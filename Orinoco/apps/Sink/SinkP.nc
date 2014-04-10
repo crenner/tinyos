@@ -46,7 +46,7 @@
 #include "OrinocoDebugReportingMsg.h"
 #include "OrinocoBeaconMsg.h"
 
-#define BLOOM_ADDR_MAX 100
+#define BLOOM_ADDR_MAX 70
 
 #ifndef SLEEP_DURATION
 #  define SLEEP_DURATION 384
@@ -185,9 +185,9 @@ implementation
 
   // DEBUG: This is a current test implementation to see if recipients 
   //        find themselves in the Bloom filter
-  am_addr_t addr = 1;
+  am_addr_t addr = 0;
   event void AliveTimer.fired() {
-    if (addr == BLOOM_ADDR_MAX) {
+/*    if (addr > BLOOM_ADDR_MAX) {
       addr = 1;
       call OrinocoRoutingRoot.resetAndAddDestination(addr);
       #ifdef PRINTF_H
@@ -201,7 +201,15 @@ implementation
       printfflush();
       #endif
       addr++;
+    }*/
+    if (addr++ > BLOOM_ADDR_MAX) {
+      addr = 1;
     }
+    call OrinocoRoutingRoot.resetAndAddDestination(addr);
+    #ifdef PRINTF_H
+    printf("%lu: %u bf-set %u\n", call LocalTime.get(), TOS_NODE_ID, addr);
+    printfflush();
+    #endif
   }
 
   // Cycle through currently supported commands by means of user button...
