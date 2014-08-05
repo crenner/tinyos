@@ -4,7 +4,7 @@ module EnergyPredictorC {
   }
   uses {
     interface EnergyModel;
-    interface Slotter;
+    interface Slotter as SlottedHarvestForecast;
     interface EnergyPolicy<fp_t>;
     interface Get<fp_t> as CapVoltage;
   }
@@ -32,11 +32,11 @@ implementation {
   }
 
   task void nextSlot() {
-    uint8_t  slot = (startSlot + ds) % call Slotter.getNumSlots();
-    //double   Ih   = (FP_FLOAT(call Slotter.getSlotValue(slot))/1000.0);
-    double  Ih = (FP_FLOAT(call Slotter.getSlotForecast(slot))/1000.0);
+    uint8_t  slot = (startSlot + ds) % call SlottedHarvestForecast.getNumSlots();
+    //double   Ih   = (FP_FLOAT(call SlottedHarvestForecast.getSlotValue(slot))/1000.0);
+    double  Ih = (FP_FLOAT(call SlottedHarvestForecast.getSlotValue(slot))/1000.0);
     calculationRunning = TRUE;
-    call EnergyModel.calculate(call Slotter.getSlotLength(slot)*(call Slotter.getBaseIntvl()), // len
+    call EnergyModel.calculate(call SlottedHarvestForecast.getSlotLength(slot)*(call SlottedHarvestForecast.getBaseIntvl()), // len
                                Vc, Ih, In);
   }
 
@@ -54,7 +54,7 @@ implementation {
     verdict = call EnergyPolicy.feed(FP_UNFLOAT(voltage));
 
     ds++;
-    if (ds < call Slotter.getNumSlots() && verdict == POLICY_VERDICT_UNDECIDED) {
+    if (ds < call SlottedHarvestForecast.getNumSlots() && verdict == POLICY_VERDICT_UNDECIDED) {
       post nextSlot();
     } else {
       // update search boundaries
@@ -76,7 +76,7 @@ implementation {
     }
   }
 
-  event void Slotter.slotEnded(uint8_t slot) {
+  event void SlottedHarvestForecast.slotEnded(uint8_t slot) {
     fp_t  capVolt = call CapVoltage.get();
     if (call EnergyPolicy.checkInitialState(capVolt) == POLICY_VERDICT_REJECT) {
       signal EnergyBudget.budgetUpdated(0);  // TODO config
@@ -88,12 +88,12 @@ implementation {
     maxIn = 20/1000.0;  // upper bound on consumption  // TODO config
     minIn = 0;          // lower bound                 // TODO config
 
-    startSlot = call Slotter.getCurSlot();
+    startSlot = call SlottedHarvestForecast.getCurSlot();
 
     initBinaryStep();
     post nextSlot();
   }
 
-  event void Slotter.cycleEnded() {
+  event void SlottedHarvestForecast.cycleEnded() {
   }
 }

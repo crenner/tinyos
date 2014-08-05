@@ -7,6 +7,8 @@ generic module AveragingSensorC() @safe() {
   }
 }
 implementation {
+  // TODO overflow handling is crap!
+
   // TODO range check and generic
   uint16_t  count = 0;
   uint32_t  sum   = 0;

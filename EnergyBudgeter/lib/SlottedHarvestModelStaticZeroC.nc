@@ -7,7 +7,7 @@
  *
  * NOTE CYCLE_LEN must be a multiple of NUM_SLOTS!
  */
-generic configuration StaticSlotterC(uint8_t NUM_SLOTS, uint16_t BASE_INTVL, uint16_t CYCLE_LEN, uint8_t ALPHA) {
+generic configuration SlottedHarvestModelStaticZeroC(uint8_t NUM_SLOTS, uint16_t BASE_INTVL, uint16_t CYCLE_LEN, uint8_t ALPHA) {
   provides {
     interface Slotter;
   }
@@ -16,17 +16,14 @@ generic configuration StaticSlotterC(uint8_t NUM_SLOTS, uint16_t BASE_INTVL, uin
   }
 }
 implementation {
-  components new StaticSlotterP(NUM_SLOTS, BASE_INTVL, CYCLE_LEN, ALPHA); 
-  Slotter         = StaticSlotterP;
-  AveragingSensor = StaticSlotterP;
-
-  components MainC;
-  MainC -> StaticSlotterP.Init;
+  components new SlottedHarvestModelStaticZeroP(NUM_SLOTS, BASE_INTVL, CYCLE_LEN, ALPHA) as HarvestModel;
+  Slotter         = HarvestModel;
+  AveragingSensor = HarvestModel;
 
   // configure job functionality
   components new EAJobC() as Job;
   components new EAPeriodicJobConfigC() as JobConfig;
-  StaticSlotterP         -> Job.Job;
-  Job.JobConfig          -> JobConfig;
-  JobConfig.SubJobConfig -> StaticSlotterP;
+  HarvestModel             -> Job.Job;
+  Job.JobConfig            -> JobConfig;
+  JobConfig.SubJobConfig   -> HarvestModel;
 }

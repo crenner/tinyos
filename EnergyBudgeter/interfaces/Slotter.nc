@@ -29,13 +29,6 @@ interface Slotter {
   command fp_t getSlotValue(uint8_t slot);
 
   /**
-   * obtain slot forecast
-   * @param slot slot index (0 <= slot < getNumSlots())
-   * @return slot forecast
-   */
-  command fp_t getSlotForecast(uint8_t slot);
-
-  /**
 
   /**
    * @return base interval in seconds
