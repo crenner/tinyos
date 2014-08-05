@@ -16,16 +16,16 @@ module EnergyModelSimP {
 }
 implementation {
   // internal state
-  double    Vc_         = 0;          // cap voltage
-  uint64_t  lastTime_   = 0;     // TODO
-  uint32_t  lastLoad_ = 0;
-  double    lastSolarCurrent_  = 0;
+  double    Vc_             = 0;   // cap voltage
+  uint32_t  lastUpdate_     = 0;   // time of last update
+  double    curConsumption_ = 0;   // node consumption current
+  double    curHarvest_     = 0;   // harvested solar current
 
   // TODO check
-  double cap;   // cap capacity
-  double eta;   // regulator efficiency
-  double Vn;    // node supply voltage
-  double Vmax;  // max cap voltage (?=  => TODO const
+  double Ccap_;   // Ccap_ Ccap_acity
+  double eta_;    // regulator efficiency
+  double Vnode_;  // node supply voltage
+  double Vmax_;   // max Ccap_ voltage (?=  => TODO const
 
   #define BREAKDOWN_VOLTAGE 0.5  // move
   // TODO how about min switch-on voltage?
@@ -39,23 +39,25 @@ implementation {
     const supply_config_t     * sc = call SupplyConfig.get();
     const capcontrol_config_t * cc = call CapConfig.get();
 
-    Vmax = FP_FLOAT(cc->maxVoltage);
-    cap  = FP_FLOAT(cc->capacity);
-    eta  = sc->efficiency / 100.0;
-    Vn   = FP_FLOAT(sc->outputVoltage);
+    Vmax_  = FP_FLOAT(cc->maxVoltage);
+    Ccap_  = FP_FLOAT(cc->capacity);
+    eta_   = sc->efficiency / 100.0;
+    Vnode_ = FP_FLOAT(sc->outputVoltage);
+    
+    dbg("EnergyModelSim", "Vmax = %g, Ccap = %g, eta = %g, Vnode = %g\n", Vmax_, Ccap_, eta_, Vnode_);
   }
   
   
   double f(double Vc, double Is, double In)
   {
-    return (Is/1000.0 - ((In*Vn)/(eta*Vc)))/cap;
+    return (Is - ((In * Vnode_) / (eta_ * Vc))) / Ccap_;
   }
 
   //Calculates a new Cap Voltage for the given parameters
   //dt timespan in which the in and outputs remain unchanged
   //Vc old CapVoltage
-  //Is Input adds to cap
-  //In Output subs from cap
+  //Is Input adds to Ccap_
+  //In Output subs from Ccap_
   inline double simulate(double dt, double Vc, double Is, double In)
   {
     if (dt <= 0) {
@@ -63,7 +65,7 @@ implementation {
     }
 
     if (In == 0 || Vc < BREAKDOWN_VOLTAGE) {
-      Vc += ((Is / 1000.0) * dt) / cap;
+      Vc += (Is * dt) / Ccap_;
     } else {
       double t = 0;
       double h = 0.001;
@@ -74,16 +76,38 @@ implementation {
         double k4 = h * f(Vc+k3,Is,In);
         Vc = Vc + (1/6.0)*(k1+2*k2+2*k3+k4);
 
+        // work-around for small Vc (FIXME still needed?)
         if (Vc < 0.01) {
           Vc = 0.0001; 
-        }
-        if (Vc > Vmax) { 
-          Vc = Vmax;
         }
         t = t + h;
       }
     }
-    return Vc;
+    
+    // Vc cannot exceed Vmax_
+    return Vc < Vmax_ ? Vc : Vmax_;
+  }
+  
+  
+  inline void update()
+  {
+    uint32_t  curTime;
+    double    dt;
+    
+    //pullConfig();  // FIXME why do that over and over again, we won't change anything really ... do we?
+    
+    curTime = call Clock.get();
+    dt      = (curTime - lastUpdate_) / 1024.0;
+    
+    // update Ccap_ voltage
+    if (dt > 0) {
+      Vc_ = simulate(dt, Vc_, curHarvest_, curConsumption_);
+      
+      dbg("EnergyModelSim", "energy update %u\t%g\t%g\t%g\t%g\n",
+          curTime, Vc_, dt, curConsumption_, curHarvest_);
+    
+      lastUpdate_ = curTime;
+    }
   }
   
   
@@ -91,57 +115,33 @@ implementation {
   
   event void Boot.booted()
   {
-    call AutoUpdateTimer.startPeriodic(1024*60);  // TODO make this configurable
+    pullConfig();
+  
+    call AutoUpdateTimer.startPeriodic(60*1024);  // TODO make this configurable
   }
 
   
   /*** EnergyLoad ******************************************************/
 
   // changed consumption
-  event void EnergyLoad.loadChanged(load_t newLoad)
+  event void EnergyLoad.loadChanged(load_t newConsumption)
   {
-    uint32_t dt, curTime;
-    
-    dbg("capvoltageEvent_Energyload", "EnergyLoad: Geändert: %i\n",newLoad);
-    
-    pullConfig();  // FIXME why do that over and over again, we won't change anything really ...
-    
-    curTime = call Clock.get();
-    dt = (curTime - lastTime_) / 1024.0;
-    
-    // update cap voltage
-    Vc_ = simulate(dt, Vc_, lastSolarCurrent_, newLoad);
-    
-    // update state
-    lastLoad_ = newLoad;
-    lastTime_ = curTime;
-    
-    dbg("capvoltageEvent", "EnergyLoad: %i\n", newLoad);
+    dbg("EnergyModelSim", "consumption changed: %u\n", newConsumption);
+  
+    // update state  (order is important)
+    update();
+    curConsumption_ = newConsumption * 1e-6;  // uA -> A
   }
   
   
   // solar current has changed
-  event void SolarCurrentUpdate.update(fp_t val)
+  event void SolarCurrentUpdate.update(fp_t newHarvest)
   {
-    uint32_t dt;
-    uint32_t curTime;
-    
-    // TODO really move this to some function, this is redundant!
-    
-    //pull Configs
-    pullConfig();
-    //Get present time
-    curTime = call Clock.get();
-    //Get timedif to previous simulation
-    dt = curTime/1024.0-lastTime_/1024.0;
-    dbg("capvoltageEvent_Sensor", "SolarValueUpdate: Vc_ vorher:%f Zeit seit letzter Berechnung:%i sekunden\n",Vc_,dt);
-    //Start the voltage in cap calculation
-    Vc_ = simulate(dt,Vc_,FP_FLOAT(val),lastLoad_);
-    dbg("capvoltageEvent_Sensor", "SolarValueUpdate: Vc_ danach:%f\n",Vc_);
-    //set lastSolarCurrent_ newInput
-    lastSolarCurrent_=FP_FLOAT(val);
-    dbg("capvoltageEvent", "Sensor: %f\n", lastSolarCurrent_);		
-    lastTime_ = curTime;
+    dbg("EnergyModelSim", "harvest changed: %g\n", FP_FLOAT(newHarvest));
+  
+    // update state  (order is important)
+    update();
+    curHarvest_ = FP_FLOAT(newHarvest) * 1e-3;  // mA -> A
   }
 
   
@@ -150,20 +150,10 @@ implementation {
   
   event void AutoUpdateTimer.fired()
   {
-    // TODO FIXME see above
-    uint32_t dt;
-    uint32_t presentTime;
-    //Get present time
-    presentTime = call Clock.get();
-    //Get timedif to previous simulation
-    dt = presentTime/1024.0-lastTime_/1024.0;
-    //pull Configs
-    pullConfig();
-    dbg("capvoltageEvent_Timer", "One_Min_Timer: Vc_ vorher:%f Zeit seit letzter Berechnung:%i sekunden\n",Vc_,dt);
-    //Start the voltage in cap calculation
-    Vc_ = simulate(dt,Vc_,lastSolarCurrent_,lastLoad_);
-    dbg("capvoltageEvent_Timer", "One_Min_Timer: Vc_ danach:%f\n",Vc_);
-    lastTime_=presentTime;
+    dbg("EnergyModelSim", "auto update\n");
+  
+    // update state  (order is important)
+    update();
   }
 
 
@@ -171,20 +161,20 @@ implementation {
   /*** CapVoltage ******************************************************/
   
   // signal successful sensor reading
-  void task capReadDone()
+  void task Ccap_ReadDone()
   {
     signal CapVoltage.readDone(SUCCESS, FP_UNFLOAT(Vc_));
   }
 
   
-  // trigger cap voltage reading
+  // trigger Ccap_ voltage reading
   command error_t CapVoltage.read()
   {
-    post capReadDone();
+    post Ccap_ReadDone();
     return SUCCESS;
   }
 
-  default event CapVoltage.readDone(error_t, fp_t)
+  default event void CapVoltage.readDone(error_t, fp_t)
   {
   }
 }

@@ -2,36 +2,45 @@ module SolarControlP {
   provides {
     interface Init;
     interface StdControl;
-    interface Get<bool>;
   }
   uses {
     interface GeneralIO as ChargeSwitch;
   }
 }
 implementation {
-  bool on = TRUE;
-
   /* Init ****************************************************************/
   command error_t Init.init()
   {
     call StdControl.start();      // allow charging
     return SUCCESS;
   }
-
-  command bool Get.get() {
-    return on;
-  }
+ 
  
   /* Init ****************************************************************/
   command error_t StdControl.start()
   {
-    on = TRUE;
+    /**
+     * Charging is always enabled, when the pin
+     * is serving as an input.
+     */
+    call ChargeSwitch.clr();
+    call ChargeSwitch.makeInput();
+
     return SUCCESS;
   }
 
   command error_t StdControl.stop()
   {
-    on = FALSE;
+    /**
+     * To disable charging, we make the solar pin
+     * an output and write a logical one. This
+     * short-circuits the solar cell.
+     * NOTE if writing a logical zero to the pin (if serving as
+     * an output), overcharging of the cap may occur!
+     */
+    call ChargeSwitch.makeOutput();
+    call ChargeSwitch.set();
+
     return SUCCESS;
   }
 }
