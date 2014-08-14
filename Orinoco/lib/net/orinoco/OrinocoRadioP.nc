@@ -7,20 +7,20 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * - Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the
- *   distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the
+ * distribution.
  * - Neither the name of the Hamburg University of Technology nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior written
- *   permission.
+ * the names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior written
+ * permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  * HAMBURG UNIVERSITY OF TECHNOLOGY OR ITS CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
@@ -33,14 +33,17 @@
  */
 
 /**
- * @author Christian Renner
- * @date December 14 2011
- */
+* @author Christian Renner
+* @date December 14 2011
+*/
 
 // TODO
 // - snoop data packets and abort sending (while backing off),
-//   if packet directed to our target (?)
+// if packet directed to our target (?) -> DONE?
 // - intermit forwarding after (long) time out
+//   -> line 560ff. -> set timeout
+//   -> when we're waking up from sleep or get a send-call, only enable fwd if not blocked (back-off)
+//   -> what information to store for back-offing?)
 
  
 //#include <RadioAssert.h>
@@ -66,7 +69,11 @@ module OrinocoRadioP {
   uses {
     interface SplitControl as SubControl;
     interface Timer<TMilli>;
-    
+
+#ifdef PRINTF_H
+    interface LocalTime<TMilli>;
+#endif
+
     interface QueueStatus;
 
     // sending and receiving
@@ -74,6 +81,7 @@ module OrinocoRadioP {
     interface AMPacket as SubAMPacket;
     interface Receive as BeaconSubReceive; // NOTE and also snoop
     interface Receive as DataSubReceive;
+    interface Receive as DataSubSnoop;
     interface AMSend as BeaconSubSend;
     interface AMSend as DataSubSend;
 
@@ -98,15 +106,15 @@ implementation {
 
   // local buffer and state information for pending tx packet (if any)
   error_t      txDataError_;     // error code for sending
-  am_addr_t    txDataDst_;       // destination for sending data
-  uint8_t      txDataExpSeqno_;  // expected beacon sequence number for ack
-  uint8_t      txAttempts_ = 0;
-  message_t  * txDataMsg_  = NULL;
+  am_addr_t    txDataDst_        = AM_BROADCAST_ADDR; // destination for sending data
+  uint8_t      txDataExpSeqno_   = -1; // expected beacon sequence number for ack
+  uint8_t      txAttempts_       = 0;
+  message_t  * txDataMsg_        = NULL;
   uint8_t      txDataLen_;
   uint8_t      txDataMaxBackoff_ = 0;
   message_t    txBeaconMsg_;
-  am_addr_t    txBeaconDst_  = AM_BROADCAST_ADDR;
-  uint8_t      txBeaconSeqno_ = 0;  // current beacon sequence number
+  am_addr_t    txBeaconDst_      = AM_BROADCAST_ADDR;
+  uint8_t      txBeaconSeqno_    = 0; // current beacon sequence number
 
   bool         beaconCancel_ = FALSE; // marks whether an attempt to send data was aborted due to a beacon (ack) reception
 
@@ -136,7 +144,7 @@ implementation {
     error = call BeaconSubSend.send(txBeaconDst_, &txBeaconMsg_, sizeof(OrinocoBeaconMsg));
     
 #ifdef ORINOCO_DEBUG_PRINTF
-    printf("%u ori bs %u %u %u %p %u\n", TOS_NODE_ID, TOS_NODE_ID, txBeaconDst_, p->seqno, &txBeaconMsg_, error);
+    printf("%u ori bs %u %u %u %p %u %lu\n", TOS_NODE_ID, TOS_NODE_ID, txBeaconDst_, p->seqno, &txBeaconMsg_, error, call LocalTime.get());
     printfflush();
 #endif
 
@@ -154,7 +162,7 @@ implementation {
     // different implementations
     // FIXME experimental (it's better hearing a bad beacon than nothing ...)
     if (TRUE) { //call LinkPacketMetadata.highChannelQuality(msg) || call PathCost.getCost() == ORINOCO_PATHCOST_INF) {
-      OrinocoBeaconMsg * p = (OrinocoBeaconMsg *)call SubPacket.getPayload(msg, sizeof(OrinocoBeaconMsg *));
+      OrinocoBeaconMsg * p = (OrinocoBeaconMsg *)call BeaconSubSend.getPayload(msg, sizeof(OrinocoBeaconMsg *));
 
       // check path cost (this must be always be the first call)
       accept = call PathCost.inspectBeacon(msg, p->cost, update);
@@ -167,11 +175,12 @@ implementation {
       // beacon accepted
       if (accept) {
         // if this beacon is acceptible, store sender id for (immediate) forwarding
-        txDataDst_        = call SubAMPacket.source(msg);
+        txDataDst_ = call SubAMPacket.source(msg);
         // store max. backoff (the back-offing is implemented in OrinocoForwardLayer)
         txDataMaxBackoff_ = p->cw;
+        
         // remember expected sequence number for the following ack ()
-        txDataExpSeqno_   = p->seqno + 1;
+        txDataExpSeqno_ = p->seqno + 1;
       }
     }
 
@@ -180,16 +189,16 @@ implementation {
     if (! accept) ps_.numIgnoredBeacons++;
 #endif
 
-    dbg("processing beacon, accept = %u\n", accept);
-
+    //printf("%lu: processing beacon from %u, accept = %u\n", call LocalTime.get(), call SubAMPacket.source(msg), accept);
+    //printfflush();
+    
     return accept;
   }
-
-
+  
   /*** beacon preparation and sending ************************************/
   inline uint16_t getRandomSleepTime() {
-    uint16_t   rdev;
-    rdev  = call Random.rand16() % (2 * call Config.getAbsWakeUpDeviation());
+    uint16_t rdev;
+    rdev = call Random.rand16() % (1 + 2 * call Config.getAbsWakeUpDeviation());
     return call Config.getWakeUpInterval() + call Config.getAbsWakeUpDeviation() - rdev;
   }
 
@@ -219,13 +228,14 @@ implementation {
     RECEIVE,                     //+ may receive data
     RECEIVE_DONE,                //  current reception phase completed
 
-    FORWARD_SUBSTART,            //  shall call SubControl.start to forward data
+    FORWARD_SUBSTART,            // shall call SubControl.start to forward data
     FORWARD_SUBSTART_DONE,       //+ waiting for SubControl.startDone
-    FORWARD_TIMER,               //  set timer
-    FORWARD,                     //  listen and wait for a beacon
-    FORWARD_SUBSEND,             //  shall send data packet via SubSend.send
+    FORWARD_TIMER,               // set timer
+    FORWARD,                     // listen and wait for a beacon
+    FORWARD_SUBSEND,             // shall send data packet via SubSend.send
     FORWARD_SUBSEND_DONE,        //+ waiting for SubSend.sendDone
-    FORWARD_DONE,                //  packet has been sent
+    FORWARD_ACK,                 // wait for an ack after having sent a packet
+    FORWARD_DONE,                // packet has been sent
 
     SLEEP_SUBSTOP,               //  shall call SubControl.stop to sleep
     SLEEP_SUBSTOP_DONE,          //+ waiting for SubControl.stopDone
@@ -285,6 +295,7 @@ implementation {
       call Timer.startOneShot(getMaxWaitingTime());
       state_ = FORWARD;
 
+      //TODO signal TrafficUpdates.forwardInit();
       call TrafficUpdates.updateForwardDelay(TRUE);
 
     // start receive timer (timeout)
@@ -327,6 +338,7 @@ implementation {
       post transition();
 
       // TODO is this the only place?
+      //TODO signal TrafficUpdates.forwardFinish();
       call TrafficUpdates.updateTxBurst(TRUE);
     
     // reception completed
@@ -377,6 +389,8 @@ implementation {
 
 
   command error_t SplitControl.stop() {
+    // TODO FORWARD_ACK
+  
     // we must cancel a pending timer (yet do not interrupt reception,
     // since we sent out a beacon)
     if (state_ == SLEEP || state_ == FORWARD) {
@@ -410,7 +424,7 @@ implementation {
 
     // forwarding completed -> switch off
     } else if (state_ == FORWARD_DONE) {
-      state_ == OFF_SUBSTOP;
+      state_ = OFF_SUBSTOP;
 
     // waiting for stopDone (to sleep) -> change to corresponding off step
     } else if (state_ == SLEEP_SUBSTOP_DONE) {
@@ -522,6 +536,13 @@ implementation {
       }
 
     // node is in forwarding state and we get a timeout (no beacon or beacon and no ack)
+    } else if (state_ == FORWARD_ACK) {
+      // no ack => wait again for beacon
+      state_ = FORWARD_TIMER;
+      
+// printf("%u TOA %lu\n", TOS_NODE_ID, call LocalTime.get());
+// printfflush();
+    
     } else if (state_ == FORWARD) {
       dbg("forward timeout\n");
       // revise the cost metric; this will either adopt the best alternative
@@ -545,7 +566,9 @@ implementation {
         /* TODO
         // NOTE what about resetting the waiting time?
         if (TRUE == signal Orinoco.sleepAfterForwardError()) {
+        // TODO how about sending / receiving (i.e., block forwarding for a while to enable receiving!)
           state_ = SLEEP_TIMER;
+          fwdBackOffUntil_ = call LocalTime.get() + call Config.getBackOffTime();
         } else {
           state_ = FORWARD_TIMER;
         }
@@ -558,6 +581,8 @@ implementation {
     // node is in received state but no data came in
     } else if (state_ == RECEIVE) {
       dbg("receive timeout\n");
+// printf("%u TO %lu\n", TOS_NODE_ID, call LocalTime.get());
+// printfflush();
       state_ = RECEIVE_DONE;
     }
 
@@ -582,25 +607,45 @@ implementation {
   /*** BeaconSubReceive **************************************************/
   //event message_t * BeaconSubReceive.receive(message_t * msg) {
   event message_t * BeaconSubReceive.receive(message_t * msg, void *, uint8_t) {
-  
-      dbg("received beacon (checking further action)\n");
 
-    // when receiving a beacon, ignore any other case than FORWARD
+#ifdef ORINOCO_DEBUG_PRINTF
+    if (1) {
+      OrinocoBeaconMsg * p = call BeaconSubSend.getPayload(msg, sizeof(OrinocoBeaconMsg));
+      printf("%u ori br %u %u %u %u %u %p %u %lu\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), p->seqno, txDataDst_, txDataExpSeqno_, msg, state_, call LocalTime.get());
+      printfflush();
+    }
+#endif
+    
+    // SOLVED? TODO we could actually lift the performance somewhat, if we react to acks even when not waiting for them!
+
+    // when receiving a beacon, first check if we are waiting for an acknowledgment
+    if (state_ == FORWARD_ACK) {
+      // if its an ack from txDataDst_ to someone else, our packet did not make it
+      if (call SubAMPacket.address() != call SubAMPacket.destination(msg)) {
+        if (AM_BROADCAST_ADDR != call SubAMPacket.destination(msg) &&
+            txDataDst_ == call SubAMPacket.source(msg))
+        {
+          call Timer.stop(); // FIXME check (our packet is lost, so stop ack-waiting timer)
+          state_ = FORWARD_TIMER; // might be overwritten (why not do what is done in state FORWARD_TIMER here?)
+          post transition();
+          // fall through ...
+      
+        // ignore any non-ack beacon while waiting for an ack
+        } else {
+          return msg;
+        }
+      }
+    }
+    
+    
+    // if we're not waiting for an ack, we may process the beacon
     // particularly do not update parent when a data packet has already been sent (ack pending)
     // schedules (back-offs may be different, resulting in timeout at receiver/parent)
-    if (state_ == FORWARD) {
-      bool                isAck = FALSE;
-      OrinocoBeaconMsg  * p     = call BeaconSubSend.getPayload(msg, sizeof(OrinocoBeaconMsg));
+    if (state_ == FORWARD_ACK || state_ == FORWARD || state_ == FORWARD_TIMER) {
+      bool isAck = FALSE;
+      OrinocoBeaconMsg * p = call BeaconSubSend.getPayload(msg, sizeof(OrinocoBeaconMsg));
       
-#ifdef ORINOCO_DEBUG_PRINTF
-      printf("%u ori br %u %u %u %u %u %p\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), p->seqno, txDataDst_, txDataExpSeqno_, msg);
-      printfflush();
-#endif
-
-      //RADIO_ASSERT(txDataMsg_ != NULL);
-
-      // STEP 1
-      // if the beacon is addressed to me, its an ack to txDataMsg_
+      // if the beacon is addressed to me, its an ack (from txDataMsg_)
       if (call SubAMPacket.address() == call SubAMPacket.destination(msg)) {
         // NOTE in theory, we could savely assume an ack here; however, in
         // case of high traffic, we observed "phantom" acks (old acks being
@@ -610,19 +655,30 @@ implementation {
             txDataExpSeqno_ == p->seqno)
         {
           // OK, it really is an ack, so proceed
-          message_t  * txDataMsgTmp = txDataMsg_;
-          txDataMsg_ = NULL;  /* delete reference *before* signaling sendDone,
-                               * to allow a nested send-call */
+          message_t * txDataMsgTmp = txDataMsg_;
+          txDataMsg_ = NULL; /* delete reference *before* signaling sendDone,
+* to allow a nested send-call */
+                               
+          call Timer.stop(); // FIXME check (we received an ack, so stop ack-waiting timer)
 
           // signal upper layer, which may directly send another packet
           signal Send.sendDone(txDataMsgTmp, txDataError_);
           isAck = TRUE;  // this beacon was an (implicit) ack!
 
           // statistics, must be in this order!
+          //TODO remove
           call TrafficUpdates.updateTxBurst(FALSE);
           call TrafficUpdates.updateForwardDelay(FALSE);
+          
+          // fall through ...
+          // isAck should make sure that we send another packet (or quit)
+          // however, it's possible that the ack contains a stop bit, so that we cannot
+          // send another packet to the same parent. We must hence restart the timer!
+          state_ = FORWARD_TIMER; // might be overwritten (why not do what is done in state FORWARD_TIMER here?)
+          post transition();
         
         } else {
+          // something went wrong: the packet is for me (ack) but I didn't expect it ... => ignore beacon
           return msg;
         }
       }
@@ -631,6 +687,8 @@ implementation {
       // order of this expression is intended (and required), since
       // processBeacon() will adapt the local weight (if possible)
       if (processBeacon(msg, isAck) && txDataMsg_ != NULL) {
+        //TODO signal TrafficUpdates.forwardBeaconReceived(isAck);
+            
         // reset timer only if beacon was an ack
         // this piece of code should be obsolete, so commented out
         //if (isAck) {
@@ -648,8 +706,8 @@ implementation {
       }
     } else if (state_ == FORWARD_SUBSEND || state_ == FORWARD_SUBSEND_DONE) {
 #ifdef ORINOCO_DEBUG_PRINTF
-      OrinocoBeaconMsg  * p     = call BeaconSubSend.getPayload(msg, sizeof(OrinocoBeaconMsg));
-      printf("%u ori br %u %u %u %u %u %p\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), p->seqno, txDataDst_, txDataExpSeqno_, msg);
+      OrinocoBeaconMsg * p = call BeaconSubSend.getPayload(msg, sizeof(OrinocoBeaconMsg));
+      printf("%u ori br! %u %u %u %u %u %p\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), p->seqno, txDataDst_, txDataExpSeqno_, msg);
       printfflush();
 #endif
     
@@ -687,11 +745,11 @@ implementation {
     dbg("received data\n");
 
     // received data outside receive => ignore to ease handling
-    if (state_ == RECEIVE) {
-      call Timer.stop();  // just received data, stop timer
-      
+    // but include data received before returning to RECEIVE from RECEIVE_TIMER
+    if (state_ == RECEIVE || state_ == RECEIVE_TIMER) {
+      call Timer.stop(); // just received data, stop timer
 #ifdef ORINOCO_DEBUG_PRINTF
-      printf("%u ori dr %u %u %p\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg);
+      printf("%u ori dr %u %u %p %u\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg, state_);
       printfflush();
 #endif
 
@@ -724,15 +782,36 @@ implementation {
       }*/
       dbg("ignored data (NOT in receive state)\n");
 #ifdef ORINOCO_DEBUG_PRINTF
-      printf("%u ori di %u %u %p\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg);
+      printf("%u ori di %u %u %p %u %lu\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg, state_, call LocalTime.get());
       printfflush();
 #endif
     } else {
       dbg("ignored data (NOT in receive state)\n");
 #ifdef ORINOCO_DEBUG_PRINTF
-      printf("%u ori di %u %u %p\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg);
-      printfflush();
+      printf("%u ori di %u %u %p %u %lu\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg, state_, call LocalTime.get());
 #endif
+    }
+
+    return msg;
+  }
+  
+  
+  /*** DataSubReceive ****************************************************/
+  event message_t * DataSubSnoop.receive(message_t * msg, void * payload, uint8_t len) {
+    
+    // if we're about to send packet to some target T and
+    // overhear another packet destined to the same target,
+    // try to abort sending (since we're too late)
+    if (state_ == FORWARD_SUBSEND) {
+      if (call SubAMPacket.destination(msg) == txDataDst_) {
+        state_ = FORWARD; // sit back again (FIXME nothing else?)
+      }
+      
+    } else if (state_ == FORWARD_SUBSEND_DONE) {
+      if (call SubAMPacket.destination(msg) == txDataDst_) {
+        call DataSubSend.cancel(txDataMsg_);
+        // sendDone will handle the remaining steps
+      }
     }
 
     return msg;
@@ -776,7 +855,10 @@ implementation {
 
 #ifdef ORINOCO_DEBUG_PRINTF
     if (error != SUCCESS) {
-      printf("%u ori df %u %u %p\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg);
+      printf("%u ori df %u %u %p %u\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg, state_);
+      printfflush();
+    } else {
+      printf("%u ori ds %u %u %u %u %p %p %u %lu\n", TOS_NODE_ID, TOS_NODE_ID, call SubAMPacket.destination(msg), txDataDst_, txDataExpSeqno_, msg, txDataMsg_, state_, call LocalTime.get());
       printfflush();
     }
 #endif
@@ -802,30 +884,11 @@ implementation {
     }
 #endif
 
-    // send was aborted by a beacon from current destination
-    // (this happens, if some contender was faster than us!)
-    // this flag asks us to immediately retry!
-    // FIXME CR What happens, if the timer fires within these states ... ?
-    /*if (error == ECANCEL) {
-      if (beaconCancel_ == TRUE) {
-        beaconCancel_ = FALSE,
-        state_ = FORWARD_SUBSEND;
-        post transition();
-      } else {
-        state_ = FORWARD;   // sit there and wait again
-      }
-    } else {
-      state_ = FORWARD;   // sit there and wait again
-    }*/
-    
     // check success of sending the packet
     if (error == SUCCESS) {
-      state_ = FORWARD;   // sit there and wait again
+      state_ = FORWARD_ACK; // sit there and wait again
     
-      // sending went fine ...
-      if (call Timer.isRunning()) {
-        call Timer.stop();
-      }
+      // sending went fine ... wait for ACK
       call Timer.startOneShot(ORINOCO_ACK_WAITING_TIME);
     
     } else if (error == ECANCEL) {
@@ -837,10 +900,18 @@ implementation {
         state_ = FORWARD_SUBSEND;
         post transition();
       } else {
-        state_ = FORWARD;   // sit there and wait again
+        if (call Timer.isRunning()) {
+          state_ = FORWARD; // sit there and wait again
+        } else {
+          state_ = FORWARD_TIMER; // restart timer
+        }
       }
     } else {
-      state_ = FORWARD;   // sit there and wait again
+      if (call Timer.isRunning()) {
+        state_ = FORWARD; // sit there and wait again
+      } else {
+        state_ = FORWARD_TIMER; // restart timer
+      }
     }
   }
 

@@ -1,5 +1,10 @@
 #include "FixPointMath.h"
 
+// TODO known issues
+// - when the node dies, this has no consequence
+// - switch-on threshold (1.6 V) isn't used
+
+
 module EnergyModelSimP {
   provides {
     interface Read<fp_t> as CapVoltage;
@@ -16,7 +21,7 @@ module EnergyModelSimP {
 }
 implementation {
   // internal state
-  double    Vc_             = 0;   // cap voltage
+  double    Vc_             = 2.7; // cap voltage  // TODO make configurable
   uint32_t  lastUpdate_     = 0;   // time of last update
   double    curConsumption_ = 0;   // node consumption current
   double    curHarvest_     = 0;   // harvested solar current
@@ -116,7 +121,8 @@ implementation {
   event void Boot.booted()
   {
     pullConfig();
-  
+
+    // TODO should be run by TOSSIM (not by node!)
     call AutoUpdateTimer.startPeriodic(60*1024);  // TODO make this configurable
   }
 
@@ -146,13 +152,14 @@ implementation {
 
   
   /*** AutoUpdateTimer *************************************************/
-  // TODO
   
   event void AutoUpdateTimer.fired()
   {
     dbg("EnergyModelSim", "auto update\n");
   
-    // update state  (order is important)
+    // update state
+    // TODO only do this, if last change is older than some minimum update
+    // interval (say, a minute)
     update();
   }
 

@@ -55,11 +55,12 @@ enum {
 
 /* wake-up configuration (default values) */
 enum {
-  ORINOCO_DFLT_WAKEUP_INTERVAL    =  512,  /* ms */
-  ORINOCO_DFLT_WAKEUP_DEVIATION   =   10,  /* percent */
-  ORINOCO_DFLT_NUM_WAITING_INTVL  =    3,  /* multiple, absolute number */
-  ORINOCO_DFLT_MIN_QUEUE_LEVEL    =    1,  /* min. number of packets in queue before forwarding */
-  ORINOCO_DFLT_QUEUE_LOCAL_RESERVE =   3   /* save 1/n spots in queue for local data */
+  ORINOCO_DFLT_WAKEUP_INTERVAL     =   512,  /* ms */
+  ORINOCO_DFLT_WAKEUP_DEVIATION    =    10,  /* percent */
+  ORINOCO_DFLT_NUM_WAITING_INTVL   =     3,  /* multiple, absolute number */
+  ORINOCO_DFLT_MIN_QUEUE_LEVEL     =     1,  /* min. number of packets in queue before forwarding */
+  ORINOCO_DFLT_QUEUE_LOCAL_RESERVE =     3,  /* save 1/n spots in queue for local data */
+  ORINOCO_DFLT_BACKOFF_TIME        = 10240   /* ms */
 };
 
 /* collection data types */

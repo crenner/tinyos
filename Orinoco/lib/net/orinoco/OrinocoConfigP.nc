@@ -52,20 +52,22 @@ implementation {
   uint8_t   waitIntvl_;
   uint8_t   qmLvl_;
   uint8_t   qlLvl_;
+  uint32_t  backoffTime_;
 
   void updateAbsDeviation() {
     Tsdev_ = (uint16_t)(((uint32_t)Ts_ * alpha_) / 100);
   }
 
   command error_t Init.init() {
-    Ts_    = ORINOCO_DFLT_WAKEUP_INTERVAL;
-    alpha_ = ORINOCO_DFLT_WAKEUP_DEVIATION;  
-    Tdmin_ = ORINOCO_DFLT_CONGESTION_WIN_MIN;
-    Tdmax_ = ORINOCO_DFLT_CONGESTION_WIN_MAX;
-    waitIntvl_ = ORINOCO_DFLT_NUM_WAITING_INTVL;
-    qmLvl_     = ORINOCO_DFLT_MIN_QUEUE_LEVEL;
-    qlLvl_     = ORINOCO_QUEUE_SIZE / ORINOCO_DFLT_QUEUE_LOCAL_RESERVE;
+    Ts_          = ORINOCO_DFLT_WAKEUP_INTERVAL;
+    alpha_       = ORINOCO_DFLT_WAKEUP_DEVIATION;  
+    Tdmin_       = ORINOCO_DFLT_CONGESTION_WIN_MIN;
+    Tdmax_       = ORINOCO_DFLT_CONGESTION_WIN_MAX;
+    waitIntvl_   = ORINOCO_DFLT_NUM_WAITING_INTVL;
+    qmLvl_       = ORINOCO_DFLT_MIN_QUEUE_LEVEL;
+    qlLvl_       = ORINOCO_QUEUE_SIZE / ORINOCO_DFLT_QUEUE_LOCAL_RESERVE;
     updateAbsDeviation();
+    backoffTime_ = ORINOCO_DFLT_BACKOFF_TIME;
     return SUCCESS;
   }
 
@@ -119,7 +121,7 @@ implementation {
     // can neither be zero nor should it be too large (to avoid queue overflows)
     // half the overall queue size should be fine
     if (m == 0 || m > ORINOCO_QUEUE_SIZE / 2) {
-      return FAIL;
+      return EINVAL;
     }
     
     qmLvl_ = m;
@@ -133,7 +135,7 @@ implementation {
   command error_t OrinocoConfig.setQueueLocalReserve(uint8_t r) {
     // local reserve must not exceed half the queue size
     if (r > ORINOCO_QUEUE_SIZE / 2) {
-      return FAIL;
+      return EINVAL;
     }
     
     qlLvl_ = r;
@@ -142,6 +144,21 @@ implementation {
   
   command uint8_t OrinocoConfig.getQueueLocalReserve() {
     return qlLvl_;
+  }
+  
+  command uint32_t OrinocoConfig.getBackoffTime() {
+    return backoffTime_;
+  }
+  
+  command error_t OrinocoConfig.setBackoffTime(uint32_t bo) {
+    // back-off must be larger than max. sleep interval
+    uint32_t minBo = call OrinocoConfig.getWakeUpInterval() + call OrinocoConfig.getAbsWakeUpDeviation();
+    if (bo < minBo) {
+      return EINVAL;
+    }
+    
+    backoffTime_ = bo;
+    return SUCCESS;
   }
 }
 

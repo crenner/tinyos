@@ -88,5 +88,11 @@ interface OrinocoConfig {
 
   // get number of queue slots reserved for local data
   command uint8_t getQueueLocalReserve();
+  
+  // get back-off time after failed forward attempt
+  command uint32_t getBackoffTime();
+  
+  // set back-off time after failed forward attempt
+  command error_t setBackoffTime(uint32_t bo);
 }
 
