@@ -44,9 +44,9 @@
 #include "OrinocoDebugReportingMsg.h"
 
 #define MSG_BURST_LEN      1    // number of packets per period (#)
-#define DATA_PERIOD    30720UL  // data creation period (ms)
+#define DATA_PERIOD    122880UL  // data creation period (ms)
 #define QUEUE_LIMIT        1    // aggregation degree (#)
-#define WAKEUP_INTVL    1024    // wake-up period (ms)
+#define WAKEUP_INTVL    768    // wake-up period (ms)
 
 #define AM_PERIODIC_PACKET  33  // packet type
 

@@ -2,3 +2,4 @@ Orinoco/apps/PeriodicSender/build/*
 Orinoco/apps/Sink/build/*
 Orinoco/apps/DataSender/build/*
 Orinoco/apps/TestDissemination/build/*
+Orinoco/apps/LinkTest/build

@@ -17,7 +17,7 @@ CC2420CHANNEL=12
 RF230CHANNEL=12
 
 ########## Radio TX Power (see below for values)
-#CC2420POWER=31
+CC2420POWER=15
 #RF230POWER=10
 
 $(info #######################################################)

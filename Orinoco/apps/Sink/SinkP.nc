@@ -102,10 +102,10 @@ module SinkP @safe() {
 
 
 #ifndef SLEEP_DURATION
-#  define SLEEP_DURATION 256
+#  define SLEEP_DURATION 384
 #endif
 #ifndef BLOOM_ADD_NODE_INTVL
-#  define BLOOM_ADD_NODE_INTVL 307200UL
+#  define BLOOM_ADD_NODE_INTVL 614400UL
 #endif
 //#pragma message "WAKEUP_INTVL =" WAKEUP_INTVL
   
