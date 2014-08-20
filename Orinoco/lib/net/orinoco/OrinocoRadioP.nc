@@ -567,6 +567,8 @@ implementation {
         // NOTE what about resetting the waiting time?
         if (TRUE == signal Orinoco.sleepAfterForwardError()) {
         // TODO how about sending / receiving (i.e., block forwarding for a while to enable receiving!)
+        // FIXME however, we have the problem that we could not deliver data and the path cost has been set 
+        // to infty! Hence, nobody will accept our beacon!
           state_ = SLEEP_TIMER;
           fwdBackOffUntil_ = call LocalTime.get() + call Config.getBackOffTime();
         } else {
