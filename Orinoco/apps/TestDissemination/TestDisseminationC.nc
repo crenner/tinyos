@@ -97,7 +97,7 @@ implementation {
       call DissUpdate.change( &dissValue );
       
       //dbg("TestDisseminationC", "TestDisseminationC: Timer fired.\n");
-      printf("%lu: %u bf-inc %u\n", call LocalTime.get(), TOS_NODE_ID, dissValue);
+      printf("%lu: %u bf-inc %u\n", call LocalTime.get(), TOS_NODE_ID, dissValue.cmd);
       printfflush();
     
       call Timer.startOneShot(UPDATE_INTVL);
@@ -111,13 +111,12 @@ implementation {
         *d = cnt++;
         //call LowPowerListening.setRemoteWakeupInterval(&myMsg, SRC_WAKEUP_INTVL);
         result = call SendData.send(&myMsg, sizeof(*d));
-	if (SUCCESS == result) {
-	  printf("%lu: %u data-tx %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
-	  printfflush();
-	} else {
-	  printf("%lu: %u data-fail %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
-	  printfflush();
-	}
+        if (SUCCESS == result) {
+          printf("%lu: %u data-tx %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
+        } else {
+          printf("%lu: %u data-fail %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
+        }
+        printfflush();
       }
 
       call Timer.startOneShot(DATA_PERIOD);
