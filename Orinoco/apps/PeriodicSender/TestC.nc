@@ -125,7 +125,7 @@ implementation {
         #ifdef PRINTF_H
         printf("%lu: %u data-tx %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
         printfflush();
-        } else {
+      } else {
         printf("%lu: %u data-fail %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
         printfflush();
         #endif

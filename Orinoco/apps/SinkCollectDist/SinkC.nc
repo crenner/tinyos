@@ -33,34 +33,57 @@
  */
 
 /**
- * Orinoco Definitions
- *
  * @author Christian Renner
- * @date December 13 2011
+ * @date December 14 2011
  */
 
-#ifndef ORINOCO_RADIO_H
-#define ORINOCO_RADIO_H
+#ifdef USE_PRINTF
+  #define NEW_PRINTF_SEMANTICS
+  #include "printf.h"
+#endif
 
+configuration SinkC {
+}
+implementation {
+  components SinkP;
+  
+  components MainC;
+  SinkP.Boot             -> MainC;
 
-/* platform/radio specific setup */
-enum {
-  ORINOCO_DFLT_CONGESTION_WIN_MIN =    7,  /* ms */
-  ORINOCO_DFLT_CONGESTION_WIN_MAX =   31,  /* ms */
-  ORINOCO_ACK_WAITING_TIME        =    8,  /* ms */ /* low-layer time for data rx (2), beacon tx (<=4?), beacon rx(2) */
-  ORINOCO_DATA_WAITING_TIME       =    8,  /* ms */ /* low-layer time for beacon rx (2), data tx (<=4?), data rx(2) */
-};
+#ifdef PRINTF_H
+  components PrintfC;
+  components SerialStartC;
+#endif
 
-/* platform/radio spec. LIMITS for wake-up config */
-enum {
-  ORINOCO_WAKEUP_INTERVAL_MIN =   128,  /* ms */
-  ORINOCO_WAKEUP_INTERVAL_MAX =  5120,  /* ms */
-};
+  components new TimerMilliC() as BootTimer;
+  SinkP.BootTimer -> BootTimer;
+  
+  components new TimerMilliC() as DistTimer;
+  SinkP.DistTimer -> DistTimer;
 
-// from the radio driver layer to enable cross-platfrom compatibility
-// could be revised at some point
-//enum {
-//  ORINOCO_MIN_RSSI           = 2, // min. RSSI needed to accept a beacon
-//};
+  components OrinocoP as Radio;
+  SinkP.RootControl      -> Radio;
+  SinkP.RoutingControl   -> Radio;
+  SinkP.RadioControl     -> Radio;
+  SinkP.OrinocoConfig    -> Radio;
+  SinkP.OrinocoRoutingRoot -> Radio;
 
-#endif /* ORINOCO_RADIO_H */
+  SinkP.RadioSend        -> Radio;
+  SinkP.RadioReceive     -> Radio.Receive;
+  SinkP.RadioPacket      -> Radio;
+  SinkP.CollectionPacket -> Radio;
+  SinkP.PacketDelayMilli -> Radio;
+
+  components OrinocoStatsReportingJobC;
+  OrinocoStatsReportingJobC.Packet -> Radio;
+  SinkP.OrinocoStatsReporting   -> OrinocoStatsReportingJobC;
+
+  #ifdef ORINOCO_DEBUG_STATISTICS
+  components OrinocoDebugReportingJobC;
+  OrinocoDebugReportingJobC.Packet -> Radio;
+  SinkP.OrinocoDebugReporting   -> OrinocoDebugReportingJobC;
+  #endif
+  
+  components LocalTimeMilliC;
+  SinkP.LocalTime -> LocalTimeMilliC;
+}

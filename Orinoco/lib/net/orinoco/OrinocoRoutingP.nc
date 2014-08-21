@@ -110,6 +110,7 @@ implementation {
   
   // check if the node's local address is stored in the newly received filter
   bool checkForPresenceInFilter() {
+    #ifndef ORINOCO_IGNORE_BLOOMFILTERS
     uint8_t  i, offsetByte, offsetBit;
     for (i = 0; i < BLOOM_HASHES; i++) {
       offsetByte = bp_.hashes[i] >> 0x03;
@@ -118,6 +119,7 @@ implementation {
         return FALSE;
       }
     }
+    #endif
     return TRUE;
   }
   

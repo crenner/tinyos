@@ -126,7 +126,7 @@ implementation {
   orinoco_data_header_t * getHeader(message_t * msg) {
     // add orinoco header to the end of the packet (behind regular payload)
     // to avoid packet copying for, e.g., serial transmission at the sink
-    // (the orinico header would be between real payload and header!)
+    // (the orinoco header would be between real payload and header!)
     return (orinoco_data_header_t *)
       (call SubPacket.getPayload(msg, call SubPacket.maxPayloadLength())
       + call Packet.payloadLength(msg));
@@ -322,7 +322,8 @@ implementation {
     }
 
     // copy message
-    *(qe.msg) = *msg;
+    //*(qe.msg) = *msg;
+    memcpy(qe.msg, msg, sizeof(*msg));
     msg = qe.msg;
 
     
@@ -426,6 +427,14 @@ implementation {
 #endif
       } else {
         // TODO handle broken connections, retry count etc.
+        
+        // FIXME DEBUG FIXME DEBUG
+        orinoco_data_header_t  * h;
+        // get packet header
+        h = getHeader(msg);
+        printf("%u ZZ %u %u %u %u %p\n", TOS_NODE_ID, h->origin, h->seqno, h->hopCnt, h->routingVersion, msg);
+        printfflush();
+        // FIXME DEBUG FIXME DEBUG
       }
 
       // send next packet in queue
