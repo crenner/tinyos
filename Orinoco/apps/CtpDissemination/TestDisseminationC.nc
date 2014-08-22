@@ -10,7 +10,9 @@ module TestDisseminationC {
   uses interface Boot;
   
   uses interface Timer<TMilli> as BootTimer;
+#  ifndef NO_DISSEMINATION
   uses interface Timer<TMilli> as Timer;
+#  endif
   
   uses interface SplitControl as RadioControl;
 
@@ -18,15 +20,17 @@ module TestDisseminationC {
   uses interface RootControl;
   uses interface StdControl as CollControl;
   uses interface Send as SendData;
-  uses interface Send as SendConf;
   uses interface Receive as ReceiveData;
-  uses interface Receive as ReceiveConf;
   uses interface CtpPacket;
 
   // dissemination
+# ifndef NO_DISSEMINATION
   uses interface StdControl as DissControl;
   uses interface DisseminationValue<orinoco_routing_t>  as DissValue;
   uses interface DisseminationUpdate<orinoco_routing_t> as DissUpdate;
+  uses interface Send as SendConf;
+  uses interface Receive as ReceiveConf;
+# endif
   
   // other stuff
   uses interface LocalTime<TMilli>;
@@ -72,8 +76,10 @@ implementation {
 
     // start our packet/update timer
     if (call RootControl.isRoot()) {
+#     ifndef NO_DISSEMINATION
       dissValue.cmd = 0;
-      call Timer.startOneShot(UPDATE_INTVL);      
+      call Timer.startOneShot(UPDATE_INTVL);
+#     endif
     } else {
       call Timer.startOneShot(1 + (call Random.rand32() % DATA_PERIOD));
     }
@@ -93,6 +99,7 @@ implementation {
   /*** Timer ************************************************************/
   event void Timer.fired() {
     if (call RootControl.isRoot()) {
+#     ifndef NO_DISSEMINATION
       dissValue.cmd++;
       call DissUpdate.change( &dissValue );
       
@@ -101,6 +108,7 @@ implementation {
       printfflush();
     
       call Timer.startOneShot(UPDATE_INTVL);
+#     endif
     } else {
       uint8_t  msgCnt;
       error_t  result;
@@ -131,6 +139,8 @@ implementation {
   
 
   /*** DissValue ********************************************************/
+#ifndef NO_DISSEMINATION
+
   void sendConfirmation(uint8_t cmd, uint16_t version, error_t status) {
     OrinocoCommandAckMsg* payload = (OrinocoCommandAckMsg*) call SendConf.getPayload(&myConfMsg, sizeof(OrinocoCommandAckMsg));
     payload->cmd = cmd;
@@ -163,7 +173,7 @@ implementation {
     // then send confirmation
     sendConfirmation(0, rxVal, SUCCESS);
   }
-
+#endif
 
   
   /*** SendData *********************************************************/
@@ -173,9 +183,11 @@ implementation {
   
   
   /*** SendConf *********************************************************/
+#ifndef NO_DISSEMINATION
   event void SendConf.sendDone(message_t * msg, error_t err) {
     // TODO
   }
+#endif
   
   
   /*** ReceiveData ******************************************************/
@@ -187,10 +199,12 @@ implementation {
   
   
   /*** ReceiveConf ******************************************************/
+#ifndef NO_DISSEMINATION
   event message_t * ReceiveConf.receive(message_t * msg, void * payload, uint8_t len) {
     OrinocoCommandAckMsg * p = (OrinocoCommandAckMsg *)payload;
     printf("%lu: %u bf-rx-conf %u %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, call CtpPacket.getOrigin(msg), call CtpPacket.getType(msg), call CtpPacket.getThl(msg), p->version);
     printfflush();
     return msg;
   }
+#endif
 }

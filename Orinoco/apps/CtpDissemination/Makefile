@@ -21,6 +21,9 @@ CFLAGS += -DLPL_DEF_LOCAL_WAKEUP=768
 CFLAGS += -DLPL_DEF_REMOTE_WAKEUP=768
 CFLAGS += -DDELAY_AFTER_RECEIVE=20
 
+# use this flag (constant) to disable dissemination
+#CFLAGS += -DNO_DISSEMINATION
+
 # enable printf
 CFLAGS += -I $(TOSDIR)/lib/printf
 
