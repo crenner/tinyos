@@ -1,4 +1,9 @@
 Orinoco/apps/PeriodicSender/build/*
 Orinoco/apps/Sink/build/*
 Orinoco/apps/DataSender/build/*
+<<<<<<< HEAD
 Orinoco/apps/LinkTest/build/*
+=======
+Orinoco/apps/TestDissemination/build/*
+Orinoco/apps/LinkTest/build
+>>>>>>> aca055f3b96a2325d81988b0e5bb6e4dd1107260

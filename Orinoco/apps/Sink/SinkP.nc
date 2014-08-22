@@ -110,6 +110,17 @@ module SinkP @safe() {
     interface LocalTime<TMilli>;  
   }
 }
+
+
+#ifndef SLEEP_DURATION
+#  define SLEEP_DURATION 384
+#endif
+#ifndef BLOOM_ADD_NODE_INTVL
+#  define BLOOM_ADD_NODE_INTVL 614400UL
+#endif
+//#pragma message "WAKEUP_INTVL =" WAKEUP_INTVL
+  
+
 implementation
 {
   enum {
