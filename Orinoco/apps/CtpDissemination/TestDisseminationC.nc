@@ -43,7 +43,7 @@ implementation {
   
   /*** Boot *************************************************************/
   event void Boot.booted() {
-    //call DissValue.set( &dissValue );
+    call DissValue.set( &dissValue );
     
     // setup root 
     if (TOS_NODE_ID == SINK_ID) {
