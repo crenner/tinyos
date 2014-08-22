@@ -7,7 +7,7 @@ CC2420POWER=15
 #CC2420POWER=7
 
 include $(MAKERULES)
-include Makefile.radioconfig
+include ../Makefile.radioconfig
 
 #CFLAGS += -DDISABLE_SYNCED_MICRO
 #CFLAGS += -DORINOCO_DEBUG_STATISTICS

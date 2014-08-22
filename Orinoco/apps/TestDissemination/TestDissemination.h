@@ -16,7 +16,8 @@
 
 // from Orinoco
 #define MSG_BURST_LEN      1    // number of packets per period (#)
-#define DATA_PERIOD    122880UL  // data creation period (ms)
+//#define DATA_PERIOD    122880UL  // data creation period (ms)
+#define DATA_PERIOD       61440UL  // data creation period (ms)
 //#define DATA_PERIOD    15*1024UL  // data creation period (ms)
 //#define SRC_WAKEUP_INTVL     768    // wake-up period (ms)
 // -> see Makefile for general lpl setup!
