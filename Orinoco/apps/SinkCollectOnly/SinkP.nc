@@ -147,6 +147,7 @@ implementation
       len += sizeof(orinoco_data_header_t);
       ((uint8_t*)payload)[len] = '\0';
       printf("%lu: %u XXX %u %s\n", call LocalTime.get(), TOS_NODE_ID, len, (char*)payload);
+      printfflush();
     }
     #endif
     

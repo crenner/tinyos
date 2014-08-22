@@ -159,6 +159,13 @@ implementation
     uint8_t hops = ((orinoco_data_header_t *)(payload + len))->hopCnt;
     printf("%lu: %u data-rx %u %u %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, call CollectionPacket.getOrigin(msg), type, *((nx_uint16_t *)payload), hops, call RadioPacket.payloadLength(msg));
     printfflush();
+    
+    if (type != 33) {  // DEBUGGING HACK TO FIND packet corruption bug
+      len += sizeof(orinoco_data_header_t);
+      ((uint8_t*)payload)[len] = '\0';
+      printf("%lu: %u XXX %u %s\n", call LocalTime.get(), TOS_NODE_ID, len, (char*)payload);
+      printfflush();
+    }
     #endif
     
     return msg;
