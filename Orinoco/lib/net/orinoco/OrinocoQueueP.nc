@@ -432,8 +432,10 @@ implementation {
         orinoco_data_header_t  * h;
         // get packet header
         h = getHeader(msg);
+        #ifdef USE_PRINTF
         printf("%u ZZ %u %u %u %u %p\n", TOS_NODE_ID, h->origin, h->seqno, h->hopCnt, h->routingVersion, msg);
         printfflush();
+        #endif
         // FIXME DEBUG FIXME DEBUG
       }
 
