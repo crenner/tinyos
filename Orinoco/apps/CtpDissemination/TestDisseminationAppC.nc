@@ -12,6 +12,9 @@ implementation {
   components MainC;
   TestDisseminationC.Boot -> MainC;
 
+  components LedsC;
+  TestDisseminationC.Leds -> LedsC;
+
   components ActiveMessageC;
   TestDisseminationC.RadioControl -> ActiveMessageC;
   TestDisseminationC.LowPowerListening -> ActiveMessageC;

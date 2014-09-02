@@ -104,6 +104,7 @@ implementation {
     // start our packet timer
     call Timer.startOneShot(1 + (call Random.rand32() % delay));
 
+    call Leds.led2On();
   }
 
   event void BootTimer.fired() {
@@ -118,7 +119,8 @@ implementation {
   event void Timer.fired() {
     uint8_t  msgCnt;
     error_t  result;
-    
+    call Leds.led2Off();
+        
     for (msgCnt = 0; msgCnt < MSG_BURST_LEN; msgCnt++) {
       nx_uint16_t *d = call Packet.getPayload(&myMsg, sizeof(*d));
       call Packet.clear(&myMsg);

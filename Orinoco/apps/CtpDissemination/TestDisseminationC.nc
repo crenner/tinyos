@@ -16,6 +16,8 @@ module TestDisseminationC {
   
   uses interface SplitControl as RadioControl;
 
+  uses interface Leds;
+
   // collection
   uses interface RootControl;
   uses interface StdControl as CollControl;
@@ -55,6 +57,7 @@ implementation {
     if (TOS_NODE_ID == SINK_ID) {
       call RootControl.setRoot();
     } else {
+      call Leds.led2On();
       call RootControl.unsetRoot();
     }
     
@@ -122,6 +125,7 @@ implementation {
     } else {
       uint8_t  msgCnt;
       error_t  result;
+      call Leds.led2Off();
 
       for (msgCnt = 0; msgCnt < MSG_BURST_LEN; msgCnt++) {
         nx_uint16_t *d = call SendData.getPayload(&myMsg, sizeof(*d));
