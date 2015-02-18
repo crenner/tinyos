@@ -162,7 +162,7 @@ implementation {
   }
 
   /***** internal helpers ************************************************/
-  message_t * ONE forward(message_t * ONE msg) {
+  message_t * forward(message_t * msg) {
     mq_entry_t    qe;
     
     // point queue element to new message

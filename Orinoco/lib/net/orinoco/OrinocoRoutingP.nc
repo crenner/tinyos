@@ -257,7 +257,7 @@ implementation {
       // maybe memcpy is an alternative...
       curRouting_.version = rxVersion;
       curRouting_.cmd     = route->cmd;
-      for (i = 0; i < BLOOM_BYTES; i++) {
+      for (i = 0; i < BLOOM_BYTES; i++) { // TODO memcpy?
         curRouting_.bloom[i] = route->bloom[i];
       }
 

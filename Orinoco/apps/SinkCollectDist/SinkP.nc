@@ -166,12 +166,11 @@ implementation
       printfflush();
     
       if (type != 33) {  // DEBUGGING HACK TO FIND packet corruption bug
-        uint8_t i;
-        len += sizeof(orinoco_data_header_t);
-        ((uint8_t*)payload)[len] = '\0';
+        uint8_t * ps = call RadioPacket.getPayload(msg, 0);
+        uint8_t * pe = (uint8_t *)payload + len + sizeof(orinoco_data_header_t) + sizeof(orinoco_delay_footer_t);
         printf("%lu: %u XXX %u", call LocalTime.get(), TOS_NODE_ID, len);
-        for (i = 0; i < len; i++) {
-          printf(" %2x", ((uint8_t*)payload)[i]);
+        for (; ps < pe; ps++) {
+          printf(" %02x", *ps);
         }
         printf("\n");
         printfflush();

@@ -113,23 +113,25 @@ implementation {
 
   // local buffer and state information for pending tx packet (if any)
   error_t      txDataError_;     // error code for sending
-  am_addr_t    txDataDst_ = AM_BROADCAST_ADDR;       // destination for sending data
-  uint8_t      txDataExpSeqno_ = -1;  // expected beacon sequence number for ack
-  uint8_t      txAttempts_ = 0;
-  message_t  * txDataMsg_  = NULL;
+  am_addr_t    txDataDst_        = AM_BROADCAST_ADDR;       // destination for sending data
+  uint8_t      txDataExpSeqno_   = -1;  // expected beacon sequence number for ack
+  uint8_t      txAttempts_       = 0;
+  message_t  * txDataMsg_        = NULL;
   uint8_t      txDataLen_;
   uint8_t      txDataMaxBackoff_ = 0;
   message_t    txBeaconMsg_;
-  am_addr_t    txBeaconDst_  = AM_BROADCAST_ADDR;
-  uint8_t      txBeaconSeqno_ = 0;  // current beacon sequence number
+  am_addr_t    txBeaconDst_      = AM_BROADCAST_ADDR;
+  uint8_t      txBeaconSeqno_    = 0;  // current beacon sequence number
   
-  bool         beaconCancel_ = FALSE; // marks whether an attempt to send data was aborted due to a beacon (ack) reception
+  bool         beaconCancel_     = FALSE; // marks whether an attempt to send data was aborted due to a beacon (ack) reception
 
-  am_addr_t    lastBeaconDestination_ = AM_BROADCAST_ADDR;
-  uint16_t     rxRouteVersion_ = 0;
+  am_addr_t    lastBeaconDest_   = AM_BROADCAST_ADDR;
+  uint16_t     rxRouteVersion_   = 0;
   
   // statistics
+#ifdef PRINTF_H
   uint32_t  shortBcnTxCount_ = 0, longBcnTxCount_ = 0, errBcnTxCount_ = 0;
+#endif
 
 #ifdef ORINOCO_DEBUG_STATISTICS
   orinoco_packet_statistics_t   ps_ = {0};
@@ -157,10 +159,10 @@ implementation {
 
     // ACK beacon handling
     if (   txBeaconDst_    != AM_BROADCAST_ADDR         // Beacon acts as ACK AND
-        && txBeaconDst_    != lastBeaconDestination_    // first ACK to this node AND
+        && txBeaconDst_    != lastBeaconDest_    // first ACK to this node AND
         && rxRouteVersion_ != call Routing.getRoutingVersionNumber()) { // version differs
     
-      p->route = *(call Routing.getCurrentBloomFilter());
+      p->route = *(call Routing.getCurrentBloomFilter()); // TODO memcpy?
       p->flags |= ORINOCO_BEACON_FLAGS_CONTAINSROUTE;
       beaconLength = sizeof(OrinocoBeaconMsg);
     } else { 
@@ -181,7 +183,7 @@ implementation {
     
     error = call BeaconSubSend.send(txBeaconDst_, &txBeaconMsg_, beaconLength);
     if (error == SUCCESS) {
-      lastBeaconDestination_ = txBeaconDst_; 
+      lastBeaconDest_ = txBeaconDst_; 
     }
     
     #ifdef PRINTF_H
@@ -229,7 +231,7 @@ implementation {
     // different implementations
     // FIXME experimental (it's better hearing a bad beacon than nothing ...)
     if (TRUE) { //call LinkPacketMetadata.highChannelQuality(msg) || call PathCost.getCost() == ORINOCO_PATHCOST_INF) {
-      OrinocoBeaconMsg * p = (OrinocoBeaconMsg *)call BeaconSubSend.getPayload(msg, sizeof(OrinocoBeaconMsg *));
+      OrinocoBeaconMsg * p = (OrinocoBeaconMsg *)call BeaconSubSend.getPayload(msg, sizeof(OrinocoBeaconMsg));
 
       // check path cost (this must be always be the first call)
       accept = call PathCost.inspectBeacon(msg, p->cost, update);

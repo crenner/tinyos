@@ -3,8 +3,8 @@ COMPONENT=TestDisseminationAppC
 
 
 #CC2420POWER=31
-CC2420POWER=15
-#CC2420POWER=7
+#CC2420POWER=15
+CC2420POWER=7
 
 include $(MAKERULES)
 include ../Makefile.radioconfig
