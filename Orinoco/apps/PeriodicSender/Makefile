@@ -12,7 +12,7 @@ CFLAGS += -DORINOCO_DEBUG_STATISTICS
 #CFLAGS += -DORINOCO_DEBUG_PRINTF
 CFLAGS += -DORINOCO_IGNORE_BLOOMFILTERS
 
-CFLAGS += -DUSE_PRINTF
+#CFLAGS += -DUSE_PRINTF -I $(TOSDIR)/lib/printf
 
 CFLAGS += \
 	-I . \
@@ -24,7 +24,6 @@ CFLAGS += \
 	-I ../../../Tools \
 	-I ../../../Reporting \
 	-I $(TOSDIR)/lib/net \
-	-I $(TOSDIR)/lib/printf \
 
 ifeq ($(findstring $(PLATFORM),iris), iris)
 CFLAGS += \

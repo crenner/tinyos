@@ -191,8 +191,10 @@ implementation
 
   event void BootTimer.fired() {
     // we need to delay this because printf is only set up at Boot.booted() and we cannot influence the order of event signalling
+    #ifdef USE_PRINTF
     printf("%lu: %u reset\n", call LocalTime.get(), TOS_NODE_ID);
     printfflush();
+    #endif
   }
 
   // DEBUG: This is a current test implementation to see if recipients 

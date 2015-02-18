@@ -1,4 +1,6 @@
+#ifdef USE_PRINTF
 #include "printf.h"
+#endif
 
 #include "TestDissemination.h"
 
@@ -10,11 +12,11 @@ module TestDisseminationC {
   uses interface Boot;
   
   uses interface Timer<TMilli> as BootTimer;
-#  ifndef NO_DISSEMINATION
   uses interface Timer<TMilli> as Timer;
-#  endif
   
   uses interface SplitControl as RadioControl;
+
+  uses interface Leds;
 
   // collection
   uses interface RootControl;
@@ -47,12 +49,15 @@ implementation {
   
   /*** Boot *************************************************************/
   event void Boot.booted() {
+    #ifndef NO_DISSEMINATION
     call DissValue.set( &dissValue );
+    #endif
     
     // setup root 
     if (TOS_NODE_ID == SINK_ID) {
       call RootControl.setRoot();
     } else {
+      call Leds.led2On();
       call RootControl.unsetRoot();
     }
     
@@ -64,12 +69,16 @@ implementation {
     }*/
     
     // switch on radio and enable routing
-    call RadioControl.start();
+    call RadioControl.start(); 
+    #ifndef NO_DISSEMINATION
     call DissControl.start();
+    #endif
     call CollControl.start();
     
+    #ifdef USE_PRINTF    
     printf("%lu: %u boot\n", call LocalTime.get(), TOS_NODE_ID);
     printfflush();
+	#endif
 
     // boot sync
     call BootTimer.startOneShot(1024);
@@ -90,8 +99,10 @@ implementation {
   /*** BootTimer ********************************************************/
   event void BootTimer.fired() {
     // we need to delay this because printf is only set up at Boot.booted() and we cannot influence the order of event signalling
+    #ifdef USE_PRINTF
     printf("%lu: %u reset\n", call LocalTime.get(), TOS_NODE_ID);
     printfflush();
+    #endif
   }
   
   
@@ -104,14 +115,17 @@ implementation {
       call DissUpdate.change( &dissValue );
       
       //dbg("TestDisseminationC", "TestDisseminationC: Timer fired.\n");
+      #ifdef USE_PRINTF
       printf("%lu: %u bf-inc %u\n", call LocalTime.get(), TOS_NODE_ID, dissValue.cmd);
       printfflush();
+      #endif
     
       call Timer.startOneShot(UPDATE_INTVL);
 #     endif
     } else {
       uint8_t  msgCnt;
       error_t  result;
+      call Leds.led2Off();
 
       for (msgCnt = 0; msgCnt < MSG_BURST_LEN; msgCnt++) {
         nx_uint16_t *d = call SendData.getPayload(&myMsg, sizeof(*d));
@@ -119,12 +133,16 @@ implementation {
         *d = cnt++;
         //call LowPowerListening.setRemoteWakeupInterval(&myMsg, SRC_WAKEUP_INTVL);
         result = call SendData.send(&myMsg, sizeof(*d));
+
+        #ifdef USE_PRINTF
         if (SUCCESS == result) {
           printf("%lu: %u data-tx %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
         } else {
           printf("%lu: %u data-fail %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
         }
         printfflush();
+        #endif
+        
       }
 
       call Timer.startOneShot(DATA_PERIOD);
@@ -147,8 +165,10 @@ implementation {
     payload->version = version;
     payload->result = status;
 
+    #ifdef USE_PRINTF
     printf("%lu: %u bf-tx-conf %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, cmd, version, status);
     printfflush();
+    #endif
 
     //call LowPowerListening.setRemoteWakeupInterval(&myConfMsg, SRC_WAKEUP_INTVL);
     call SendConf.send(&myConfMsg, sizeof(OrinocoCommandAckMsg));
@@ -165,9 +185,11 @@ implementation {
     }
 
     //dbg("TestDisseminationC", "Received new correct 32-bit value @ %s.\n", sim_time_string());
+    #ifdef USE_PRINTF
     printf("%lu: %u bf-rx %u %u\n", call LocalTime.get(), TOS_NODE_ID, dissValue.cmd, rxVal);
     printfflush();
-    
+	#endif
+	    
     dissValue = dv;
     
     // then send confirmation
@@ -192,8 +214,10 @@ implementation {
   
   /*** ReceiveData ******************************************************/
   event message_t * ReceiveData.receive(message_t * msg, void * payload, uint8_t len) {
+    #ifdef USE_PRINTF
     printf("%lu: %u data-rx %u %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, call CtpPacket.getOrigin(msg), call CtpPacket.getType(msg), *((nx_uint16_t *)payload), call CtpPacket.getThl(msg));
     printfflush();
+    #endif
     return msg;
   }
   
@@ -202,8 +226,10 @@ implementation {
 #ifndef NO_DISSEMINATION
   event message_t * ReceiveConf.receive(message_t * msg, void * payload, uint8_t len) {
     OrinocoCommandAckMsg * p = (OrinocoCommandAckMsg *)payload;
+    #ifdef USE_PRINTF
     printf("%lu: %u bf-rx-conf %u %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, call CtpPacket.getOrigin(msg), call CtpPacket.getType(msg), call CtpPacket.getThl(msg), p->version);
     printfflush();
+    #endif
     return msg;
   }
 #endif

@@ -4,10 +4,16 @@
 configuration TestDisseminationAppC {}
 implementation {
   components TestDisseminationC;
+  
+  #ifdef USE_PRINTF
   components PrintfC, SerialStartC;
-
+  #endif
+  
   components MainC;
   TestDisseminationC.Boot -> MainC;
+
+  components LedsC;
+  TestDisseminationC.Leds -> LedsC;
 
   components ActiveMessageC;
   TestDisseminationC.RadioControl -> ActiveMessageC;

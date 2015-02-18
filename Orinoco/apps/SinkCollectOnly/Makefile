@@ -12,7 +12,7 @@ CFLAGS += -DORINOCO_DEBUG_STATISTICS
 CFLAGS += -DDISABLE_SYNCED_MICRO
 CFLAGS += -DORINOCO_QUEUE_SIZE=1
 
-CFLAGS += -DUSE_PRINTF
+CFLAGS += -DUSE_PRINTF -I $(TOSDIR)/lib/printf
 
 CFLAGS += \
 	-I . \
@@ -25,7 +25,6 @@ CFLAGS += \
 	-I ../../../Tools \
 	-I ../../../Reporting \
 	-I $(TOSDIR)/lib/net \
-	-I $(TOSDIR)/lib/printf \
 
 ifeq ($(findstring $(PLATFORM),iris), iris)
 CFLAGS += \

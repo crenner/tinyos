@@ -13,8 +13,6 @@ include ../Makefile.radioconfig
 #CFLAGS += -DORINOCO_DEBUG_STATISTICS
 #CFLAGS += -DORINOCO_DEBUG_PRINTF
 
-CFLAGS += -DUSE_PRINTF
-
 # use lpl
 CFLAGS += -DLOW_POWER_LISTENING
 CFLAGS += -DLPL_DEF_LOCAL_WAKEUP=768
@@ -25,7 +23,7 @@ CFLAGS += -DDELAY_AFTER_RECEIVE=20
 #CFLAGS += -DNO_DISSEMINATION
 
 # enable printf
-CFLAGS += -I $(TOSDIR)/lib/printf
+#CFLAGS += -DUSE_PRINTF -I $(TOSDIR)/lib/printf
 
 ### For CTP:
 CFLAGS += -I$(TOSDIR)/lib/net -I%T/lib/net/ctp -I%T/lib/net/le

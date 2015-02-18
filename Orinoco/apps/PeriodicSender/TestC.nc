@@ -104,19 +104,23 @@ implementation {
     // start our packet timer
     call Timer.startOneShot(1 + (call Random.rand32() % delay));
 
+    call Leds.led2On();
   }
 
   event void BootTimer.fired() {
     // we need to delay this because printf is only set up at Boot.booted() and we cannot influence the order of event signalling
+    #ifdef USE_PRINTF
     printf("%lu: %u reset\n", call LocalTime.get(), TOS_NODE_ID);
     printfflush();
+    #endif
   }
 
 
   event void Timer.fired() {
     uint8_t  msgCnt;
     error_t  result;
-    
+    call Leds.led2Off();
+        
     for (msgCnt = 0; msgCnt < MSG_BURST_LEN; msgCnt++) {
       nx_uint16_t *d = call Packet.getPayload(&myMsg, sizeof(*d));
       call Packet.clear(&myMsg);
