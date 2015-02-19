@@ -77,8 +77,11 @@ module OrinocoRadioP {
     interface QueueStatus;
 
     // sending and receiving
-    interface Packet as SubPacket;
+    interface Packet as DataSubPacket;
+    interface Packet as BeaconSubPacket;
     interface AMPacket as SubAMPacket;
+    
+    
     interface Receive as BeaconSubReceive; // NOTE and also snoop
     interface Receive as DataSubReceive;
     interface Receive as DataSubSnoop;
@@ -129,7 +132,7 @@ implementation {
     OrinocoBeaconMsg  * p;
     error_t             error;
 
-    call SubPacket.clear(&txBeaconMsg_);
+    call BeaconSubPacket.clear(&txBeaconMsg_);
     p = call BeaconSubSend.getPayload(&txBeaconMsg_, sizeof(OrinocoBeaconMsg));
     p->cost   = call PathCost.getCost();
     p->cw     = curCongestionWin_;
@@ -459,6 +462,7 @@ implementation {
   command uint8_t BackoffConfig.getMaximumBackoff() {
     return txDataMaxBackoff_;
   }
+  
 
 
   /*** PacketStatistics **************************************************/
@@ -531,7 +535,7 @@ implementation {
         // if there is data, try to get rid of it first
         // TODO this actually needs some tweaking:
         // - never accept data if we need to send something
-        //   -> when we got stuck somehow (no forwarder), when should be accept data again?
+        //   -> when we got stuck somehow (no forwarder), when should we accept data again?
         state_ = FORWARD_SUBSTART;
       }
 
@@ -608,7 +612,7 @@ implementation {
   
   /*** BeaconSubReceive **************************************************/
   //event message_t * BeaconSubReceive.receive(message_t * msg) {
-  event message_t * BeaconSubReceive.receive(message_t * msg, void *, uint8_t) {
+  event message_t * BeaconSubReceive.receive(message_t * msg, void * payload, uint8_t len) {
 
 #ifdef ORINOCO_DEBUG_PRINTF
     if (1) {
@@ -776,7 +780,7 @@ implementation {
       // we got another data packet that we cannot handle, so the congestion window
       // might have been too small
       // FIXME doing this here is problematic, because the congestion time in the next beacon
-      // and the current timer may be have different values! We need something to cope with that
+      // and the current timer may have different values! We need something to cope with that
       /*if (curCongestionWin_ >= call Config.getMaxDwellTime() / 2) {
         curCongestionWin_ = call Config.getMaxDwellTime();
       } else {
@@ -798,7 +802,7 @@ implementation {
   }
   
   
-  /*** DataSubReceive ****************************************************/
+  /*** DataSubSnoop ******************************************************/
   event message_t * DataSubSnoop.receive(message_t * msg, void * payload, uint8_t len) {
     
     // if we're about to send packet to some target T and
@@ -995,25 +999,26 @@ implementation {
     return FAIL;
   }
 
+  
   /*** Packet ************************************************************/
   command void Packet.clear(message_t * msg) {
-    return call SubPacket.clear(msg);
+    return call DataSubPacket.clear(msg);
   }
 
-  command uint8_t Packet.payloadLength(message_t* msg) {
-    return call SubPacket.payloadLength(msg);
+  command uint8_t Packet.payloadLength(message_t * msg) {
+    return call DataSubPacket.payloadLength(msg);
   }
 
   command void Packet.setPayloadLength(message_t * msg, uint8_t len) {
-    call SubPacket.setPayloadLength(msg, len);
+    call DataSubPacket.setPayloadLength(msg, len);
   }
 
   command uint8_t Packet.maxPayloadLength() {
-    return call SubPacket.maxPayloadLength();
+    return call DataSubPacket.maxPayloadLength();
   }
 
   command void * Packet.getPayload(message_t * msg, uint8_t len) {
-    return call SubPacket.getPayload(msg, len);
+    return call DataSubPacket.getPayload(msg, len);
   }
 }
 

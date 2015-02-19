@@ -72,18 +72,24 @@ implementation {
   OrinocoPathCost   = Mac;
   TrafficUpdates    = Mac;
   TrafficStatistics = Mac;
+  
+  // FIXME check
+  // is it possible that there result conflicts
+  // from payload access via AMSend vs. Packet?
 
   // why do we use active messages at all?
   components ActiveMessageC as AM;
   Mac.SubControl       -> AM;
-  Mac.SubPacket        -> OrinocoPacketDelayLayerC; // AM;
-  Mac.SubAMPacket      -> AM;
-  Mac.BeaconSubReceive -> AM.Receive[ORINOCO_AM_BEACON];  // get all beacons (wire twice!)
-  Mac.BeaconSubReceive -> AM.Snoop[ORINOCO_AM_BEACON];
-  Mac.DataSubReceive   -> OrinocoPacketDelayLayerC; // AM.Receive[ORINOCO_AM_DATA];
-  Mac.DataSubSnoop     -> AM.Snoop[ORINOCO_AM_DATA];
-  Mac.BeaconSubSend    -> AM.AMSend[ORINOCO_AM_BEACON];
-  Mac.DataSubSend      -> OrinocoForwardLayerC; // AM.AMSend[ORINOCO_AM_DATA];
+  Mac.SubAMPacket      -> AM; // FIXME?
+  
+  Mac.BeaconSubPacket  -> DisseminationLayer.BeaconPacket; // AM;
+  Mac.BeaconSubReceive -> DisseminationLayer.BeaconReceive; // AM.Receive[ORINOCO_AM_BEACON];
+  //Mac.BeaconSubReceive -> AM.Snoop[ORINOCO_AM_BEACON]; // get all beacons (wire twice!) -> this is now done in the dissemination layer
+  Mac.DataSubPacket    -> DisseminationLayer.DataPacket;
+  Mac.DataSubReceive   -> DisseminationLayer.DataReceive; // AM.Receive[ORINOCO_AM_DATA];
+  Mac.DataSubSnoop     -> AM.Snoop[ORINOCO_AM_DATA]; // we only use the destination address of snooped packets, so we skip intermediate layers
+  Mac.BeaconSubSend    -> DisseminationLayer.BeaconSend; // AM.AMSend[ORINOCO_AM_BEACON];
+  Mac.DataSubSend      -> DisseminationLayer.DataSend; // OrinocoForwardLayerC; // AM.AMSend[ORINOCO_AM_DATA];
 
   // TODO Temporary solution, should be moved in sep. module
   Mac.LinkPacketMetadata -> AM;
@@ -91,15 +97,32 @@ implementation {
 
 //  PacketTimeStampRadio  = AM;
 
+  components OrinocoDisseminationLayerC as DisseminationLayer;
+  // Beacon wire directly to AM
+  DisseminationLayer.BeaconSubPacket  -> AM;
+  DisseminationLayer.BeaconSubSend    -> AM.AMSend[ORINOCO_AM_BEACON];
+  DisseminationLayer.BeaconSubReceive -> AM.Receive[ORINOCO_AM_BEACON];  // get all beacons (wire twice!)
+  DisseminationLayer.BeaconSubReceive -> AM.Snoop[ORINOCO_AM_BEACON];
+  // data packets settle on top of the forward layer (in send direction)
+  // but use the delay layer for receiving (they skip the forward layer ..., which is bad design)
+  DisseminationLayer.DataSubPacket    -> OrinocoPacketDelayLayerC;
+  DisseminationLayer.DataSubSend      -> OrinocoForwardLayerC;
+  DisseminationLayer.DataSubReceive   -> OrinocoPacketDelayLayerC; // AM.Receive[ORINOCO_AM_DATA];
+
+  //
   components OrinocoForwardLayerC;
   OrinocoForwardLayerC.SubSendData -> OrinocoPacketDelayLayerC; // AM.AMSend[ORINOCO_AM_DATA];
   OrinocoForwardLayerC.Config      -> Mac;
 
+  //
   components OrinocoPacketDelayLayerC;
   PacketDelayMilli = OrinocoPacketDelayLayerC;
   OrinocoPacketDelayLayerC.AMSubSend  -> AM.AMSend[ORINOCO_AM_DATA];
   OrinocoPacketDelayLayerC.SubReceive -> AM.Receive[ORINOCO_AM_DATA];
   OrinocoPacketDelayLayerC.SubPacket  -> AM;
+  
+  //OrinocoDisseminationC.Orinoco-> Mac.OrinocoDissemination;
+  //Mac.VerSize -> OrinocoDisseminationC;
 
 #ifdef PRINTF_H
   components LocalTimeMilliC as Clock;
