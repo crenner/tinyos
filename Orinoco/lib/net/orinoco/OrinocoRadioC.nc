@@ -108,6 +108,7 @@ implementation {
   DisseminationLayer.DataSubPacket    -> OrinocoPacketDelayLayerC;
   DisseminationLayer.DataSubSend      -> OrinocoForwardLayerC;
   DisseminationLayer.DataSubReceive   -> OrinocoPacketDelayLayerC; // AM.Receive[ORINOCO_AM_DATA];
+  DisseminationLayer.AMPacket         -> AM;
 
   //
   components OrinocoForwardLayerC;
