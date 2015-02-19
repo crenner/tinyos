@@ -42,46 +42,44 @@
   #include "printf.h"
 #endif
 
-configuration TestAppC {
+configuration SinkC {
 }
 implementation {
+  components SinkP;
+  
   components MainC;
-  components TestC;
-  components OrinocoP;
-  components new TimerMilliC();
-  components new TimerMilliC() as BootTimer;
+  SinkP.Boot             -> MainC;
 
-  #ifdef PRINTF_H
+#ifdef PRINTF_H
   components PrintfC;
   components SerialStartC;
-  components LocalTimeMilliC;
-  TestC.LocalTime -> LocalTimeMilliC;
-  #endif
-  
-  TestC.Boot              -> MainC.Boot;
-  TestC.Timer             -> TimerMilliC;
-  TestC.BootTimer         -> BootTimer;
-  TestC.RadioControl      -> OrinocoP;
-  TestC.ForwardingControl -> OrinocoP;
-  TestC.Send              -> OrinocoP.Send;
-  TestC.RootControl       -> OrinocoP;
-  TestC.Packet            -> OrinocoP;
-  TestC.OrinocoConfig     -> OrinocoP;
+#endif
 
-  // Orinoco internal reporting
+  components new TimerMilliC() as BootTimer;
+  SinkP.BootTimer -> BootTimer;
+
+  components OrinocoP as Radio;
+  SinkP.RootControl      -> Radio;
+  SinkP.RoutingControl   -> Radio;
+  SinkP.RadioControl     -> Radio;
+  SinkP.OrinocoConfig    -> Radio;
+
+  SinkP.RadioSend        -> Radio;
+  SinkP.RadioReceive     -> Radio.Receive;
+  SinkP.RadioPacket      -> Radio;
+  SinkP.CollectionPacket -> Radio;
+  SinkP.PacketDelayMilli -> Radio;
+
   components OrinocoStatsReportingJobC;
-  OrinocoStatsReportingJobC.Packet -> OrinocoP;
-  TestC.OrinocoStatsReporting   -> OrinocoStatsReportingJobC;
+  OrinocoStatsReportingJobC.Packet -> Radio;
+  SinkP.OrinocoStatsReporting   -> OrinocoStatsReportingJobC;
 
-  components LedsC;
-  TestC.Leds -> LedsC;
-  
-  components RandomC;
-  TestC.Random -> RandomC;
-  
   #ifdef ORINOCO_DEBUG_STATISTICS
   components OrinocoDebugReportingJobC;
-  OrinocoDebugReportingJobC.Packet -> OrinocoP;
-  TestC.OrinocoDebugReporting   -> OrinocoDebugReportingJobC;
+  OrinocoDebugReportingJobC.Packet -> Radio;
+  SinkP.OrinocoDebugReporting   -> OrinocoDebugReportingJobC;
   #endif
+  
+  components LocalTimeMilliC;
+  SinkP.LocalTime -> LocalTimeMilliC;
 }

@@ -40,10 +40,15 @@
 #include "Reporting.h"
 #include "Orinoco.h"
 
+#include "OrinocoDebugReportingMsg.h"
+
 #define MSG_BURST_LEN      1    // number of packets per period (#)
-#define DATA_PERIOD    30720UL  // data creation period (ms)
-#define QUEUE_LIMIT        1    // aggregattion degree (#)
-#define WAKEUP_INTVL    1024    // wake-up period (ms)
+//#define DATA_PERIOD    122880UL  // data creation period (ms)
+//#define DATA_PERIOD    61440UL  // data creation period (ms)
+//#define DATA_PERIOD    5120UL  // data creation period (ms)
+#define DATA_PERIOD    61440UL  // data creation period (ms)
+#define QUEUE_LIMIT        1    // aggregation degree (#)
+#define WAKEUP_INTVL     768    // wake-up period (ms)
 
 #define AM_PERIODIC_PACKET  33  // packet type
 
@@ -51,25 +56,38 @@ module TestC {
   uses {
     interface Boot;
     interface Timer<TMilli>;
+    interface Timer<TMilli> as BootTimer;
     interface SplitControl as RadioControl;
     interface StdControl as ForwardingControl;
     interface RootControl;
     interface OrinocoConfig;
     interface Packet;
     interface QueueSend as Send[collection_id_t];
-        
+    interface Leds;
+    
+    interface Random;
+
+    #ifdef PRINTF_H
+    interface LocalTime<TMilli>;
+    #endif    
+    
     // Orinoco Stats
-    interface Receive as OrinocoStatsReportingMsg;
-    //interface Receive as OrinocoDebugReportingMsg;
+    interface Receive as OrinocoStatsReporting;
+    
+    #ifdef ORINOCO_DEBUG_STATISTICS
+    interface Receive as OrinocoDebugReporting;
+    #endif
   }
 }
 implementation {
   message_t  myMsg;
-  uint16_t  cnt = 0;
-
+  uint16_t   cnt = 0;
+  bool       active = FALSE;
+  uint32_t   delay = DATA_PERIOD;
+  
   event void Boot.booted() {
     // we're no root, just make sure
-    call RootControl.unsetRoot();  // make this node a root
+    call RootControl.unsetRoot();
 
     // switch on radio and enable routing
     call RadioControl.start();
@@ -78,44 +96,101 @@ implementation {
     call OrinocoConfig.setWakeUpInterval(WAKEUP_INTVL);  
     call OrinocoConfig.setMinQueueSize(1);
 
+    // boot sync
+    call BootTimer.startOneShot(1024);
+
     // start our packet timer
-    call Timer.startPeriodic(DATA_PERIOD);
+    call Timer.startOneShot(1 + (call Random.rand32() % delay));
+
+    call Leds.led2On();
   }
+
+  event void BootTimer.fired() {
+    // we need to delay this because printf is only set up at Boot.booted() and we cannot influence the order of event signalling
+    #ifdef USE_PRINTF
+    printf("%lu: %u reset\n", call LocalTime.get(), TOS_NODE_ID);
+    printfflush();
+    #endif
+  }
+
 
   event void Timer.fired() {
     uint8_t  msgCnt;
-
+    error_t  result;
+    call Leds.led2Off();
+        
     for (msgCnt = 0; msgCnt < MSG_BURST_LEN; msgCnt++) {
-      nx_uint16_t * d;
-
-      // prepare message
+      nx_uint16_t *d = call Packet.getPayload(&myMsg, sizeof(*d));
       call Packet.clear(&myMsg);
-      
-      d = call Packet.getPayload(&myMsg, sizeof(cnt));
       *d = cnt++;
-
-      // and send it
-      call Send.send[AM_PERIODIC_PACKET](&myMsg, sizeof(cnt));
+      result = call Send.send[AM_PERIODIC_PACKET](&myMsg, sizeof(*d));
+      if (SUCCESS == result) {
+        #ifdef PRINTF_H
+        printf("%lu: %u data-tx %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
+        printfflush();
+      } else {
+        printf("%lu: %u data-fail %u\n", call LocalTime.get(), TOS_NODE_ID, *d);
+        printfflush();
+        #endif
+      }
     }
+    
+    call Timer.startOneShot(delay);
   }
 
-  event void RadioControl.startDone(error_t error) {
-    // nothing
+  void restartTimer(uint32_t value) {
+    call Timer.startOneShot(value);
+    delay = value;
   }
 
-  event void RadioControl.stopDone(error_t error) {
-    // nothing
+  /*
+  event void Dissemination.newCommandNotification(uint8_t cmd, uint16_t identifier) {
+    error_t returnCode;
+    
+    #ifdef PRINTF_H
+      printf("%lu: %u cmd-rx %u\n", call LocalTime.get(), TOS_NODE_ID, identifier);
+      printfflush();
+    #endif
   }
+  */
   
+  event void RadioControl.startDone(error_t error) { }
+
+  event void RadioControl.stopDone(error_t error) { }
   
+
   /* ************************* ORINOCO STATS ************************* */
-  event message_t * OrinocoStatsReportingMsg.receive(message_t * msg, void * payload, uint8_t len) {
-    call Send.send[CID_ORINOCO_STATS_REPORT](msg, len);  // packet is copied or rejected
+  event message_t * OrinocoStatsReporting.receive(message_t *msg, void *payload, uint8_t len) {
+    //call Send.send[CID_ORINOCO_STATS_REPORT](msg, len);  // packet is copied or rejected
     return msg;
   }
 
-  /*event message_t * OrinocoDebugReportingMsg.receive(message_t * msg, void * payload, uint8_t len) {
-    call Send.send[CID_ORINOCO_DEBUG_REPORT](msg, len);  // packet is copied or rejected
+  #ifdef ORINOCO_DEBUG_STATISTICS
+  event message_t * OrinocoDebugReporting.receive(message_t * msg, void * payload, uint8_t len) {
+    //call Send.send[CID_ORINOCO_DEBUG_REPORT](msg, len);  // packet is copied or rejected
+    
+    #ifdef PRINTF_H
+    OrinocoDebugReportingMsg * m = (OrinocoDebugReportingMsg *)payload;
+    printf("%lu: %u dbg %u %u %u %lu %lu %u %lu %lu %lu %u %lu %u %u\n",
+      call LocalTime.get(),
+      TOS_NODE_ID,
+      m->seqno,
+      m->qs.numPacketsDropped,
+      m->qs.numDuplicates,
+      m->ps.numTxBeacons,
+      m->ps.numTxAckBeacons,
+      m->ps.numTxBeaconsFail,
+      m->ps.numRxBeacons,
+      m->ps.numIgnoredBeacons,
+      m->ps.numTxPackets,
+      m->ps.numTxPacketsFail,
+      m->ps.numRxPackets,
+      m->ps.numTxTimeouts,
+      m->ps.numMetricResets);
+    printfflush();
+    #endif 
+    
     return msg;
-  }*/
+  }
+  #endif
 }
