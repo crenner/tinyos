@@ -52,6 +52,8 @@
 
 #define AM_PERIODIC_PACKET  33  // packet type
 
+#define RESET_DELAY  2048
+
 module TestC {
   uses {
     interface Boot;
@@ -97,10 +99,10 @@ implementation {
     call OrinocoConfig.setMinQueueSize(1);
 
     // boot sync
-    call BootTimer.startOneShot(1024);
+    call BootTimer.startOneShot(RESET_DELAY);
 
     // start our packet timer
-    call Timer.startOneShot(1 + (call Random.rand32() % delay));
+    call Timer.startOneShot(RESET_DELAY + 1 + (call Random.rand32() % delay));
 
     call Leds.led2On();
   }

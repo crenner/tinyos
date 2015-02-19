@@ -9,8 +9,8 @@
 PACKETLENGTH=80
 
 ########## Radio channel (11-26 in 2.4GHz)
-CC2420CHANNEL=18
-RF230CHANNEL=12
+CC2420CHANNEL=19
+RF230CHANNEL=13
 
 ########## Radio TX Power (see below for values)
 #CC2420POWER=31

@@ -47,6 +47,9 @@
 #ifndef SLEEP_DURATION
 #  define SLEEP_DURATION 128
 #endif
+
+
+#define RESET_DELAY  2048
   
 
 module SinkP @safe() {
@@ -87,7 +90,7 @@ implementation
     call RoutingControl.start();
     call RadioControl.start();
 
-    call BootTimer.startOneShot(1024);
+    call BootTimer.startOneShot(RESET_DELAY);
   }
 
   event void BootTimer.fired() {
