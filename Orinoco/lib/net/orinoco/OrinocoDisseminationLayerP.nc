@@ -52,16 +52,40 @@ implementation {
     // transmission at the sink
     return (uint8_t *)
       (call DataSubPacket.getPayload(msg, call DataSubPacket.maxPayloadLength())
-      + call DataPacket.payloadLength(msg)); // FIXME is this the right call?
-      // FIXME also check in PacketDelayLayerP!
+      + call DataPacket.payloadLength(msg));
   }
    
 
   /*** BeaconSend ********************************************************/
   command error_t
   BeaconSend.send(am_addr_t dst, message_t * msg, uint8_t len) {
-    // TODO
-    // - attach data, if required
+    // do we have to piggy-back data?
+    if (updateRequired_) {
+      uint8_t          v;
+      uint8_t          dlen;
+      uint8_t        * p = NULL;
+      const uint8_t  * d = NULL;
+      
+      // get version, data and size
+      v = signal Dissemination.version();
+      d = signal Dissemination.data(&dlen);
+      
+      if (d != NULL && dlen > 0) {
+        // get pointer behind upper layer payload
+        p = call BeaconSubPacket.getPayload(msg, call BeaconSubPacket.maxPayloadLength())
+            + len;
+        // FIXME we should check len here (it *must* be sizeof(OrinocoBeaconMsg)
+        
+        // TODO check if data fits into packet!
+        *p = v;  // TODO proper typecast to diss_version_t
+        memcpy(p + DISSEMINATION_VERSION_SIZE, d, dlen);
+        len += dlen + DISSEMINATION_VERSION_SIZE;
+      }
+    
+      // we're sending out the data, so clear flag
+      updateRequired_ = FALSE;
+    }
+    
     return call BeaconSubSend.send(dst, msg, len);
   }
   
@@ -90,18 +114,26 @@ implementation {
   }
 
   command uint8_t BeaconPacket.payloadLength(message_t * msg) {
+    // FIXME
     return call BeaconSubPacket.payloadLength(msg);
+    //return call DataSubPacket.payloadLength(msg) - DISSEMINATION_VERSION_SIZE;
   }
 
   command void BeaconPacket.setPayloadLength(message_t * msg, uint8_t len) {
+    // FIXME at this point, we don't exactly know
     call BeaconSubPacket.setPayloadLength(msg, len);
+    //call DataSubPacket.setPayloadLength(msg, len + DISSEMINATION_VERSION_SIZE);
   }
 
   command uint8_t BeaconPacket.maxPayloadLength() {
+    // FIXME apply max. data size to be piggy-backed
+    //return call BeaconSubPacket.maxPayloadLength() - DISSEMINATION_MAX_DATA_SIZE;
     return call BeaconSubPacket.maxPayloadLength();
   }
 
   command void * BeaconPacket.getPayload(message_t * msg, uint8_t len) {
+    // FIXME apply max. data size to be piggy-backed
+    //return call BeaconSubPacket.getPayload(msg, len + DISSEMINATION_MAX_DATA_SIZE);
     return call BeaconSubPacket.getPayload(msg, len);
   }
 
@@ -158,7 +190,7 @@ implementation {
   }
   
   
-  /*** Dissemination *****************************************************/
+  /*** Dissemination (dummy implementation) ******************************/
   default event uint8_t
   Dissemination.version() {
     return 0;
@@ -171,7 +203,7 @@ implementation {
   }
   
   default event void
-  Dissemination.update(const uint8_t * d, uint8_t size) {
+  Dissemination.update(uint8_t rversion, const uint8_t * rdata, uint8_t size) {
     // ignore
   }
   
@@ -186,11 +218,19 @@ implementation {
   /*** BeaconSubReceive **************************************************/
   event message_t * 
   BeaconSubReceive.receive(message_t * msg, void * payload, uint8_t len) {
-    // TODO
-    // - check if data attached (do we need an extra field or how do we do this?)
-    // -> we could use another packet type?
-    // - copy out data (if present)
-    return signal BeaconReceive.receive(msg, payload, len);
+    // is there any data attached?
+    // NOTE this implementation relies on the fact that the remaining
+    // packet payload is a fixed-size OrinocoBeaconMsg
+    if (len > sizeof(OrinocoBeaconMsg)) {
+      uint8_t    dlen = len - sizeof(OrinocoBeaconMsg) - DISSEMINATION_VERSION_SIZE;
+      uint8_t  * d    = (uint8_t *)payload + sizeof(OrinocoBeaconMsg) + DISSEMINATION_VERSION_SIZE;
+      uint8_t    v    = *((uint8_t *)payload + sizeof(OrinocoBeaconMsg));
+      
+      // provide update
+      signal Dissemination.update(v, d, dlen);
+    }
+
+    return signal BeaconReceive.receive(msg, payload, sizeof(OrinocoBeaconMsg));
   }
   
   
@@ -212,7 +252,7 @@ implementation {
       updateRequired_  = TRUE;
       
       //updateRequester_ = call AMPacket.source(msg);
-      printf("%u diss old %u %u %u\n", TOS_NODE_ID, vl, *vr, call AMPacket.source(msg));
+      printf("%u diss-old %u %u %u\n", TOS_NODE_ID, vl, *vr, call AMPacket.source(msg));
       printfflush();
     } else {
       updateRequired_  = FALSE;

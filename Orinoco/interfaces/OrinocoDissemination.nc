@@ -22,6 +22,6 @@ interface OrinocoDissemination {
    * signal there is a new update
    * the user must copy the data out
    */
-  event void update(const uint8_t * d, uint8_t size);
+  event void update(uint8_t rversion, const uint8_t * rdata, uint8_t size);
 }
 

@@ -78,8 +78,8 @@ module SinkP @safe() {
     interface LocalTime<TMilli>;  
   }
 }
-implementation
-{
+implementation {
+
   event void Boot.booted() {
 
     // set static wake-up interval for orinoco
@@ -146,15 +146,18 @@ implementation
     printfflush();
     
     if (type != 33) {  // DEBUGGING HACK TO FIND packet corruption bug
+      // TODO check packet type in queue upon packet reception and output to make such bad packets trackable!
+      uint8_t  i;
       len += sizeof(orinoco_data_header_t);
       ((uint8_t*)payload)[len] = '\0';
-      printf("%lu: %u XXX %u %s\n", call LocalTime.get(), TOS_NODE_ID, len, (char*)payload);
+      printf("%lu: %u XXX %u", call LocalTime.get(), TOS_NODE_ID, len);
+      for (i = 0; i < len; i++) {
+        printf(" %02x", ((uint8_t *)payload)[i]);
+      }
+      printf("\n");
       printfflush();
     }
     #endif
-    
-          
-
     
     return msg;
   }
