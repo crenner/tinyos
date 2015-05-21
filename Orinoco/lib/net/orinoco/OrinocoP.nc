@@ -84,6 +84,11 @@ implementation {
   Snoop                 = Queue.Snoop;
   Intercept             = Queue;
   MainC                -> Queue.Init;
+  
+#ifdef PRINTF_H
+  components LocalTimeMilliC;
+  Queue.LocalTime      -> LocalTimeMilliC;
+#endif
 
   components OrinocoRadioC;
   PacketDelayMilli      = OrinocoRadioC;

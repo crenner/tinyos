@@ -60,6 +60,11 @@ typedef nx_struct OrinocoDebugReportingMsg {
     nx_uint16_t  numTxTimeouts;
     nx_uint16_t  numMetricResets;
   } ps;
+  nx_struct { // @see Statistics.h
+    nx_uint32_t  numTxDissBeacons;
+    nx_uint16_t  numRxDissBeacons;
+    nx_uint16_t  numRxDissBeaconsNonNew;
+  } ds;
 } OrinocoDebugReportingMsg;
 
 

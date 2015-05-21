@@ -48,7 +48,7 @@ module OrinocoDebugReportingJobP {
     interface EAJob;
     interface Get<const orinoco_queue_statistics_t *>  as QueueStats;
     interface Get<const orinoco_packet_statistics_t *> as PacketStats;
-
+    interface Get<const orinoco_dissemination_statistics_t *> as DissStats;
   }
 }
 implementation {
@@ -58,8 +58,9 @@ implementation {
 
   // run job
   event void EAJob.run() {
-    const orinoco_queue_statistics_t   * qs;
-    const orinoco_packet_statistics_t  * ps;
+    const orinoco_queue_statistics_t          * qs;
+    const orinoco_packet_statistics_t         * ps;
+    const orinoco_dissemination_statistics_t  * ds;
     OrinocoDebugReportingMsg * p = (OrinocoDebugReportingMsg *)
       call Packet.getPayload(pmsg_, sizeof(OrinocoDebugReportingMsg));
 
@@ -82,6 +83,11 @@ implementation {
     p->ps.numRxPackets      = ps->numRxPackets;
     p->ps.numTxTimeouts     = ps->numTxTimeouts;
     p->ps.numMetricResets   = ps->numMetricResets;
+    
+    ds = call DissStats.get();
+    p->ds.numTxDissBeacons       = ds->numTxDissBeacons;
+    p->ds.numRxDissBeacons       = ds->numRxDissBeacons;
+    p->ds.numRxDissBeaconsNonNew = ds->numRxDissBeaconsNonNew;
 
     // signal data availability
     pmsg_ = signal Receive.receive(pmsg_, p, sizeof(OrinocoDebugReportingMsg));

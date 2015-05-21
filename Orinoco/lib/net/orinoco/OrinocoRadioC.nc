@@ -127,7 +127,8 @@ implementation {
 
 #ifdef PRINTF_H
   components LocalTimeMilliC as Clock;
-  Mac.LocalTime -> Clock;
+  Mac.LocalTime                -> Clock;
+  DisseminationLayer.LocalTime -> Clock;
 #endif
 
   components new TimerMilliC() as Timer;

@@ -65,6 +65,10 @@ configuration OrinocoDisseminationLayerC {
     
     // am ids
     interface AMPacket;
+        
+#ifdef PRINTF_H
+    interface LocalTime<TMilli>;
+#endif
   }
 }
 implementation {
@@ -88,6 +92,10 @@ implementation {
   DataSubPacket        = OrinocoDisseminationLayerP.DataSubPacket;
   
   AMPacket             = OrinocoDisseminationLayerP;
+  
+#ifdef PRINTF_H
+  LocalTime            = OrinocoDisseminationLayerP;
+#endif
   
   //PacketDelayMilli = OrinocoDisseminationLayerP;
 

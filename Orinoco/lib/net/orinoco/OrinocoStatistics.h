@@ -83,5 +83,14 @@ typedef struct {
   uint16_t  numMetricResets;      ///> number of metric resets
 } orinoco_packet_statistics_t;
 
+/* dissemination statistics */
+// this will only be available, if the code is compiled with
+// ORINOCO_DEBUG_STATISTICS
+typedef struct {
+  uint32_t  numTxDissBeacons;     ///> number of successfully sent beacons serving for dissermination
+  uint16_t  numRxDissBeacons;     ///> number of received beacons with dissermination data
+  uint16_t  numRxDissBeaconsNonNew;  ///> number of received beacons with outdated dissermination data
+} orinoco_dissemination_statistics_t;
+
 
 #endif /* ORINOCO_STATISTICS_H */

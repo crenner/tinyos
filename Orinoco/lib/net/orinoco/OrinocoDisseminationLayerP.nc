@@ -17,6 +17,10 @@ module OrinocoDisseminationLayerP {
     
     // dissemination
     interface OrinocoDissemination as Dissemination;
+    
+#ifdef ORINOCO_DEBUG_STATISTICS
+    interface Get<const orinoco_dissemination_statistics_t *> as DisseminationStatistics;
+#endif
   }
   uses {
     // beacons
@@ -31,6 +35,10 @@ module OrinocoDisseminationLayerP {
 
     // am ids
     interface AMPacket;
+    
+#ifdef PRINTF_H
+    interface LocalTime<TMilli>;
+#endif
   }
 }
 implementation {
@@ -44,6 +52,10 @@ implementation {
   // this will surely mess up the weird time extraction at the current
   // sink implementation .. (if it's still there)
   
+#ifdef ORINOCO_DEBUG_STATISTICS
+  orinoco_dissemination_statistics_t  ds_ = {0};
+#endif
+  
    
   /*** tools *************************************************************/
   uint8_t * getDataFooter(message_t * msg) {
@@ -53,6 +65,13 @@ implementation {
     return (uint8_t *)
       (call DataSubPacket.getPayload(msg, call DataSubPacket.maxPayloadLength())
       + call DataPacket.payloadLength(msg));
+  }
+  
+  
+  // check if v1 is newer than v2
+  // return true, if v1 newer than v2; false otherwise
+  bool isNewer(uint8_t v1, uint8_t v2) {
+    return (v1 > v2) || ((v2 - v1) >= DISSEMINATION_VERSION_MAX/2);
   }
    
 
@@ -80,6 +99,13 @@ implementation {
         *p = v;  // TODO proper typecast to diss_version_t
         memcpy(p + DISSEMINATION_VERSION_SIZE, d, dlen);
         len += dlen + DISSEMINATION_VERSION_SIZE;
+        
+#ifdef ORINOCO_DEBUG_STATISTICS
+        ds_.numTxDissBeacons++;
+#endif
+
+//       printf("%lu: %u diss-tx %u %u\n", call LocalTime.get(), TOS_NODE_ID, v, call AMPacket.destination(msg));
+//       printfflush();
       }
     
       // we're sending out the data, so clear flag
@@ -208,6 +234,15 @@ implementation {
   }
   
   
+  /*** DisseminationStatistics *******************************************/
+#ifdef ORINOCO_DEBUG_STATISTICS
+  command const orinoco_dissemination_statistics_t *
+  DisseminationStatistics.get() {
+    return &ds_;
+  }
+#endif
+  
+  
   /*** BeaconSubSend *****************************************************/
   event void
   BeaconSubSend.sendDone(message_t * msg, error_t error) {
@@ -227,7 +262,19 @@ implementation {
       uint8_t    v    = *((uint8_t *)payload + sizeof(OrinocoBeaconMsg));
       
       // provide update
-      signal Dissemination.update(v, d, dlen);
+      // TODO check if it's useful to do this here
+      if (isNewer(v, signal Dissemination.version())) {
+#ifdef ORINOCO_DEBUG_STATISTICS
+        ds_.numRxDissBeacons++;
+#endif
+        signal Dissemination.update(v, d, dlen);
+      } else {
+#ifdef ORINOCO_DEBUG_STATISTICS
+        ds_.numRxDissBeaconsNonNew++;
+#endif
+        //printf("%lu: %u diss-glitch %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, signal Dissemination.version(), v, call AMPacket.source(msg));
+        //printfflush();
+      }
     }
 
     return signal BeaconReceive.receive(msg, payload, sizeof(OrinocoBeaconMsg));
@@ -248,12 +295,12 @@ implementation {
     uint8_t    vl = signal Dissemination.version();
     
     // is the sender still up to date?
-    if (*vr < vl || (*vr - vl) >= DISSEMINATION_VERSION_MAX/2) {
-      updateRequired_  = TRUE;
+    if (isNewer(vl, *vr)) {
+      updateRequired_ = TRUE;
       
       //updateRequester_ = call AMPacket.source(msg);
-      printf("%u diss-old %u %u %u\n", TOS_NODE_ID, vl, *vr, call AMPacket.source(msg));
-      printfflush();
+      //printf("%lu: %u diss-trig %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, vl, *vr, call AMPacket.source(msg));
+      //printfflush();
     } else {
       updateRequired_  = FALSE;
       //updateRequester_ = AM_BROADCAST;

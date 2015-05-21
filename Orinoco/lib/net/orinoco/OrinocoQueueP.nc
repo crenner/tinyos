@@ -86,6 +86,11 @@ module OrinocoQueueP {
 
     // config
     interface OrinocoConfig as Config;
+    
+    // debug
+#ifdef PRINTF_H
+    interface LocalTime<TMilli>;
+#endif
   }
 }
 implementation {
@@ -465,6 +470,23 @@ implementation {
     } else {
       call PacketHistory.insert(mc);
     }
+    
+    // DEBUGGING HACK TO FIND packet corruption bug
+    // HACK only works with CC2420
+    if (h->type != 33) {
+      // check packet type in queue upon packet reception and output to make such bad packets trackable!
+      uint8_t  i;
+      printf("%lu: %u XXX %u %u %u %u", call LocalTime.get(), TOS_NODE_ID, len, TOSH_DATA_LENGTH,
+        ((cc2420_header_t *)(msg->data - sizeof(cc2420_header_t)))->length,
+        (uint8_t)((uint8_t *)payload - (uint8_t *)msg->data));
+      for (i = 0; i < TOSH_DATA_LENGTH; i++) {
+	//printf(" %02x", ((uint8_t *)payload)[i]);
+	printf(" %02x", msg->data[i]);
+      }
+      printf("\n");
+      printfflush();
+    }
+    // DEBUGGING HACK TO FIND packet corruption bug
 
     // If I'm a root, signal receive, forward otherwise
     if (call RootControl.isRoot()) {

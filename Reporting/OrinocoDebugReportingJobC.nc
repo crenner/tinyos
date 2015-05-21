@@ -60,9 +60,10 @@ implementation {
   EAPeriodicJobConfigC.SubJobConfig -> OrinocoDebugReportingJobConfigC;
 
   // job's internal wirings
-  components OrinocoRadioP, OrinocoQueueP;
+  components OrinocoRadioP, OrinocoQueueP, OrinocoDisseminationLayerP;
   OrinocoDebugReportingJobP.QueueStats   -> OrinocoQueueP;
   OrinocoDebugReportingJobP.PacketStats  -> OrinocoRadioP;
+  OrinocoDebugReportingJobP.DissStats    -> OrinocoDisseminationLayerP;
 
   // external wirings
   Receive = OrinocoDebugReportingJobP;
