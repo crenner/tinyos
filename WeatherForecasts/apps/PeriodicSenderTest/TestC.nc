@@ -39,8 +39,6 @@
  
 #include "Reporting.h"
 #include "Orinoco.h"
-#include "MulticastCommands.h"
-#include "RadioTest.h"
 
 #include "OrinocoDebugReportingMsg.h"
 
@@ -65,7 +63,6 @@ module TestC {
     interface StdControl as ForwardingControl;
     interface RootControl;
     interface OrinocoConfig;
-    interface OrinocoRoutingClient as OrinocoRouting;
     interface Packet;
     interface QueueSend as Send[collection_id_t];
     interface Leds;
