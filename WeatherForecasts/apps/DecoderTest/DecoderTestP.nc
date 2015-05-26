@@ -45,14 +45,14 @@
 module DecoderTestP @safe() {
   uses {
     interface Boot;
-    interface Decoder;
+    interface WeatherForecastDecoder<ddc_forecast_t, DdcForecastMsg> as Decoder;
     
     interface SplitControl as UartControl;
     interface Receive as UartReceive;
   }
 }
 implementation {
-  ddcForecastMsg    fcastMsg;
+  DdcForecastMsg    fcastMsg;
   ddc_forecast_t    fcastRes;
   
     

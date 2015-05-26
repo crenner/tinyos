@@ -8,7 +8,7 @@
 
 module DdcDecoderP {
   provides {
-    interface Decoder;
+    interface WeatherForecastDecoder<ddc_forecast_t, DdcForecastMsg> as Decoder;
   }
   uses {
     interface LocalTime<TMilli>;
@@ -86,7 +86,7 @@ implementation {
  
 
   command error_t
-  Decoder.decode(ddc_forecast_t * res, const ddcForecastMsg * encData)
+  Decoder.decode(ddc_forecast_t * res, const DdcForecastMsg * encData)
   {
     uint8_t  i;
     uint8_t  sunrise, sunset;

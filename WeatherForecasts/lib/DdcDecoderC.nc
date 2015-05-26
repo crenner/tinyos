@@ -8,7 +8,7 @@
 
 configuration DdcDecoderC {
   provides {
-    interface Decoder;
+    interface WeatherForecastDecoder<ddc_forecast_t, DdcForecastMsg> as Decoder;
   }
 }
 implementation {

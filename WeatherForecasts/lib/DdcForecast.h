@@ -12,8 +12,6 @@ enum {
 
 
 
-
-
 typedef struct ddc_forecast_s {
   uint32_t  creationTime;  // creation time (in local ms)
   uint8_t   resolution;    // time resolution of the forecast (in hours)
