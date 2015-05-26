@@ -121,8 +121,7 @@ implementation {
       // at sunrise/sunset, move to next occurance
       if (i == sunrise) {
         sunrise += 24;
-      }
-      if (i == sunset) {
+      } else if (i == sunset) {
         sunset += 24;
       }
       
@@ -140,6 +139,7 @@ implementation {
     }
     
     // DEBUG
+    // TODO make this optional (preprocessor switch)
     printf("dT = %lu\n", call LocalTime.get() - start);
     printfflush();
     

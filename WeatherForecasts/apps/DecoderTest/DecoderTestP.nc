@@ -55,14 +55,15 @@ implementation {
   DdcForecastMsg    fcastMsg;
   ddc_forecast_t    fcastRes;
   
-    
   
-  task void decoderTask() {
+  task void
+  decoderTask() {
     call Decoder.decode(&fcastRes, &fcastMsg);
   }
   
 
-  event void Boot.booted() {
+  event void
+  Boot.booted() {
     call UartControl.start();
   }
   
