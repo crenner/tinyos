@@ -476,9 +476,10 @@ implementation {
     if (h->type != 33) {
       // check packet type in queue upon packet reception and output to make such bad packets trackable!
       uint8_t  i;
-      printf("%lu: %u XXX %u %u %u %u", call LocalTime.get(), TOS_NODE_ID, len, TOSH_DATA_LENGTH,
+      /*printf("%lu: %u XXX %u %u %u %u", call LocalTime.get(), TOS_NODE_ID, len, TOSH_DATA_LENGTH,
         ((cc2420_header_t *)(msg->data - sizeof(cc2420_header_t)))->length,
-        (uint8_t)((uint8_t *)payload - (uint8_t *)msg->data));
+        (uint8_t)((uint8_t *)payload - (uint8_t *)msg->data));*/
+      printf("%lu: %u XXX %u %u", call LocalTime.get(), TOS_NODE_ID, len, TOSH_DATA_LENGTH);
       for (i = 0; i < TOSH_DATA_LENGTH; i++) {
 	//printf(" %02x", ((uint8_t *)payload)[i]);
 	printf(" %02x", msg->data[i]);
