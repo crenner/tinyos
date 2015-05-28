@@ -17,10 +17,10 @@ implementation {
 
   // set up slotter
   #ifdef HARVEST_MODEL
-  #  warning "Using custom harvest model"
+  #  warning "Using *custom* harvest model"
   components new HARVEST_MODEL(FORECAST_NUM_SLOTS, FORECAST_BASE_INTVL, FORECAST_CYCLE_LEN, FORECAST_FILTER) as HarvestModelC;
   #else
-  #  warning "Using default harvest model SlottedHarvestModelStaticC"
+  #  warning "Using *default* harvest model SlottedHarvestModelStaticC"
   components new SlottedHarvestModelStaticC(FORECAST_NUM_SLOTS, FORECAST_BASE_INTVL, FORECAST_CYCLE_LEN, FORECAST_FILTER) as HarvestModelC;
   #endif
   Slotter = HarvestModelC;
@@ -28,10 +28,10 @@ implementation {
   
   // set up harvest prediction
   #ifdef HARVEST_PREDICTION
-  #  warning "Using custom harvest predictor"
-  components HARVEST_PREDICTION  as HarvestPredictionC;
+  #  warning "Using *custom* harvest predictor"
+  components HARVEST_PREDICTION as HarvestPredictionC;
   #else
-  #  warning "Using default harvest predictor SlottedHarvestPredictionDummyC"
+  #  warning "Using *default* harvest predictor"
   components SlottedHarvestPredictionDummyC as HarvestPredictionC;
   #endif
   
@@ -39,7 +39,8 @@ implementation {
   HarvestPredictionC.HarvestFactorForecast -> HarvestFactorForecastC;
   
   // set up harvest factor forecast
-  components HarvestFactorForecastC;
+  // FIXME
+  components HarvestFactorForecastDummyC as HarvestFactorForecastC;
   
   // set up energy prediction
   components EnergyPredictorC;

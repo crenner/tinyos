@@ -16,11 +16,11 @@ typedef nx_struct DdcForecastMsg {
   nx_struct {
 //    nx_uint8_t  version    : DDC_FORECAST_VERSION_SIZE;     // version number, ring counter
     nx_uint8_t  numDays    : DDC_FORECAST_NUMDAYS_SIZE;     // forecast length - 1 in number of days
-    nx_uint8_t  resolution : DDC_FORECAST_NUMDAYS_SIZE;     // resolution - 1 in hours
+    nx_uint8_t  resolution : DDC_FORECAST_RESOLUTION_SIZE;  // resolution - 1 in hours
     nx_uint8_t  sunrise    : DDC_FORECAST_TIMEOFFSET_SIZE;  // sunrise offset w.r.t. forecast creation or sunset
     nx_uint8_t  sunset     : DDC_FORECAST_TIMEOFFSET_SIZE;  // sunset offset w.r.t. forecast creation or sunrise
 //    nx_uint8_t  reserved   : DDC_FORECAST_RESERVED_SIZE;    // unused bits
   } header;
-  DdcForecastAge_t  age;                                 // message age (seconds)
+  //DdcForecastAge_t  age;                                 // message age (seconds)
   nx_uint8_t        data[DDC_FORECAST_MAX_DATALEN];      // data, up 8 * DDC_FORECAST_MAX_DATALEN bits
 } DdcForecastMsg;

@@ -1,5 +1,7 @@
 enum {
-  DDC_VALUES_MAX        = 72,
+  // TODO part of these could be used as variables for a generic implementation of the decoder!
+  DDC_VALUE_MAX_NUM     = 72,  // maximum number of values
+  DDC_VALUE_MAX         =  8,  // maximum value
   DDC_VALUE_ABS_SIZE    =  4,  // size of absolute values (in bits)
   DDC_VALUE_REL_MAXSIZE =  3,
   DDC_VALUE_UNKNOWN     = -1,
@@ -18,6 +20,6 @@ typedef struct ddc_forecast_s {
   uint8_t   numValues;     // number of forecast values (<= DDC_VALUES_MAX)
   uint8_t   sunrise;
   uint8_t   sunset;
-  uint8_t   values[DDC_VALUES_MAX];
-} ddc_forecast_t; 
+  uint8_t   values[DDC_VALUE_MAX_NUM];
+} ddc_forecast_t;
 

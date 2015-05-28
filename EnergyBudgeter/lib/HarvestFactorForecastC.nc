@@ -1,136 +1,95 @@
 module HarvestFactorForecastC {
   provides {
-    interface HarvestFactorForecast;
+    interface HarvestFactorForecast;  // per time
   }
   
-  // TODO receive forecast message from somewhere
+  uses {
+    interface HarvestFactorForecast;  // per slot
+  }
+  
+  // TODO where to do the DDC value to FP conversion? Here (simple) or below (more generic)
+  // TODO put this in between predictor and slotter?
+  // TODO how generic can this module be? DDC forecasting isn't at all! We have to push some things around!
 }
 implementation {
-
-  command fp_t HarvestFactorForecast.getHarvestFactor(uint32_t from, uint32_t dt) {
-    return FP_ONE;
+//  bool             init_ = FALSE;  // FIXME we need a marker here to cope with missing forecasts
+  
+  
+  /*** HarvestFactorForecast *******************************************/
+  
+  command fp_t
+  HarvestFactorForecast.getHarvestFactor(uint32_t from, uint32_t dt) {
+  
+    // TODO use new interface to obtain individual values here ...
+    
+    // NOTE we implement this straight-forward and demand that the upper
+    // layer either lives with slow computation or buffers results
+    
+    uint8_t         i, starti, endi;
+    uint32_t        factorSum = 0;  // weighted sum of forecast factors
+    uint32_t        realDt = 0;  // real time delta for averaging w/o night times
+    const uint32_t  msecRes = (uint32_t)fcastRes.resolution * 60 * 60 * 1024; // hour -> binary msec
+    // ^^^^ FIXME this assumes a that values all have the same length ... that might not be the case!
+    // we may want to check if a more generic implementation really has poor performance ...
+    // however, we might also add commands to get the index of certain slots (for a given time)
+    // or might just want to add up times to in a loop, since +/- is better than *// anyway ...
+    
+    // check, if we received a forecast at all
+    if (! XXX.valid()) {
+      return FP_NaN;
+    }
+    
+    // calculate indices of first and last slot
+    // the -1 in endi is required to ensure the endi is inclusive (in the
+    // rare event that slots and forecasts are perfectly aligned.
+    starti = (from - fcastRes.creationTime) / msecRes;
+    endi   = (from + dt - fcastRes.creationTime - 1) / msecRes;
+    
+    // sanity checking
+    if (starti >= fcastRes_.numValues || endi >= fcastRes_.numValues)
+      return FP_NaN;
+    }
+    
+    // in general, forecasts and slots won't be aligned, so we apply some
+    // individual handling
+    // case 1: the time span resides inside a single slot (starti == endi)
+    if (starti == endi) {
+      if (fcastRes_.value[starti] != DDC_VALUE_UNKNOWN) {
+        return FP_NaN;
+      } else {
+        return fcastRes_.value[starti]; // TODO scale?
+      }
+    }
+    
+    // case 2: the time span covers multiple slots
+    // a. start within first slot
+    if (fcastRes_.value[starti] != DDC_VALUE_UNKNOWN) {
+      uint32_t  overlap = fcastRes.creationTime + (starti + 1) * msecRes - from;
+      factor += fcastRes.value[starti] * overlap;
+      realDt += overlap;
+    }
+    
+    // b. continue with fully (intermediate) slots
+    for (i = starti + 1; i < endi - 1; i++) {
+      if (fcastRes_.value[i] != DDC_VALUE_UNKNOWN) {
+        factor += fcastRes.value[i] * msecRes;
+        realDt += msecRes;
+      }
+    }
+    
+    // c. end within last slot
+    if (fcastRes_.value[endi] != DDC_VALUE_UNKNOWN) {
+      uint32_t  overlap = (from + dt) - (fcastRes.creationTime + (endi - 1) * msecRes);
+      factor += fcastRes.value[endi] * overlap;
+      realDt += overlap;
+    }
+    
+    if (realDt > 0) {
+      return /*TODO convert*/ factor / realDt;
+    } else {
+      return FP_NaN;
+    }
   }
 }
 
 
-// TODO TODO TODO
-// SCHACHT
-//
-//
-// uint8_t cloudcover[NUM_FC_VAL], sunshine[NUM_FC_VAL];
-// 	uint32_t cc_creation, ss_creation;
-// 
-// 	//Worst Case initialization for both cloudcover- and sunshine-duration- forecasts
-// 	command error_t Init.init() {
-// 		int i;
-// 		for(i=0;i<NUM_FC_VAL;i++){
-// 			cloudcover[i]=8;
-// 			sunshine[i]=0;
-// 		}
-// 		dbg("Forecast","Forecast: Initialisiert.\n");
-// 		return SUCCESS;
-// 	}
-// 
-// 	//Receives forecast updates over the motes radio.
-// 	event message_t* ReceivesForecast.receive(message_t* bufPtr, void* payload, uint8_t len) {
-// 		//Is it a message we are waiting for?
-// 		if(len==sizeof(ForecastMessage)){
-// 			int i;
-// 			bool legit=TRUE;
-// 			//Create a pointer to the data of the message.
-// 			ForecastMessage* data=(ForecastMessage*)payload;
-// 
-// 			//Cloudcover- or Sunshine-Update?
-// 			if(data->fc_type==0){
-// 				//Are the values legit?
-// 				for (i=0;i<NUM_FC_VAL;i++)
-// 					if(legit)
-// 						legit=(data->values[i]>=0&&data->values[i]<=8);
-// 
-// 				//Do a Cloudcoverupdate if they are.
-// 				if(legit) {
-// 					dbg("Forecast","Forecast:Legitimes Cloudcoverupdate.\n");
-// 					cc_creation=data->fc_creation;
-// 					for(i=0;i<NUM_FC_VAL;i++)
-// 						cloudcover[i]=data->values[i];
-// 				}
-// 			} else if(data->fc_type==1){
-// 				//Are the values legit?
-// 				for (i=0;i<NUM_FC_VAL;i++)
-// 					if(legit)
-// 						legit=(data->values[i]>=0&&data->values[i]<=60);
-// 
-// 				//Do a Sunshineupdate if they are.
-// 				if(legit) {
-// 					dbg("Forecast","Forecast:Legitimes Sunshineupdate.\n");
-// 					ss_creation=data->fc_creation;
-// 					for(i=0;i<NUM_FC_VAL;i++)
-// 						sunshine[i]=data->values[i];
-// 				}
-// 			} else {
-// 				//Ignore message. (Contains unknown type of update.)
-// 			}
-// 		}
-// 		return bufPtr;
-// 	}
-// 
-// 
-// 	//Returns the Cloudcover-Forecast for the designated timeperiod.
-// 	command fp_t ForecastSink.getCloudcoverForecast(uint32_t period_begins, uint32_t period_length) {
-// 		int i;
-// 		fp_t cloudcover_forecast;
-// 		uint32_t i_period_begins, i_period_ends, cloudtime;
-// 
-// 		//Beginning of calculation period
-// 		i_period_begins=(period_begins<cc_creation)?cc_creation:period_begins;
-// 		//Ending of calculation period
-// 		i_period_ends=(cc_creation+(NUM_FC_VAL*DUR_FC_VAL)<period_begins+period_length)?cc_creation+(NUM_FC_VAL*DUR_FC_VAL):period_begins+period_length;
-// 
-// 		//Whole timeperiod in one slot?
-// 		if((i_period_begins-cc_creation)/DUR_FC_VAL==(i_period_ends-cc_creation)/DUR_FC_VAL) {
-// 			//duration*active slot
-// 			cloudtime=(i_period_ends-i_period_begins)*cloudcover[(i_period_begins-cc_creation)/DUR_FC_VAL];
-// 		} else {
-// 			//First forecastslot (may be only parts of it)
-// 			cloudtime=DUR_FC_VAL-((i_period_begins-cc_creation)%DUR_FC_VAL)*cloudcover[(i_period_begins-cc_creation)/DUR_FC_VAL];
-// 			//Whole slots in between (may be none)
-// 			for(i=(i_period_begins-cc_creation)/DUR_FC_VAL+1;i<(i_period_ends-cc_creation)/DUR_FC_VAL;i++){
-// 				cloudtime+=DUR_FC_VAL*cloudcover[i];
-// 			}
-// 			//Last forecastslot (may be only parts of it)
-// 			cloudtime+=((i_period_ends-cc_creation)%DUR_FC_VAL)*cloudcover[(i_period_ends-cc_creation)/DUR_FC_VAL];
-// 		}
-// 		//The mean cloudcover for the given period gets calculated and returned as a fp_t
-// 		cloudcover_forecast=(fp_t)round((((float)cloudtime/((float)i_period_ends - (float) i_period_begins)) / 8.0 )*256.0);
-// 		return cloudcover_forecast;
-// 	}
-// 
-// 	//Returns the Sunshine-Forecast for the designated timeperiod.
-// 	command fp_t ForecastSink.getSunShineForecast(uint32_t period_begins, uint32_t period_length) {
-// 		fp_t sunshine_forecast;
-// 		uint32_t i_period_begins, i_period_ends, suntime;
-// 		int i;
-// 		//Beginning of calculation period
-// 		i_period_begins=(period_begins<ss_creation)?ss_creation:period_begins;
-// 		//Ending of calculation period
-// 		i_period_ends=(ss_creation+(NUM_FC_VAL*DUR_FC_VAL)<period_begins+period_length)?ss_creation+(NUM_FC_VAL*DUR_FC_VAL):period_begins+period_length;
-// 
-// 		//Whole timeperiod in one slot?
-// 		if((i_period_begins-ss_creation)/DUR_FC_VAL==(i_period_ends-ss_creation)/DUR_FC_VAL) {
-// 			//duration*active slot
-// 			suntime=(i_period_ends-i_period_begins)*cloudcover[(i_period_begins-ss_creation)/DUR_FC_VAL];
-// 		} else {
-// 			//First forecastslot (may be only parts of it)
-// 			suntime=DUR_FC_VAL-((i_period_begins-ss_creation)%DUR_FC_VAL)*cloudcover[(i_period_begins-ss_creation)/DUR_FC_VAL];
-// 			//Whole slots in between (may be none)
-// 			for(i=(i_period_begins-ss_creation)/DUR_FC_VAL+1;i<(i_period_ends-ss_creation)/DUR_FC_VAL;i++){
-// 				suntime+=DUR_FC_VAL*cloudcover[i];
-// 			}
-// 			//Last forecastslot (may be only parts of it)
-// 			suntime+=((i_period_ends-ss_creation)%DUR_FC_VAL)*cloudcover[(i_period_ends-ss_creation)/DUR_FC_VAL];
-// 		}
-// 		//The mean sunshine for the given period gets calculated and returned as a fp_t
-// 		sunshine_forecast=(fp_t)round(((float)suntime/((float)i_period_ends - (float) i_period_begins))*256.0);
-// 
-// 		return sunshine_forecast;
-// 	}
