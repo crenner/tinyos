@@ -98,8 +98,8 @@ implementation {
     res->numValues = (encData->header.numDays) * (24 / encData->header.resolution);
     
     // make sure we can handle the data
-    if (res->numValues > DDC_VALUES_MAX) {
-      res->numValues = DDC_VALUES_MAX;
+    if (res->numValues > DDC_VALUE_MAX_NUM) {
+      res->numValues = DDC_VALUE_MAX_NUM;
     }
     
     // TODO use packet delay to calculate creatio time *correctly*
@@ -137,19 +137,6 @@ implementation {
         res->values[i] = DDC_VALUE_UNKNOWN;
       }
     }
-    
-    // DEBUG
-    // TODO make this optional (preprocessor switch)
-    printf("dT = %lu\n", call LocalTime.get() - start);
-    printfflush();
-    
-    printf("ddc header: %u %lu %u %u\n", res->numValues, res->creationTime, res->sunrise, res->sunset);
-    printf("ddc values:");
-    for (i = 0; i < res->numValues; i++) {
-      printf(" %u", res->values[i]);
-    }
-    printf("\n");
-    printfflush();
     
     return SUCCESS;
   }

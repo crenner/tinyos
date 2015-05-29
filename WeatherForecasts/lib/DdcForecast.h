@@ -1,3 +1,7 @@
+#ifndef DDC_FORECAST_H
+#define DDC_FORECAST_H
+
+
 enum {
   // TODO part of these could be used as variables for a generic implementation of the decoder!
   DDC_VALUE_MAX_NUM     = 72,  // maximum number of values
@@ -23,3 +27,5 @@ typedef struct ddc_forecast_s {
   uint8_t   values[DDC_VALUE_MAX_NUM];
 } ddc_forecast_t;
 
+
+#endif

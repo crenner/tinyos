@@ -31,7 +31,9 @@ CFLAGS += \
 	-I ../../../SunShine/chips/atm128/flash \
 	-I ../../../EnergyBudgeter/lib \
 	-I ../../../EnergyBudgeter/interfaces \
-	-I ../../../EnergyBudgeter/sunshine
+	-I ../../../EnergyBudgeter/sunshine \
+	-I ../../../WeatherForecasts/interfaces \
+	-I ../../../WeatherForecasts/lib
 
 #ifeq ($(findstring $(PLATFORM),iris), iris)
 # iris

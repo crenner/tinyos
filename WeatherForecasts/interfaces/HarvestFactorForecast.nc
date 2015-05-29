@@ -6,7 +6,4 @@ interface HarvestFactorForecast {
    * @return harvest factor as fp_t in range [0,1] or FP_NaN
    */
   command fp_t getHarvestFactor(uint32_t from, uint32_t dt);
-  
-  // signal a forecast update
-  event void update();
 }

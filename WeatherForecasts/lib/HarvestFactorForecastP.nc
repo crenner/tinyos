@@ -1,22 +1,75 @@
-module HarvestFactorForecastC {
+module HarvestFactorForecastP {
   provides {
     interface HarvestFactorForecast;  // per time
   }
-  
   uses {
-    interface HarvestFactorForecast;  // per slot
+    interface WeatherForecast<fp_t>;  // per slot
   }
-  
-  // TODO where to do the DDC value to FP conversion? Here (simple) or below (more generic)
-  // TODO put this in between predictor and slotter?
-  // TODO how generic can this module be? DDC forecasting isn't at all! We have to push some things around!
 }
 implementation {
-//  bool             init_ = FALSE;  // FIXME we need a marker here to cope with missing forecasts
   
   
   /*** HarvestFactorForecast *******************************************/
   
+  command fp_t
+  HarvestFactorForecast.getHarvestFactor(uint32_t from, uint32_t dt) {
+    
+    // NOTE we implement this straight-forward and demand that the upper
+    // layer either lives with slow computation or buffers results
+    
+    uint8_t   i;
+    uint32_t  fstart, fend;
+    uint32_t  factorSum = 0;  // weighted sum of forecast factors
+    uint32_t  realDt = 0;  // real time delta for averaging w/o night times
+    
+    // check, if we received a forecast at all
+    if (! call WeatherForecast.valid()) {
+      return FP_NaN;
+    }
+    
+    // NOTE in the following, we do all time considerations relative to the
+    // creation time of the forecast (from is always later than forecast
+    // creation) in order to prevent any time wrap-around issues.
+    from   -= call WeatherForecast.creationTime();
+    
+    // check if the required time span is in scope (forecast horizon)
+    if (from + dt > call WeatherForecast.horizon()) {
+      return FP_NaN;
+    }
+
+    
+    // iterate over individual forecast factors and calculated a weighted sum
+    fstart  = 0;
+    for (i = 0; i < call WeatherForecast.numValues(); i++) {
+      fend = fstart + call WeatherForecast.length(i);
+      
+      if (fstart >= from + dt) {  // forecast slot is behind requested interval
+        break;
+      } else if (fend > from) { // there is an overlap
+        fp_t  value = call WeatherForecast.value(i);
+        if (value != FP_NaN) {
+          uint32_t  overlap;
+          overlap =  ((from + dt < fend) ? (from + dt) : fend)  // min(from + dt, fend)
+                   - ((from > fstart) ? from : fstart);         // max(from, fstart);
+        
+          factorSum += value * overlap;
+          realDt    += overlap;
+        }
+      }
+      
+      fstart = fend;
+    }
+    
+    
+    if (realDt > 0) {
+      return (factorSum + realDt / 2) / realDt;
+    } else {
+      return FP_NaN;
+    }
+  }
+  
+  
+  /*
   command fp_t
   HarvestFactorForecast.getHarvestFactor(uint32_t from, uint32_t dt) {
   
@@ -32,12 +85,8 @@ implementation {
     // ^^^^ FIXME this assumes a that values all have the same length ... that might not be the case!
     // we may want to check if a more generic implementation really has poor performance ...
     // however, we might also add commands to get the index of certain slots (for a given time)
-    // or might just want to add up times to in a loop, since +/- is better than *// anyway ...
+    // or might just want to add up times to in a loop, since +/- is better than
     
-    // check, if we received a forecast at all
-    if (! XXX.valid()) {
-      return FP_NaN;
-    }
     
     // calculate indices of first and last slot
     // the -1 in endi is required to ensure the endi is inclusive (in the
@@ -85,11 +134,12 @@ implementation {
     }
     
     if (realDt > 0) {
-      return /*TODO convert*/ factor / realDt;
+      return factor / realDt;   // TODO convert
     } else {
       return FP_NaN;
     }
   }
+  */
 }
 
 

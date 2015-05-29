@@ -29,8 +29,6 @@ interface Slotter {
   command fp_t getSlotValue(uint8_t slot);
 
   /**
-
-  /**
    * @return base interval in seconds
    */
   command uint16_t getBaseIntvl();

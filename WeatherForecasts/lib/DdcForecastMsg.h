@@ -1,3 +1,6 @@
+#ifndef DDC_FORECAST_MSG_H
+#define DDC_FORECAST_MSG_H
+
 
 enum {
   DDC_FORECAST_MAX_DATALEN     = 20,  // max length of ddc forecasts in bytes
@@ -24,3 +27,6 @@ typedef nx_struct DdcForecastMsg {
   //DdcForecastAge_t  age;                                 // message age (seconds)
   nx_uint8_t        data[DDC_FORECAST_MAX_DATALEN];      // data, up 8 * DDC_FORECAST_MAX_DATALEN bits
 } DdcForecastMsg;
+
+
+#endif

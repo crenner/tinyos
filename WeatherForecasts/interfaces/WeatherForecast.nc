@@ -1,4 +1,4 @@
-interface WeatherForecast {
+interface WeatherForecast<forecast_value_t> {
 
   /* returns whether there is any valid forecast available; all other
    * commands may only be used when there is a valid forecast */
@@ -6,10 +6,14 @@ interface WeatherForecast {
   
   /* returns the local time (in ms) of the current forecast's creation */
   command uint32_t creationTime();
+  
+  /* returns the overall forecast horizon (i.e., the sum of all lengths
+   * (as provided below in length(i)). */
+  command uint32_t horizon();
 
   /* returns the (raw) value of the I'th forecast; if that value does
    * not exist, the command returns DDC_VALUE_UNKNOWN */
-  command uint8_t value(uint8_t i);
+  command forecast_value_t value(uint8_t i);
   
   /* returns the length (in binary ms) of the I'th forecast; if that 
    * forecast does not exist, the command returns 0 */
@@ -17,6 +21,7 @@ interface WeatherForecast {
   
   /* returns the number of forecast values */
   command uint8_t numValues();
+
   
   // TODO the following commands assume that we always know the data
   /* returns the time of the most recent (past) sunrise */
@@ -30,3 +35,4 @@ interface WeatherForecast {
   
   /* returns the time of the next sunset */
   command uint32_t nextSunset();
+}

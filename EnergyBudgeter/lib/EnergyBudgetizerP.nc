@@ -40,7 +40,7 @@ implementation {
   
   // set up harvest factor forecast
   // FIXME
-  components HarvestFactorForecastDummyC as HarvestFactorForecastC;
+  components HarvestFactorForecastC;
   
   // set up energy prediction
   components EnergyPredictorC;

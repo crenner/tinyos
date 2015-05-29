@@ -1,6 +1,10 @@
+#include "DdcForecast.h"
+#include "DdcForecastMsg.h"
+
+
 module WeatherForecastC {
   provides {
-    //interface HarvestFactorForecastRaw;
+    interface WeatherForecast<uint8_t>;
   }
   uses {
     interface DisseminationValue<DdcForecastMsg>  as DissValue;
@@ -40,15 +44,14 @@ implementation {
   
   task void
   decodeTask() {
-    if (SUCCESS != call Decoder.decode(&fcastRes_, &fcastMsg_)) {
+    ddc_forecast_t  fcastTmp_;
     
-    // FIXME (check state of decoding?)
-    
-    init_ = TRUE;
-    
-    printForecastcast();
-    
-    signal HarvestFactorForecast.update();
+    if (SUCCESS != call Decoder.decode(&fcastTmp_, &fcastMsg_)) {
+      fcastRes_ = fcastTmp_;
+      init_ = TRUE;
+      
+      printForecast();
+    }
   }
   
   
@@ -63,7 +66,13 @@ implementation {
   
   command uint32_t
   WeatherForecast.creationTime() {
-    return fcastRes_.creationTime();
+    return fcastRes_.creationTime;
+  }
+  
+  
+  command uint32_t
+  WeatherForecast.horizon() {
+    return fcastRes_.numValues * (uint32_t)fcastRes_.resolution * 60 * 60 * 1024;  // hour --> binary ms
   }
   
   
@@ -96,24 +105,28 @@ implementation {
   command uint32_t
   WeatherForecast.prevSunrise() {
     // TODO
+    return 0;
   }
   
   
   command uint32_t
   WeatherForecast.nextSunrise() {
     // TODO
+    return 0;
   }
   
   
   command uint32_t
   WeatherForecast.prevSunset() {
     // TODO
+    return 0;
   }
   
   
   command uint32_t
   WeatherForecast.nextSunset() {
     // TODO
+    return 0;
   }
 
   
@@ -123,7 +136,7 @@ implementation {
   event void
   DissValue.changed() {
     // access packet delay directly to estimate time of forecast creation
-    fcastRes.creationTime = call LocalTime.get() - call DissDelay.delay();
+    fcastRes_.creationTime = call LocalTime.get() - call DissDelay.delay();
     
     // put actual decoding into separate task
     post decodeTask();
