@@ -2,8 +2,10 @@
 #define WEATHERFORECAST_H
 
 
+#define WEATHERFORECAST_VALUE_UNKNOWN  0xFF
+
+
 enum {
-  WEATHERFORECAST_VALUE_UNKNOWN     = -1,
   CLOUDCOVER_MAX_VALUE              = 8,
 };
 

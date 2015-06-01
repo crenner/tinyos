@@ -91,9 +91,6 @@ implementation {
     uint8_t  i;
     uint8_t  sunrise, sunset;
     
-    // DEBUG
-    uint32_t  start = call LocalTime.get();
-    
     // get the number of values inside the forecast
     res->numValues = (encData->header.numDays) * (24 / encData->header.resolution);
     

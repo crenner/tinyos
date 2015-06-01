@@ -4,7 +4,7 @@ module EnergyPredictorC {
   }
   uses {
     interface EnergyModel;
-    interface Slotter as SlottedHarvestForecast;
+    interface SlottedForecast as SlottedHarvestForecast;
     interface EnergyPolicy<fp_t>;
     interface Get<fp_t> as CapVoltage;
   }
@@ -15,9 +15,8 @@ implementation {
   double    maxIn;   // upper bound on consumption
   double    minIn;   // lower bound
 
-  uint8_t   startSlot;
+  uint8_t   curSlot;
   double    startVc;
-  uint8_t   ds;
 
   double    In;
 
@@ -26,18 +25,16 @@ implementation {
   bool calculationRunning = FALSE;
 
   void initBinaryStep() {
-    In = (maxIn + minIn) / 2.0;
-    Vc = startVc;
-    ds = 0;
+    In      = (maxIn + minIn) / 2.0;
+    Vc      = startVc;
+    curSlot = 0;
   }
 
   task void nextSlot() {
-    uint8_t  slot = (startSlot + ds) % call SlottedHarvestForecast.getNumSlots();
-    //double   Ih   = (FP_FLOAT(call SlottedHarvestForecast.getSlotValue(slot))/1000.0);
-    double  Ih = (FP_FLOAT(call SlottedHarvestForecast.getSlotValue(slot))/1000.0);
+    //double   Ih   = (FP_FLOAT(call SlottedHarvestForecast.getSlotValue(curSlot))/1000.0);
+    double  Ih = (FP_FLOAT(call SlottedHarvestForecast.getSlotValue(curSlot))/1000.0);
     calculationRunning = TRUE;
-    call EnergyModel.calculate(call SlottedHarvestForecast.getSlotLength(slot)*(call SlottedHarvestForecast.getBaseIntvl()), // len
-                               Vc, Ih, In);
+    call EnergyModel.calculate(call SlottedHarvestForecast.getSlotDuration(curSlot), Vc, Ih, In);
   }
 
   event void EnergyModel.calculationDone(double voltage) {
@@ -53,8 +50,8 @@ implementation {
     // feed intermediate result to policy
     verdict = call EnergyPolicy.feed(FP_UNFLOAT(voltage));
 
-    ds++;
-    if (ds < call SlottedHarvestForecast.getNumSlots() && verdict == POLICY_VERDICT_UNDECIDED) {
+    curSlot++;
+    if (curSlot < call SlottedHarvestForecast.getNumSlots() && verdict == POLICY_VERDICT_UNDECIDED) {
       post nextSlot();
     } else {
       // update search boundaries
@@ -76,7 +73,7 @@ implementation {
     }
   }
 
-  event void SlottedHarvestForecast.slotEnded(uint8_t slot) {
+  event void SlottedHarvestForecast.slotEnded() {
     fp_t  capVolt = call CapVoltage.get();
     if (call EnergyPolicy.checkInitialState(capVolt) == POLICY_VERDICT_REJECT) {
       signal EnergyBudget.budgetUpdated(0);  // TODO config
@@ -87,8 +84,6 @@ implementation {
 
     maxIn = 20/1000.0;  // upper bound on consumption  // TODO config
     minIn = 0;          // lower bound                 // TODO config
-
-    startSlot = call SlottedHarvestForecast.getCurSlot();
 
     initBinaryStep();
     post nextSlot();

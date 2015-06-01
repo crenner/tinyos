@@ -23,6 +23,7 @@ module TestC {
 
     interface OrinocoTrafficStatistics as OrinocoStats;
     interface Slotter;
+    interface SlotValue<fp_t> as HarvestModelValue;
 
     interface Receive as EnergyReportingMsg;
     interface Receive as OrinocoStatsReportingMsg;
@@ -204,7 +205,7 @@ implementation {
       p->firstSlot = s;
       for (i = 0; i < MAX_SLOTS_PER_MSG /*&& s < call Slotter.getNumSlots()*/; i++, s++) {
         // NOTE calls to Slotter.getSlotValue/Len return 0 for invalid indices
-        p->slotVal[i] = call Slotter.getSlotValue(s);
+        p->slotVal[i] = call HarvestModelValue.get(s);
         p->slotLen[i] = call Slotter.getSlotLength(s);
       }
       call Send.send[CID_HARVEST_FORECAST_REPORT](&msg, sizeof(HarvestForecastReportingMsg));  // packet is copied or rejected

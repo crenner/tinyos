@@ -4,6 +4,8 @@ configuration EnergyBudgetizerP {
   provides {
     interface EnergyBudget;
     interface Slotter;
+    interface SlotValue<fp_t> as HarvestModelValue;
+    //interface SlotValue<fp_t> as HarvestForecastValue;
   }
   uses {
     interface EnergyModel;
@@ -18,29 +20,33 @@ implementation {
   // set up slotter
   #ifdef HARVEST_MODEL
   #  warning "Using *custom* harvest model"
-  components new HARVEST_MODEL(FORECAST_NUM_SLOTS, FORECAST_BASE_INTVL, FORECAST_CYCLE_LEN, FORECAST_FILTER) as HarvestModelC;
+  components new HARVEST_MODEL(HARVESTMODEL_NUM_SLOTS, HARVESTMODEL_BASE_INTVL, HARVESTMODEL_CYCLE_LEN, HARVESTMODEL_FILTER) as HarvestModelC;
   #else
   #  warning "Using *default* harvest model SlottedHarvestModelStaticC"
-  components new SlottedHarvestModelStaticC(FORECAST_NUM_SLOTS, FORECAST_BASE_INTVL, FORECAST_CYCLE_LEN, FORECAST_FILTER) as HarvestModelC;
+  components new SlottedHarvestModelStaticC(HARVESTMODEL_NUM_SLOTS, HARVESTMODEL_BASE_INTVL, HARVESTMODEL_CYCLE_LEN, HARVESTMODEL_FILTER) as HarvestModelC;
   #endif
-  Slotter = HarvestModelC;
+  Slotter           = HarvestModelC;
+  HarvestModelValue = HarvestModelC;
   HarvestModelC.AveragingSensor -> AveragingSensorC;
   
   // set up harvest prediction
   #ifdef HARVEST_PREDICTION
   #  warning "Using *custom* harvest predictor"
-  components HARVEST_PREDICTION as HarvestPredictionC;
+  components new HARVEST_PREDICTION(FORECAST_NUM_SLOTS) as HarvestPredictionC;
   #else
   #  warning "Using *default* harvest predictor"
-  components SlottedHarvestPredictionDummyC as HarvestPredictionC;
+  components new SlottedHarvestPredictionDummyC(FORECAST_NUM_SLOTS) as HarvestPredictionC;
   #endif
   
-  HarvestPredictionC.SlottedHarvestModel   -> HarvestModelC;
-  HarvestPredictionC.HarvestFactorForecast -> HarvestFactorForecastC;
+  HarvestPredictionC.SlottedHarvestModel       -> HarvestModelC;
+  HarvestPredictionC.SlottedHarvestModelValue  -> HarvestModelC;
   
   // set up harvest factor forecast
-  // FIXME
-  components HarvestFactorForecastC;
+  components new HarvestFactorForecastC(HARVESTMODEL_NUM_SLOTS, HARVESTMODEL_FILTER); // FIXME unclever implementation ?
+  HarvestPredictionC.HarvestFactorForecast     -> HarvestFactorForecastC;
+  HarvestPredictionC.SlottedHarvestFactorValue -> HarvestFactorForecastC;
+  HarvestFactorForecastC.Slotter -> HarvestModelC;
+//  HarvestForecastValue
   
   // set up energy prediction
   components EnergyPredictorC;

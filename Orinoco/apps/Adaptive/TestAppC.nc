@@ -8,8 +8,9 @@ implementation {
   TestC.Boot -> MainC.Boot;
 
   components EnergyBudgetizerC;
-  TestC.EnergyBudget -> EnergyBudgetizerC;
-  TestC.Slotter      -> EnergyBudgetizerC;
+  TestC.EnergyBudget      -> EnergyBudgetizerC;
+  TestC.Slotter           -> EnergyBudgetizerC;
+  TestC.HarvestModelValue -> EnergyBudgetizerC.HarvestModelValue;
 
   components SunshineC;
   TestC.Caplibrate -> SunshineC;

@@ -9,7 +9,8 @@
  */
 generic configuration SlottedHarvestModelStaticC(uint8_t NUM_SLOTS, uint16_t BASE_INTVL, uint16_t CYCLE_LEN, uint8_t ALPHA) {
   provides {
-    interface Slotter;//[uint8_t id];
+    interface Slotter;
+    interface SlotValue<fp_t>;
   }
   uses {
     interface AveragingSensor<fp_t>;
@@ -18,6 +19,7 @@ generic configuration SlottedHarvestModelStaticC(uint8_t NUM_SLOTS, uint16_t BAS
 implementation {
   components new SlottedHarvestModelStaticP(NUM_SLOTS, BASE_INTVL, CYCLE_LEN, ALPHA) as SlotterP; 
   Slotter         = SlotterP;
+  SlotValue       = SlotterP;
   AveragingSensor = SlotterP;
 
   components MainC;

@@ -1,12 +1,36 @@
-module HarvestFactorForecastP {
+#include "Statistics.h"
+
+
+generic module HarvestFactorForecastP(uint8_t NUM_SLOTS, uint8_t ALPHA) {
   provides {
-    interface HarvestFactorForecast;  // per time
+    interface Init @exactlyonce();
+    interface HarvestFactorForecast;
+    interface SlotValue<fp_t>;
   }
   uses {
+    interface Slotter;
     interface WeatherForecast<fp_t>;  // per slot
+    interface LocalTime<TMilli>;
   }
 }
 implementation {
+  
+  fp_t  mean_[NUM_SLOTS];   // mean slot values
+  
+  
+  
+  /*** Init **************************************************************/
+  
+  command error_t
+  Init.init() {
+    uint8_t  i;
+    for (i = 0; i < NUM_SLOTS; i++)  {
+      mean_[i] = FP_ONE;
+    }
+
+    return SUCCESS;
+  }
+  
   
   
   /*** HarvestFactorForecast *******************************************/
@@ -30,7 +54,7 @@ implementation {
     // NOTE in the following, we do all time considerations relative to the
     // creation time of the forecast (from is always later than forecast
     // creation) in order to prevent any time wrap-around issues.
-    from   -= call WeatherForecast.creationTime();
+    from -= call WeatherForecast.creationTime();
     
     // check if the required time span is in scope (forecast horizon)
     if (from + dt > call WeatherForecast.horizon()) {
@@ -140,6 +164,42 @@ implementation {
     }
   }
   */
+  
+  
+  
+  /*** SlotValue *********************************************************/
+  
+  command fp_t
+  SlotValue.get(uint8_t slot) {
+    if (slot < NUM_SLOTS) {
+      return mean_[slot];
+    } else {
+      return FP_NaN;
+    }
+  }
+  
+  
+  /*** Slotter ***********************************************************/
+  
+  event void
+  Slotter.slotEnded(uint8_t slot) {
+    uint32_t  from, dt;
+    fp_t slotVal;
+  
+    if (slot >= NUM_SLOTS) {
+      return;  // must not occur!
+    }
+    
+    dt      = call Slotter.getSlotDuration(slot);
+    from    = call LocalTime.get() - dt;
+    slotVal = call HarvestFactorForecast.getHarvestFactor(from, dt); 
+    mean_[slot] = ewmaFilter16(mean_[slot], slotVal, ALPHA);
+  }
+  
+  
+  event void
+  Slotter.cycleEnded() {
+  }
 }
 
 

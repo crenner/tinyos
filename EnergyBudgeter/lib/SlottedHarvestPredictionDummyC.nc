@@ -1,35 +1,89 @@
-module SlottedHarvestPredictionDummyC {
+generic module SlottedHarvestPredictionDummyC(uint8_t FORECAST_HORIZON) {
   provides {
-    interface Slotter as SlottedHarvestPrediction;
+    interface SlottedForecast as SlottedHarvestPrediction;
   }
   uses {
     interface Slotter as SlottedHarvestModel;
+    interface SlotValue<fp_t> as SlottedHarvestModelValue;
+    interface SlotValue<fp_t> as SlottedHarvestFactorValue;
     interface HarvestFactorForecast;
   }
 }
 implementation {
-
-  uint8_t   latestSlot_      = 0;  // marker for the
+  /*
+  uint8_t   latestSlot_      = 0;  // marker for the ... TODO
   uint16_t  latestSlotBegin_ = 0;  // 
+  */
+  
+  bool  dirty_ = TRUE;
+  fp_t  cache_[FORECAST_HORIZON];  // cache of forecast values for 
 
+  
+  /*** helpers *********************************************************/
+  void
+  buildCache() {
+    uint8_t   slot, i;
+    uint32_t  from, dt;
+    fp_t      modelVal, avgFactor, predFactor;
+    
+    // fill the gap of cache entries
+    from = 0;
+    for (i = 0; i < FORECAST_HORIZON; i++) {
+      // calculate the slot index of the underlying layer
+      slot = (call SlottedHarvestModel.getCurSlot() + i) % call SlottedHarvestModel.getNumSlots();
+      
+      // slot duration
+      dt = call SlottedHarvestModel.getSlotDuration(slot);
+      
+      // get required values for prediction
+      modelVal   = call SlottedHarvestModelValue.get(slot);
+      avgFactor  = call SlottedHarvestFactorValue.get(slot);
+      predFactor = call HarvestFactorForecast.getHarvestFactor(from, dt);
+      
+      // FIXME if (HarvestFactorForecast.valid() && predFactor != FP_NaN) {
+      if (predFactor != FP_NaN) {
+        cache_[i] = fpMlt(modelVal, fpDiv(predFactor, avgFactor));
+      } else {
+        cache_[i] = modelVal;
+      }
+      
+      from += dt;
+    }
+
+    dirty_ = FALSE;
+  }
+  
   
   /*** SlottedHarvestPrediction ****************************************/
-
-  command uint8_t SlottedHarvestPrediction.getCurSlot() {
-    return call SlottedHarvestModel.getCurSlot();
+  
+  command uint8_t
+  SlottedHarvestPrediction.getNumSlots() {
+    return FORECAST_HORIZON;
   }
 
   
-  command uint8_t SlottedHarvestPrediction.getNumSlots() {
-    return call SlottedHarvestModel.getNumSlots();
+  command uint32_t
+  SlottedHarvestPrediction.getSlotDuration(uint8_t slot) {
+    return call SlottedHarvestModel.getSlotDuration(slot);
+  }
+  
+  
+  command fp_t
+  SlottedHarvestPrediction.getSlotValue(uint8_t slot) {
+    // at the moment, we do only support up to FORECAST_HORIZON
+    if (slot >= FORECAST_HORIZON) {
+      return FP_NaN;
+    }
+  
+    if (dirty_) {
+      buildCache();
+    }
+    
+    return cache_[slot];
   }
 
   
-  command uint8_t SlottedHarvestPrediction.getSlotLength(uint8_t slot) {
-    return call SlottedHarvestModel.getSlotLength(slot);
-  }
-
-  
+  /*
   command fp_t SlottedHarvestPrediction.getSlotValue(uint8_t slot) {
     uint32_t  from, dt;
     
@@ -46,30 +100,54 @@ implementation {
       latestSlotBegin_ += call SlottedHarvestModel.getSlotLength(latestSlot_);
     }
   
+    // FIXME
+    // this is a very poor implementation (performance-wise), as the harvest factors will be recomputed
+    // over and over again (instead of cacheing their values). However, recomputation is only needed,
+    // a) upon reception of a new forecast
+    // b) change of slot aligments
+    // c) slots must be shifted (by means of the pointer to the first slot in a ring buffer) upon slot end
+    
+    // FIXME
+    // at the moment, we're missing the integration of the forecast value into the slotted value
+    // looks like this should be done with a second slotter (if different length)
+  
     // next, convert slot length base units / intervals into ms-time
     from = (uint32_t)latestSlotBegin_                             * call SlottedHarvestModel.getBaseIntvl();
     dt   = (uint32_t)call SlottedHarvestModel.getSlotLength(slot) * call SlottedHarvestModel.getBaseIntvl();
     
     // and finally obtain the forecast by multiplying the slot value with the harvest factor
     return fpMlt(call SlottedHarvestModel.getSlotValue(slot), call HarvestFactorForecast.getHarvestFactor(from, dt));
-  }
-
-
-  command uint16_t SlottedHarvestPrediction.getBaseIntvl() {
-    return call SlottedHarvestModel.getBaseIntvl();
-  }
+  }*/
 
 
   /*** SlottedHarvestModel *********************************************/
   
-  event void SlottedHarvestModel.slotEnded(uint8_t slot) {
-    signal SlottedHarvestPrediction.slotEnded(slot);
+  event void
+  SlottedHarvestModel.slotEnded(uint8_t slot) { 
+    signal SlottedHarvestPrediction.slotEnded();
   }
 
   
-  event void SlottedHarvestModel.cycleEnded() {
+  event void
+  SlottedHarvestModel.cycleEnded() {
     signal SlottedHarvestPrediction.cycleEnded();
   }
+  
+  
+//   event void
+//   SlottedHarvestModel.realigned() {
+//     updateCache();
+//   
+//   // TODO TODO TODO TODO
+//     signal SlottedHarvestPrediction.realigned();
+//   }
+  
+  
+  /*** SlottedHarvestModel *********************************************/
+//   event void
+//   ??? {
+//     updateCache();
+//   }
 }
 
 

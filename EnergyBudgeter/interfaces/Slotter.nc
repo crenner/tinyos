@@ -15,6 +15,14 @@ interface Slotter {
   command uint8_t getNumSlots();
 
   /**
+   * get the duration of slot
+   * @param slot slot index (0 <= slot < getNumSlots())
+   * @return duration of slot in binary ms
+   */
+  command uint32_t getSlotDuration(uint8_t slot);
+  
+  
+  /**
    * get the length of slot
    * @param slot slot index (0 <= slot < getNumSlots())
    * @return length of slot as multiple of base interval (@see getBaseIntvl())
@@ -26,12 +34,12 @@ interface Slotter {
    * @param slot slot index (0 <= slot < getNumSlots())
    * @return representativ slot value
    */
-  command fp_t getSlotValue(uint8_t slot);
+  //command fp_t getSlotValue(uint8_t slot);
 
   /**
    * @return base interval in seconds
    */
-  command uint16_t getBaseIntvl();
+  //command uint16_t getBaseIntvl();
 
   /**
    * called when a slot reached its end
