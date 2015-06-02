@@ -21,7 +21,7 @@ module GenericFileSensorP {
   provides {
     interface Read<fp_t>;
     //interface Get<fp_t>;
-    interface Init as Init;
+    interface Init;
   }
   uses {
     interface LocalTime<TMilli> as Clock;	
