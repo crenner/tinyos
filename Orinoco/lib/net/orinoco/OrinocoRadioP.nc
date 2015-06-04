@@ -90,7 +90,7 @@ module OrinocoRadioP {
 
     // path metric
     interface OrinocoPathCost as PathCost;
-    interface LinkPacketMetadata;
+//    interface LinkPacketMetadata;
 //    interface PacketField<uint8_t> as PacketRSSI;
 
     // configuration
@@ -143,7 +143,7 @@ implementation {
     }
 
     // try sending
-    dbg("sending beacon to %u\n", txBeaconDst_);
+    dbg("OrinocoRadioP", "sending beacon to %u\n", txBeaconDst_);
     error = call BeaconSubSend.send(txBeaconDst_, &txBeaconMsg_, sizeof(OrinocoBeaconMsg));
     
 #ifdef ORINOCO_DEBUG_PRINTF
@@ -548,7 +548,7 @@ implementation {
 // printfflush();
     
     } else if (state_ == FORWARD) {
-      dbg("forward timeout\n");
+      dbg("OrinocoRadioP", "forward timeout\n");
       // revise the cost metric; this will either adopt the best alternative
       // among all beacons heard since we started forwarding or resets the
       // cost metric
@@ -586,7 +586,7 @@ implementation {
 
     // node is in received state but no data came in
     } else if (state_ == RECEIVE) {
-      dbg("receive timeout\n");
+      dbg("OrinocoRadioP", "receive timeout\n");
 // printf("%u TO %lu\n", TOS_NODE_ID, call LocalTime.get());
 // printfflush();
       state_ = RECEIVE_DONE;
@@ -748,7 +748,7 @@ implementation {
   /*** DataSubReceive ****************************************************/
   //event message_t * DataSubReceive.receive(message_t * msg) {
   event message_t * DataSubReceive.receive(message_t * msg, void * payload, uint8_t len) {
-    dbg("received data\n");
+    dbg("OrinocoRadioP", "received data\n");
 
     // received data outside receive => ignore to ease handling
     // but include data received before returning to RECEIVE from RECEIVE_TIMER
@@ -786,13 +786,13 @@ implementation {
       } else {
         curCongestionWin_ *= 2;
       }*/
-      dbg("ignored data (NOT in receive state)\n");
+      dbg("OrinocoRadioP", "ignored data (NOT in receive state)\n");
 #ifdef ORINOCO_DEBUG_PRINTF
       printf("%u ori di %u %u %p %u %lu\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg, state_, call LocalTime.get());
       printfflush();
 #endif
     } else {
-      dbg("ignored data (NOT in receive state)\n");
+      dbg("OrinocoRadioP", "ignored data (NOT in receive state)\n");
 #ifdef ORINOCO_DEBUG_PRINTF
       printf("%u ori di %u %u %p %u %lu\n", TOS_NODE_ID, call SubAMPacket.source(msg), call SubAMPacket.destination(msg), msg, state_, call LocalTime.get());
       printfflush();

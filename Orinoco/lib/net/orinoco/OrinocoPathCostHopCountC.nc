@@ -51,5 +51,5 @@ implementation {
   RootControl     = OrinocoPathCostHopCountP;
 
   components ActiveMessageC as AM;
-  OrinocoPathCostHopCountP.LinkPacketMetadata -> AM;
+  //OrinocoPathCostHopCountP.LinkPacketMetadata -> AM;
 }

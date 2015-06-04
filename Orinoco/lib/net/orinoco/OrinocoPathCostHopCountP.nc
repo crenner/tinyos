@@ -43,7 +43,7 @@ module OrinocoPathCostHopCountP {
   }
   uses {
     interface RootControl;
-    interface LinkPacketMetadata;
+    //interface LinkPacketMetadata;
   }
 }
 implementation {
@@ -107,7 +107,7 @@ implementation {
     // only update, if desired (per specification, this should only be the
     // case, if the beacon is an ack)
     // FIXME stuff behind the && is experimental
-    if (update && (call LinkPacketMetadata.highChannelQuality(msg) || curCost_ == ORINOCO_PATHCOST_INF)) {
+    if (update && (TRUE /*call LinkPacketMetadata.highChannelQuality(msg)*/ || curCost_ == ORINOCO_PATHCOST_INF)) {
       curCost_ = cost;
     }
 

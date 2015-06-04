@@ -92,7 +92,7 @@ implementation {
   Mac.DataSubSend      -> DisseminationLayer.DataSend; // OrinocoForwardLayerC; // AM.AMSend[ORINOCO_AM_DATA];
 
   // TODO Temporary solution, should be moved in sep. module
-  Mac.LinkPacketMetadata -> AM;
+  //Mac.LinkPacketMetadata -> AM;
   //Mac.PacketRSSI         -> AM.PacketRSSI;
 
 //  PacketTimeStampRadio  = AM;

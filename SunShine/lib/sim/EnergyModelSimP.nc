@@ -132,7 +132,7 @@ implementation {
   // changed consumption
   event void EnergyLoad.loadChanged(load_t newConsumption)
   {
-    dbg("EnergyModelSim", "consumption changed: %u\n", newConsumption);
+    dbg("EnergyModelSim", "consumption changed: %u @ %u\n", newConsumption, call Clock.get());
   
     // update state  (order is important)
     update();

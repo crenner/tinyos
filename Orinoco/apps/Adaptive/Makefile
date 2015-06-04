@@ -1,7 +1,15 @@
 COMPONENT=TestAppC
 
-include $(MAKERULES)
-include ../Makefile.radioconfig
+ifneq ($(findstring sim,$(MAKECMDGOALS)),sim)
+	LDFLAGS += ../../../Tools/FixPointMath.c
+	LDFLAGS += ../../../Tools/Statistics.c
+endif
+
+ifeq ($(findstring iris,$(MAKECMDGOALS)),iris)
+	include $(MAKERULES)
+	include ../Makefile.radioconfig
+endif
+
 
 #CFLAGS += -DENERGY_POLICY=EnergyPolicyMaxPowerC
 CFLAGS += -DENERGY_POLICY=EnergyPolicyDepletionSafeC
@@ -15,13 +23,14 @@ CFLAGS += \
         -I $(TOSDIR)/lib/net \
         -I ../../interfaces \
         -I ../../lib/net/orinoco \
-        -I ../../../LocalTimeSyncedMicro/lib \
         -I ../../../EAJobs/interfaces \
         -I ../../../EAJobs/lib \
-        -I ../../../Tools \
-        -I ../../../Reporting \
+        -I ../../../EnergyBudgeter/interfaces \
+	-I ../../../EnergyBudgeter/lib \
+	-I ../../../EnergyBudgeter/sunshine \
 	-I ../../../EnergyProfiler/interfaces \
 	-I ../../../EnergyProfiler/lib \
+	-I ../../../LocalTimeSyncedMicro/lib \
 	-I ../../../SunShine/interfaces \
 	-I ../../../SunShine/lib \
 	-I ../../../SunShine/lib/jobs \
@@ -29,9 +38,9 @@ CFLAGS += \
 	-I ../../../SunShine/lib/configurator \
 	-I ../../../SunShine/lib/generic_crc \
 	-I ../../../SunShine/chips/atm128/flash \
-	-I ../../../EnergyBudgeter/lib \
-	-I ../../../EnergyBudgeter/interfaces \
-	-I ../../../EnergyBudgeter/sunshine \
+	-I ../../../SunShine/platforms/mica \
+	-I ../../../Reporting \
+	-I ../../../Tools \
 	-I ../../../WeatherForecasts/interfaces \
 	-I ../../../WeatherForecasts/lib
 
@@ -54,6 +63,10 @@ else
 $(error Platform "$(PLATFORM)" is not supported)
 endif
 
-LDFLAGS += ../../../Tools/FixPointMath.c
-LDFLAGS += ../../../Tools/Statistics.c
 
+CXXFLAGS+=-O2 -I/usr/include/python2.7/ -I$(TOSDIR)/lib/tossim/
+
+.PHONY: simulation
+simulation: ../../../Tools/FixPointMath.o ../../../Tools/Statistics.o
+	make -e iris sim-etrack
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) simbuild/iris/tossim.o simbuild/iris/sim.o simbuild/iris/c-support.o ../../../Tools/FixPointMath.o ../../../Tools/Statistics.o TossimDriver.cpp -o simulate
