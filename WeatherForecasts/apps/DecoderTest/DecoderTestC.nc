@@ -45,6 +45,7 @@
   #define NEW_PRINTF_SEMANTICS
   #include "printf.h"
 #endif
+#include "DdcForecastMsg.h"
 
 configuration DecoderTestC {
 }
@@ -54,15 +55,26 @@ implementation {
   components MainC;
   DecoderTestP.Boot -> MainC;
   
-//   components LocalTimeMilliC;
-//   DecoderTestP.LocalTime -> LocalTimeMilliC;
+  components LocalTimeMicroC;
+  DecoderTestP.LocalTime -> LocalTimeMicroC;
 
-  components SerialActiveMessageC as Serial;
-  DecoderTestP.UartControl -> Serial;
-  DecoderTestP.UartReceive -> Serial.Receive[AM_DDC_FORECAST_MSG];
+
+// NEU
+// Receive Package
+  components new AMSenderC(AM_DDC_FORECAST_MSG);
+  components new AMReceiverC(AM_DDC_FORECAST_MSG);
+  components ActiveMessageC;
+  DecoderTestP.AMControl      -> ActiveMessageC;
+  DecoderTestP.Receive 		-> AMReceiverC;
+  DecoderTestP.AMSend 		-> AMSenderC;
+  DecoderTestP.Packet 		-> AMSenderC;
+//-------------------------------------
+
   
   components DdcDecoderC;
   DecoderTestP.Decoder -> DdcDecoderC;
+
+  
   
   // printf
   components PrintfC;

@@ -46,7 +46,7 @@ module DecoderTestP @safe() {
   uses {
     interface Boot;
     interface WeatherForecastDecoder<ddc_forecast_t, DdcForecastMsg> as Decoder;
-    interface LocalTime<TMicro>;
+    interface LocalTime<TMilli>;
     
     interface SplitControl as AMControl;
     interface Receive;

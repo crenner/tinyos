@@ -10,7 +10,6 @@ DdcForecastMsg.java: ../../lib/DdcForecastMsg.h
 include $(MAKERULES)
 
 CFLAGS += -DUSE_PRINTF -I $(TOSDIR)/lib/printf
-CFLAGS += -DPRINTF_BUFFER_SIZE=80
 
 CFLAGS += \
 	-I . \

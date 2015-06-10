@@ -35,80 +35,48 @@
 /**
  * @author Christian Renner
  */
- 
-#include "Serial.h"
 
-#include "DdcForecast.h"
+/**
+ * @author Christian Renner
+ * @date December 14 2011
+ */
+
+#ifdef USE_PRINTF
+  #define NEW_PRINTF_SEMANTICS
+  #include "printf.h"
+#endif
 #include "DdcForecastMsg.h"
-#include "printf.h"
 
-module DecoderTestP @safe() {
-  uses {
-    interface Boot;
-    interface WeatherForecastDecoder<ddc_forecast_t, DdcForecastMsg> as Decoder;
-    interface LocalTime<TMicro>;
-    
-    interface SplitControl as AMControl;
-    interface Receive;
-    interface AMSend;
-    interface Packet;
-
-  }
+configuration DecoderTestC {
 }
 implementation {
-
-  DdcForecastMsg    fcastMsg;
-  ddc_forecast_t    fcastRes;
-
-  task void
-  decoderTask() {
-  uint8_t i;
-  uint32_t startTime;
-  startTime =call LocalTime.get();
-    call Decoder.decode(&fcastRes, &fcastMsg);
-  startTime =call LocalTime.get()-startTime;
-    for(i = 0; i< fcastRes.numValues; i++)
-	{
-		printf("%u*",fcastRes.values[i]);
-    		printfflush(); 
-	}
-
-    printf(": %lu \n",startTime);
-    printfflush(); 
-  }
+  components DecoderTestP;
   
+  components MainC;
+  DecoderTestP.Boot -> MainC;
+  
+  components LocalTimeMilliC;
+  DecoderTestP.LocalTime -> LocalTimeMicroC;
 
-  event void
-  Boot.booted() {
-    call AMControl.start();
-    printf("start \n");
-    printfflush();
-  }
+
+// NEU
+// Receive Package
+  components new AMSenderC(AM_DDC_FORECAST_MSG);
+  components new AMReceiverC(AM_DDC_FORECAST_MSG);
+  components ActiveMessageC;
+  DecoderTestP.AMControl      -> ActiveMessageC;
+  DecoderTestP.Receive 		-> AMReceiverC;
+  DecoderTestP.AMSend 		-> AMSenderC;
+  DecoderTestP.Packet 		-> AMSenderC;
+//-------------------------------------
+
+  
+  components DdcDecoderC;
+  DecoderTestP.Decoder -> DdcDecoderC;
+
   
   
-  event void
-  AMControl.startDone(error_t error) {
-  }
-  
-  
-  event void
-  AMControl.stopDone(error_t error) {
-    call AMControl.start();  // restart
-  }
-  
-
-
-
-
-  event message_t* Receive.receive(message_t* bufPtr, 
-				   void* payload, uint8_t len) {
-
-    memcpy(&fcastMsg, payload, len);   
-    post decoderTask();
-    return bufPtr;
-  }
-
-  event void AMSend.sendDone(message_t* bufPtr, error_t error) {
-  }
-
-}  
+  // printf
+  components PrintfC;
+  components SerialStartC;
+}

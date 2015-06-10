@@ -10,7 +10,7 @@ enum {
   DDC_FORECAST_TIMEOFFSET_SIZE = 5,   // size of time offsets (sunrise/sunset) (bits)
   //DDC_FORECAST_RESERVED_SIZE   = 4,   // unused bits (to next byte border)
   AM_DDC_FORECAST_MSG          = 200,
-  AM_DDCFORECASTMSG          = 200 // added this extra line so the MIG compiler can read the AM
+  AM_DDCFORECASTMSG          = 200
 };
 
 
