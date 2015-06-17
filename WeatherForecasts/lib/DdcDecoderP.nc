@@ -132,7 +132,7 @@ implementation {
       defaultPredecessor = 0; // false
       if (i == sunrise) {
         sunrise += 24;
-        defaultPredecessor = 0;
+        defaultPredecessor = 1;
       } else if (i == sunset) {
         sunset += 24;
       }

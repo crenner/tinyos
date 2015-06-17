@@ -8,7 +8,7 @@ enum {
   DDC_VALUE_MAX         =  8,  // maximum value
   DDC_VALUE_ABS_SIZE    =  4,  // size of absolute values (in bits)
   DDC_VALUE_REL_MAXSIZE =  3,
-  DDC_VALUE_UNKNOWN     = -1,
+  DDC_VALUE_UNKNOWN     = /*-1*/ 9,
   DDC_VALUE_DEFAULT     =  5,
   //
   DDC_CODE_EQ           =  0, // uses same codes as encoder but with leading ones only leaving out all zeroes

@@ -46,7 +46,7 @@ module DecoderTestP @safe() {
   uses {
     interface Boot;
     interface WeatherForecastDecoder<ddc_forecast_t, DdcForecastMsg> as Decoder;
-    interface LocalTime<TMilli>;
+    interface LocalTime<TMicro>;
     
     interface SplitControl as AMControl;
     interface Receive;
@@ -67,13 +67,14 @@ implementation {
   startTime =call LocalTime.get();
     call Decoder.decode(&fcastRes, &fcastMsg);
   startTime =call LocalTime.get()-startTime;
+
     for(i = 0; i< fcastRes.numValues; i++)
 	{
 		printf("%u*",fcastRes.values[i]);
-    		printfflush(); 
+    		//printfflush(); 
 	}
 
-    printf(": %lu \n",startTime);
+    printf("%lu\n",startTime);
     printfflush(); 
   }
   

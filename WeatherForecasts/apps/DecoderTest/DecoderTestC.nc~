@@ -46,6 +46,7 @@
   #include "printf.h"
 #endif
 #include "DdcForecastMsg.h"
+#include "printf.h"
 
 configuration DecoderTestC {
 }
@@ -55,7 +56,7 @@ implementation {
   components MainC;
   DecoderTestP.Boot -> MainC;
   
-  components LocalTimeMilliC;
+  components LocalTimeMicroC;
   DecoderTestP.LocalTime -> LocalTimeMicroC;
 
 

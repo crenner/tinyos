@@ -67,13 +67,14 @@ implementation {
   startTime =call LocalTime.get();
     call Decoder.decode(&fcastRes, &fcastMsg);
   startTime =call LocalTime.get()-startTime;
+
     for(i = 0; i< fcastRes.numValues; i++)
 	{
 		printf("%u*",fcastRes.values[i]);
-    		printfflush(); 
+    		//printfflush(); 
 	}
 
-    printf(": %lu \n",startTime);
+    printf("%lu\n",startTime);
     printfflush(); 
   }
   
@@ -81,8 +82,6 @@ implementation {
   event void
   Boot.booted() {
     call AMControl.start();
-    printf("start \n");
-    printfflush();
   }
   
   

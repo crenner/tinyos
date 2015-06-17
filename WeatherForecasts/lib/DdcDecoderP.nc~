@@ -90,8 +90,6 @@ implementation {
 
       } else /* DDC_CODE_ABS */ {
         res[n] = readBits(DDC_VALUE_ABS_SIZE);
-        printf("abs %u\n", res[0]);
-        printfflush();
       }
     
   }

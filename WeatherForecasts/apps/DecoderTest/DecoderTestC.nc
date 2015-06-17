@@ -40,12 +40,13 @@
  * @author Christian Renner
  * @date December 14 2011
  */
-
+/*
 #ifdef USE_PRINTF
   #define NEW_PRINTF_SEMANTICS
   #include "printf.h"
-#endif
+#endif*/
 #include "DdcForecastMsg.h"
+#include "printf.h"
 
 configuration DecoderTestC {
 }

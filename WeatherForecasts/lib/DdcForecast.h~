@@ -11,8 +11,8 @@ enum {
   DDC_VALUE_UNKNOWN     = -1,
   DDC_VALUE_DEFAULT     =  5,
   //
-  DDC_CODE_EQ           =  0,
-  DDC_CODE_INC          =  1,
+  DDC_CODE_EQ           =  0, // uses same codes as encoder but with leading ones only leaving out all zeroes
+  DDC_CODE_INC          =  1, // e.q binarty code is 10, without 0 it's only 1
   DDC_CODE_DEC          =  2,
   DDC_CODE_ABS          =  3,
 };
