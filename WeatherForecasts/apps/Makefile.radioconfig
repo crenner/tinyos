@@ -29,7 +29,7 @@ else
   ifneq ($(strip $(PACKETLENGTH)),)
     CFLAGS += -DTOSH_DATA_LENGTH=$(PACKETLENGTH)
   else
-    PACKETLENGTH=28# TOSROOT/tos/chips/cc2420/CC2420.h:153, TOSROOT/tos/types/message.h:7
+    PACKETLENGTH=80# TOSROOT/tos/chips/cc2420/CC2420.h:153, TOSROOT/tos/types/message.h:7
   endif 
 
   ifneq ($(strip $(PRINTF_MSG_LENGTH)),)

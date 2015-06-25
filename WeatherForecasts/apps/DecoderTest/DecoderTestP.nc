@@ -36,11 +36,10 @@
  * @author Christian Renner
  */
  
-#include "Serial.h"
-
 #include "DdcForecast.h"
 #include "DdcForecastMsg.h"
-#include "printf.h"
+#include "DdcTestMsg.h"
+//#include "printf.h"
 
 module DecoderTestP @safe() {
   uses {
@@ -53,35 +52,87 @@ module DecoderTestP @safe() {
     interface AMSend;
     interface Packet;
 
+    interface Leds;
+
   }
 }
 implementation {
 
-  DdcForecastMsg    fcastMsg;
+  //DdcForecastMsg    fcastMsg;
   ddc_forecast_t    fcastRes;
+  bool locked = FALSE;
+  bool temp = FALSE;
+  bool temp2 = FALSE;
+  message_t packet;
+
+  message_t tmpPacket;
+  message_t* tmpPtr= &tmpPacket;
 
   task void
   decoderTask() {
   uint8_t i;
+  uint8_t maxIndex;
   uint32_t startTime;
+  DdcForecastMsg* cc= (DdcForecastMsg*)tmpPtr->data;
   startTime =call LocalTime.get();
-    call Decoder.decode(&fcastRes, &fcastMsg);
+  call Decoder.decode(&fcastRes, cc);
   startTime =call LocalTime.get()-startTime;
 
-    for(i = 0; i< fcastRes.numValues; i++)
+  if (locked) {
+      return;
+  }
+  else {
+      DdcTestMsg* rcm = (DdcTestMsg*)call Packet.getPayload(&packet, sizeof(DdcTestMsg));
+
+        
+      if (rcm == NULL) {
+	call Leds.led0On(); 
+	return;
+      }
+
+      if (call Packet.maxPayloadLength() < sizeof(DdcTestMsg)) {
+	return;
+      }
+      
+
+      rcm->decodingTime = startTime;
+      rcm->numValues = fcastRes.numValues;
+      rcm->sunrise = fcastRes.sunrise;
+      rcm->sunset = fcastRes.sunset;
+      maxIndex = fcastRes.numValues >>1; // divided by 2
+      for(i = 0; i< maxIndex; i++)
 	{
-		printf("%u*",fcastRes.values[i]);
-    		//printfflush(); 
+		rcm->values[i] =(fcastRes.values[2*i]<<4)+fcastRes.values[2*i+1];
 	}
 
-    printf("%lu\n",startTime);
-    printfflush(); 
-  }
+/*
+      for(i = 0; i< fcastRes.numValues; i++)
+	{
+		rcm->values[i] =fcastRes.values[i];
+	}*/
+
+      if (call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(DdcTestMsg)) == SUCCESS) {
+
+	    if(!temp2){
+		call Leds.led2On();
+		temp2 = TRUE;
+	    }else {
+	     	call Leds.led2Off();
+		temp2 = FALSE;
+	    }
+	locked = TRUE;
+     }
+ }
+
+
+
+}
   
 
   event void
   Boot.booted() {
     call AMControl.start();
+    call Leds.led0Off();
   }
   
   
@@ -101,13 +152,30 @@ implementation {
 
   event message_t* Receive.receive(message_t* bufPtr, 
 				   void* payload, uint8_t len) {
+     message_t* tmp  = tmpPtr;
+     tmpPtr          = bufPtr;
+     bufPtr          = tmp;     
 
-    memcpy(&fcastMsg, payload, len);   
-    post decoderTask();
+    if(!temp){
+	call Leds.led1On();
+	temp = TRUE;
+    }else {
+     	call Leds.led1Off();
+	temp = FALSE;
+    }
+	
+   post decoderTask();
+
+
     return bufPtr;
   }
 
   event void AMSend.sendDone(message_t* bufPtr, error_t error) {
+    if (&packet == bufPtr) {
+      locked = FALSE;
+      //call Leds.led0Off();
+      //call Leds.led2Off();
+    }
   }
 
 }  

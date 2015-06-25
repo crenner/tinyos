@@ -46,7 +46,9 @@
   #include "printf.h"
 #endif*/
 #include "DdcForecastMsg.h"
-#include "printf.h"
+#include "DdcForecast.h"
+#include "DdcTestMsg.h"
+//#include "printf.h"
 
 configuration DecoderTestC {
 }
@@ -62,13 +64,23 @@ implementation {
 
 // NEU
 // Receive Package
-  components new AMSenderC(AM_DDC_FORECAST_MSG);
+/*
+  components new AMSenderC(AM_DDCFORECAST);
   components new AMReceiverC(AM_DDC_FORECAST_MSG);
   components ActiveMessageC;
   DecoderTestP.AMControl      -> ActiveMessageC;
   DecoderTestP.Receive 		-> AMReceiverC;
   DecoderTestP.AMSend 		-> AMSenderC;
   DecoderTestP.Packet 		-> AMSenderC;
+*/
+components SerialActiveMessageC as AM;
+  DecoderTestP.AMControl -> AM;
+  DecoderTestP.Receive -> AM.Receive[AM_DDC_FORECAST_MSG];
+  DecoderTestP.AMSend -> AM.AMSend[AM_DDCTESTMSG];
+  DecoderTestP.Packet -> AM;
+// LED
+  components LedsC;
+  DecoderTestP.Leds -> LedsC;
 //-------------------------------------
 
   
@@ -78,6 +90,6 @@ implementation {
   
   
   // printf
-  components PrintfC;
-  components SerialStartC;
+  //components PrintfC;
+  //components SerialStartC;
 }

@@ -3,7 +3,7 @@
 
 
 enum {
-  DDC_FORECAST_MAX_DATALEN     = 20,  // max length of ddc forecasts in bytes
+  DDC_FORECAST_MAX_DATALEN     = 30,  // max length of ddc forecasts in bytes
   //DDC_FORECAST_VERSION_SIZE    = 5,   // size of version number (bits)
   DDC_FORECAST_NUMDAYS_SIZE    = 3,   // size of the number of days field (bits)
   DDC_FORECAST_RESOLUTION_SIZE = 2,   // size of the resolution field (bits)

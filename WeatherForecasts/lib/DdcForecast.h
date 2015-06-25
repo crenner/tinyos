@@ -15,6 +15,7 @@ enum {
   DDC_CODE_INC          =  1, // e.q binarty code is 10, without 0 it's only 1
   DDC_CODE_DEC          =  2,
   DDC_CODE_ABS          =  3,
+  AM_DDCFORECAST        = 188
 };
 
 
@@ -27,6 +28,7 @@ typedef struct ddc_forecast_s {
   uint8_t   sunset;
   uint8_t   values[DDC_VALUE_MAX_NUM];
 } ddc_forecast_t;
+
 
 
 #endif
