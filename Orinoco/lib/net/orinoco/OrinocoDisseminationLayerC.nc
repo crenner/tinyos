@@ -36,6 +36,7 @@
  * @author Christian Renner
  * @date February 18th 2015
  */
+#include "DdcForecastMsg.h"
 
 configuration OrinocoDisseminationLayerC {
   provides {
@@ -51,6 +52,8 @@ configuration OrinocoDisseminationLayerC {
     
     // dissemination
     interface OrinocoDissemination;
+    interface DisseminationValue<DdcForecastMsg>  as Value;	
+    interface DisseminationUpdate<DdcForecastMsg> as Update;
   }
   uses {
     // beacons
@@ -80,6 +83,9 @@ implementation {
   DataReceive          = OrinocoDisseminationLayerP.DataReceive;
   DataSend             = OrinocoDisseminationLayerP.DataSend;
   DataPacket           = OrinocoDisseminationLayerP.DataPacket;
+
+  Value = OrinocoDisseminationLayerP;
+  Update = OrinocoDisseminationLayerP;
   
   OrinocoDissemination = OrinocoDisseminationLayerP;
   

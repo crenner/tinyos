@@ -4,7 +4,7 @@
  */
 #ifndef ORINOCO_BEACON_MSG_H
 #define ORINOCO_BEACON_MSG_H
-
+#include "Orinoco.h"
 typedef enum {
   ORINOCO_BEACON_FLAGS_ACCEPTSDATA  = 0x01
 } orinoco_beacon_flags_t;

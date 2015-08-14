@@ -37,12 +37,20 @@
  * @date December 14 2011
  */
 
+/*
+TODO 
+1 Dissemination Interface einbauen
+2. Serielle Schnittstellen einbauen
+3. zusammenfügen
+
+*/
 #include "AM.h"
 #include "Serial.h"
 #include "Reporting.h"
 
 #include "OrinocoDebugReportingMsg.h"
 #include "OrinocoBeaconMsg.h"
+#include "DdcForecastMsg.h"
 
 #ifndef SLEEP_DURATION
 #  define SLEEP_DURATION 256
@@ -57,38 +65,45 @@
 module SinkP @safe() {
   uses {
     interface Boot;
+    interface Timer<TMilli> as BootTimer;
+    interface Timer<TMilli> as DistTimer;
+
     interface SplitControl as RadioControl;
     interface StdControl as RoutingControl;
     
     interface RootControl;
-    //interface OrinocoRoutingRoot;
+   // interface OrinocoRoutingRoot;
 
     interface OrinocoConfig;
 
-    interface Timer<TMilli> as BootTimer;
-    interface Timer<TMilli> as DistTimer;
+
     
     // forecast dissemination
-    interface DisseminationUpdate<TODO> as ForecastUpdate;
-    interface DisseminationValue<TODO>  as ForecastValue;
+    interface DisseminationUpdate<DdcForecastMsg> as ForecastUpdate;
+    interface DisseminationValue<DdcForecastMsg>  as ForecastValue;
 
     // radio
     interface Packet as RadioPacket;
+    interface Receive as SerialReceive;
     interface CollectionPacket;
     interface Receive as RadioReceive[collection_id_t];
     interface QueueSend as RadioSend[collection_id_t];
-
     interface PacketDelay<TMilli> as PacketDelayMilli;
-
     interface Receive as OrinocoStatsReporting;
     interface Receive as OrinocoDebugReporting;
-
     interface LocalTime<TMilli>;  
+    interface Leds;
+
+
   }
 }
 implementation
 {
   uint16_t  version = 0;
+  bool temp = FALSE;
+  message_t tmpPacket;
+  message_t* tmpPtr= &tmpPacket;
+
 
   event void Boot.booted() {
 
@@ -112,26 +127,26 @@ implementation
   
   am_addr_t addr = 0;
   event void DistTimer.fired() {
-    ddcForecastMsg_t  fcast;
-    
+
+	DdcForecastMsg  fcast;
+  
     // stop timer, if have we have reached the desired number of forecasts (0 == inf)
     if (FORECAST_NUM != 0 && version >= FORECAST_NUM) {
        call DistTimer.stop();
        return;
     }
-    
-    // init
+/*
     fcast.len = FORECAST_LEN;
     
     // FIXME how do we provide the size in bytes?
 
     // provide update (and disseminate it)
-    call Update.change(&fcast);
+    call Update.change(&fcast);*/
   }
-  
+  /*
   event void Value.changed(){
     // sinks ignore value updates (we probably don't need the interface at all ...)
-  }
+  }*/
 
 
   event message_t * OrinocoStatsReporting.receive(message_t * msg, void * payload, uint8_t len) {
@@ -175,9 +190,10 @@ implementation
 
   event message_t *
   RadioReceive.receive[collection_id_t type](message_t * msg, void * payload, uint8_t len) {
+/*
     #ifdef PRINTF_H
     uint8_t hops = ((orinoco_data_header_t *)(payload + len))->hopCnt;
-    if (type == ORINOCO_AM_CMDCFRM) {
+    if (type == ORINOCO_AM_CMDCFRM) { // TODO what is CMDCFRM?
       OrinocoCommandAckMsg * p = (OrinocoCommandAckMsg *)payload;
       printf("%lu: %u bf-rx-conf %u %u %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, call CollectionPacket.getOrigin(msg), type, hops, p->version, len);
       printfflush();
@@ -196,8 +212,30 @@ implementation
         printfflush();
       }
     }
-    #endif
+    #endif*/
     
     return msg;
   }
+
+   event message_t* SerialReceive.receive(message_t* bufPtr, 
+				   void* payload, uint8_t len) {
+	message_t* tmp  = tmpPtr;
+    	tmpPtr          = bufPtr;
+    	bufPtr          = tmp;
+ 	if(!temp){
+		call Leds.led2On();
+		temp = TRUE;
+    	}else {
+     		call Leds.led2Off();
+		temp = FALSE;
+    	}
+
+    	return bufPtr;
+   }
+
+   event void ForecastValue.changed(){
+   // hier passiert nichts
+   // ist drin, weil sonst fehler
+   }
+
 }  

@@ -36,7 +36,7 @@
  * @author Christian Renner
  * @date December 14 2011
  */
-
+#include "DdcForecastMsg.h"
 #ifdef USE_PRINTF
   #define NEW_PRINTF_SEMANTICS
   #include "printf.h"
@@ -65,6 +65,7 @@ implementation {
   SinkP.RootControl      -> Radio;
   SinkP.RoutingControl   -> Radio;
   SinkP.RadioControl     -> Radio;
+
   SinkP.OrinocoConfig    -> Radio;
   //SinkP.OrinocoRoutingRoot -> Radio;
 
@@ -73,11 +74,21 @@ implementation {
   SinkP.RadioPacket      -> Radio;
   SinkP.CollectionPacket -> Radio;
   SinkP.PacketDelayMilli -> Radio;
-  
+
   // dissemination
-  components DummyForecastC;
-  SinkP.ForecastUpdate -> DummyForecastC;
-  SinkP.ForecastValue  -> DummyForecastC;
+  components OrinocoDisseminationLayerC;
+  SinkP.ForecastUpdate -> OrinocoDisseminationLayerC.Update;
+  SinkP.ForecastValue  -> OrinocoDisseminationLayerC.Value;
+
+  //Receive Packages via Serial Connection
+  components SerialActiveMessageC as AM;
+  SinkP.RadioControl -> AM;
+  SinkP.SerialReceive -> AM.Receive[AM_DDC_FORECAST_MSG];
+  SinkP.RadioPacket -> AM;
+  //Leds
+  components LedsC;
+  SinkP.Leds -> LedsC;
+
 
   components OrinocoStatsReportingJobC;
   OrinocoStatsReportingJobC.Packet -> Radio;
@@ -88,6 +99,7 @@ implementation {
   OrinocoDebugReportingJobC.Packet -> Radio;
   SinkP.OrinocoDebugReporting   -> OrinocoDebugReportingJobC;
   #endif
+
   
   components LocalTimeMilliC;
   SinkP.LocalTime -> LocalTimeMilliC;

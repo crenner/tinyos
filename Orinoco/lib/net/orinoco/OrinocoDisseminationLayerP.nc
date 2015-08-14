@@ -17,6 +17,9 @@ module OrinocoDisseminationLayerP {
     
     // dissemination
     interface OrinocoDissemination as Dissemination;
+
+    interface DisseminationValue<DdcForecastMsg> as Value;	
+    interface DisseminationUpdate<DdcForecastMsg> as Update;
     
 #ifdef ORINOCO_DEBUG_STATISTICS
     interface Get<const orinoco_dissemination_statistics_t *> as DisseminationStatistics;
@@ -43,6 +46,7 @@ module OrinocoDisseminationLayerP {
 }
 implementation {
   bool     updateRequired_  = FALSE;
+  DdcForecastMsg paket; // local Package
   // FIXME we might want to make sure that we send updates only
   // to intended receivers.
   //am_addr_t  updateRequester_ = AM_BROADCAST;
@@ -232,6 +236,23 @@ implementation {
   Dissemination.update(uint8_t rversion, const uint8_t * rdata, uint8_t size) {
     // ignore
   }
+
+// Kopiere übergebenen Wert auf das lokale Paket 
+command void Update.change(DdcForecastMsg* CC){
+}
+
+
+// Liefere neue Werte ab
+command const DdcForecastMsg* Value.get(){
+return &paket;
+
+}
+// Setze standardwert
+command void Value.set( const DdcForecastMsg* val){
+paket = *val;
+
+
+}
   
   
   /*** DisseminationStatistics *******************************************/
