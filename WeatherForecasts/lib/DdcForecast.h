@@ -29,6 +29,8 @@ typedef struct ddc_forecast_s {
   uint8_t   values[DDC_VALUE_MAX_NUM];
 } ddc_forecast_t;
 
+ddc_forecast_t decodedData;
+
 
 
 #endif

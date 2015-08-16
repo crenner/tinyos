@@ -43,11 +43,11 @@
 #endif
 #include "DdcForecastMsg.h"
 
-configuration TestAppC {
+configuration periodicSenderC {
 }
 implementation {
   components MainC;
-  components TestC;
+  components periodicSenderP as TestC;
   components new TimerMilliC();
   components new TimerMilliC() as BootTimer;
 

@@ -82,6 +82,8 @@ implementation {
   components RadioTestAppC;
   TestC.Value-> RadioTestAppC.Value;
 */
+  components OrinocoDisseminationLayerC;
+  TestC.ForecastValue  -> OrinocoDisseminationLayerC.Value;
   components LedsC;
   TestC.Leds -> LedsC;
   

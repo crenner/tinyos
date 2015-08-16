@@ -68,7 +68,7 @@ configuration OrinocoDisseminationLayerC {
     interface Packet as DataSubPacket;
 
     //dissemination
-    
+
     // am ids
     interface AMPacket;
         
@@ -86,23 +86,19 @@ implementation {
   DataReceive          = OrinocoDisseminationLayerP.DataReceive;
   DataSend             = OrinocoDisseminationLayerP.DataSend;
   DataPacket           = OrinocoDisseminationLayerP.DataPacket;
-
+  
+  OrinocoDissemination = OrinocoDisseminationLayerP;
+  BeaconSubReceive     = OrinocoDisseminationLayerP.BeaconSubReceive;
+  BeaconSubSend        = OrinocoDisseminationLayerP.BeaconSubSend;
+  BeaconSubPacket      = OrinocoDisseminationLayerP.BeaconSubPacket;
+  DataSubReceive       = OrinocoDisseminationLayerP.DataSubReceive;
+  DataSubSend          = OrinocoDisseminationLayerP.DataSubSend;
+  DataSubPacket        = OrinocoDisseminationLayerP.DataSubPacket;
+  AMPacket             = OrinocoDisseminationLayerP;
 //new
   components new OrinocoDisseminatorC(DdcForecastMsg) as Disseminator;
   Value  	       = Disseminator.Value;
   Update               = Disseminator.Update;
-  
-  OrinocoDissemination = OrinocoDisseminationLayerP;
-  
-  BeaconSubReceive     = OrinocoDisseminationLayerP.BeaconSubReceive;
-  BeaconSubSend        = OrinocoDisseminationLayerP.BeaconSubSend;
-  BeaconSubPacket      = OrinocoDisseminationLayerP.BeaconSubPacket;
-  
-  DataSubReceive       = OrinocoDisseminationLayerP.DataSubReceive;
-  DataSubSend          = OrinocoDisseminationLayerP.DataSubSend;
-  DataSubPacket        = OrinocoDisseminationLayerP.DataSubPacket;
-  
-  AMPacket             = OrinocoDisseminationLayerP;
   
 #ifdef PRINTF_H
   LocalTime            = OrinocoDisseminationLayerP;

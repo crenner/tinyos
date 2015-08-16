@@ -1,7 +1,7 @@
 // TODO move to header
 #define DISSEMINATION_VERSION_SIZE  sizeof(uint8_t)
 #define DISSEMINATION_VERSION_MAX   255
-
+#include "DdcForecast.h"
 
 module OrinocoDisseminationLayerP {
   provides {
@@ -17,7 +17,6 @@ module OrinocoDisseminationLayerP {
     
     // dissemination
     interface OrinocoDissemination as Dissemination;
-
     interface DisseminationValue<DdcForecastMsg> as Value;	
     interface DisseminationUpdate<DdcForecastMsg> as Update;
     
@@ -46,7 +45,6 @@ module OrinocoDisseminationLayerP {
 }
 implementation {
   bool     updateRequired_  = FALSE;
-  DdcForecastMsg paket; // local Package
   // FIXME we might want to make sure that we send updates only
   // to intended receivers.
   //am_addr_t  updateRequester_ = AM_BROADCAST;
@@ -59,7 +57,11 @@ implementation {
 #ifdef ORINOCO_DEBUG_STATISTICS
   orinoco_dissemination_statistics_t  ds_ = {0};
 #endif
-  
+  /*** Decoding ****************************************************/  
+   task void decodingTask(){
+
+
+  }
    
   /*** tools *************************************************************/
   uint8_t * getDataFooter(message_t * msg) {
@@ -237,23 +239,18 @@ implementation {
     // ignore
   }
 
-// Kopiere übergebenen Wert auf das lokale Paket 
-command void Update.change(DdcForecastMsg* CC){
-}
+  command void Update.change(DdcForecastMsg* CC){
+    //ignore
+  }
 
+  command const DdcForecastMsg* Value.get(){
+   //ignore
+   return NULL;
+  }
 
-// Liefere neue Werte ab
-command const DdcForecastMsg* Value.get(){
-return &paket;
-
-}
-// Setze standardwert
-command void Value.set( const DdcForecastMsg* val){
-paket = *val;
-
-
-}
-  
+  command void Value.set( const DdcForecastMsg* val){
+   //ignore
+  }
   
   /*** DisseminationStatistics *******************************************/
 #ifdef ORINOCO_DEBUG_STATISTICS
@@ -262,7 +259,7 @@ paket = *val;
     return &ds_;
   }
 #endif
-  
+
   
   /*** BeaconSubSend *****************************************************/
   event void
@@ -279,16 +276,16 @@ paket = *val;
     // packet payload is a fixed-size OrinocoBeaconMsg
     if (len > sizeof(OrinocoBeaconMsg)) {
       uint8_t    dlen = len - sizeof(OrinocoBeaconMsg) - DISSEMINATION_VERSION_SIZE;
-      uint8_t  * d    = (uint8_t *)payload + sizeof(OrinocoBeaconMsg) + DISSEMINATION_VERSION_SIZE;
-      uint8_t    v    = *((uint8_t *)payload + sizeof(OrinocoBeaconMsg));
+      uint8_t  * beaconData    = (uint8_t *)payload + sizeof(OrinocoBeaconMsg) + DISSEMINATION_VERSION_SIZE;
+      uint8_t    beaconVersion    = *((uint8_t *)payload + sizeof(OrinocoBeaconMsg));
       
       // provide update
       // TODO check if it's useful to do this here
-      if (isNewer(v, signal Dissemination.version())) {
+      if (isNewer(beaconVersion, signal Dissemination.version())) {
 #ifdef ORINOCO_DEBUG_STATISTICS
         ds_.numRxDissBeacons++;
 #endif
-        signal Dissemination.update(v, d, dlen);
+        signal Dissemination.update(beaconVersion, beaconData, dlen);
       } else {
 #ifdef ORINOCO_DEBUG_STATISTICS
         ds_.numRxDissBeaconsNonNew++;
@@ -297,6 +294,8 @@ paket = *val;
         //printfflush();
       }
     }
+//TODO decoding
+   post decodingTask();
 
     return signal BeaconReceive.receive(msg, payload, sizeof(OrinocoBeaconMsg));
   }
@@ -329,4 +328,5 @@ paket = *val;
     
     return signal DataReceive.receive(msg, payload, len);
   }
+
 }

@@ -54,7 +54,7 @@
 
 #define AM_PERIODIC_PACKET  33  // packet type
 
-module TestC {
+module periodicSenderP {
   uses {
     interface Boot;
     interface Timer<TMilli>;
@@ -72,7 +72,7 @@ module TestC {
     interface Leds;
 
     interface OrinocoConfig;
-  //  interface DisseminationValue<CloudCoverMAX> as Value;
+    interface DisseminationValue<DdcForecastMsg>  as ForecastValue;
  
     interface Random;
 
@@ -103,8 +103,8 @@ implementation {
     call RadioControl.start();
     call ForwardingControl.start();
     
-//    call OrinocoConfig.setWakeUpInterval(WAKEUP_INTVL);  
-//    call OrinocoConfig.setMinQueueSize(1);
+    call OrinocoConfig.setWakeUpInterval(WAKEUP_INTVL);  
+    call OrinocoConfig.setMinQueueSize(1);
 
     // boot sync
     call BootTimer.startOneShot(1024);
@@ -114,26 +114,28 @@ implementation {
  
 
      // setze Standardwert
-   // call Value.set(&defPackage);
+   call ForecastValue.set(&defPackage);
 
   }
-/*
+
 // neue daten wurden empfangen und werden über diese Methode des Anwendungsschicht zur Verfügung gestellt
 // autor anhtuan nguyen 
 // testklasse gibt empfangene Vorhersagen aus
- event void Value.changed(){
+ event void ForecastValue.changed(){
      uint32_t timestamp;
-     const DdcForecastMsg* CC =call  Value.get(); 
+     const DdcForecastMsg* CC =call  ForecastValue.get(); 
+	//TODO neuen Wert ausgeben entweder über printf oder serielle Schnittstelle
+/*
      timestamp  =  CC->header_ZMsbAM  & (HEADER_TIME_MSB);// setze modus und auflösungsbit auf 
      timestamp  =  timestamp<< HEADER_TIME_MSB_OFFSET;
      timestamp  =  timestamp| CC->header_ZLsb;
       #ifdef WISEBED
-      printf("%u,%lu: BL %u,%u,%u,%lu\n",TOS_NODE_ID,call LocalTime.get(),CC->data[2],CC->data[3],CC->header_VA,timestamp);
+      printf("%u,%lu: BL %u,%u,%u,%lu\n",TOS_NODE_ID,call LocalTime.get(),CC->data[2],CC->data[3],
+      CC- >header_VA,timestamp);
       printfflush();
       #endif
-
+	*/
 }
-*/
 
  event message_t *
   RadioReceive.receive[collection_id_t type](message_t * msg, void * payload, uint8_t len) {
