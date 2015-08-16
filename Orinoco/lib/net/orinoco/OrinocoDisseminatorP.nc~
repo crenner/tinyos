@@ -35,8 +35,6 @@ implementation {
     piggyData_.age = 0;
     version_++;
     creationTime_ = call LocalTimeMilli.get();
-    printf("KACK\n");
-     printfflush();
   }
   
   

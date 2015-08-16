@@ -41,13 +41,13 @@
   #define NEW_PRINTF_SEMANTICS
   #include "printf.h"
 #endif
+#include "DdcForecastMsg.h"
 
-configuration TestAppC {
+configuration periodicSenderC {
 }
 implementation {
   components MainC;
-  components TestC;
-  components OrinocoP;
+  components periodicSenderP as TestC;
   components new TimerMilliC();
   components new TimerMilliC() as BootTimer;
 
@@ -61,35 +61,37 @@ implementation {
   TestC.Boot              -> MainC.Boot;
   TestC.Timer             -> TimerMilliC;
   TestC.BootTimer         -> BootTimer;
-  TestC.RadioControl      -> OrinocoP;
-  TestC.ForwardingControl -> OrinocoP;
-  TestC.Send              -> OrinocoP.Send;
-  TestC.RootControl       -> OrinocoP;
-  TestC.Packet            -> OrinocoP;
-  TestC.OrinocoConfig     -> OrinocoP;
-  TestC.OrinocoRouting    -> OrinocoP;
 
-  TestC.RadioReceive      -> OrinocoP.Receive;
-  TestC.CollectionPacket  -> OrinocoP;
+  components OrinocoP as Radio;
+  TestC.RootControl       -> Radio;
+  TestC.RadioControl      -> Radio;
+  TestC.ForwardingControl -> Radio;
+  TestC.Send              -> Radio.Send;
+  TestC.Packet            -> Radio;
+  TestC.RadioReceive      -> Radio.Receive;
+  TestC.CollectionPacket  -> Radio;
+  TestC.OrinocoConfig     -> Radio;
+  //TestC.OrinocoRouting    -> Radio;
 
   // Orinoco internal reporting
   components OrinocoStatsReportingJobC;
-  OrinocoStatsReportingJobC.Packet -> OrinocoP;
+  OrinocoStatsReportingJobC.Packet -> Radio;
   TestC.OrinocoStatsReporting   -> OrinocoStatsReportingJobC;
-
+/*
   // Data Dissemination
   components RadioTestAppC;
   TestC.Value-> RadioTestAppC.Value;
-
+*/
   components LedsC;
   TestC.Leds -> LedsC;
   
   components RandomC;
   TestC.Random -> RandomC;
-  
+ 
   #ifdef ORINOCO_DEBUG_STATISTICS
   components OrinocoDebugReportingJobC;
-  OrinocoDebugReportingJobC.Packet -> OrinocoP;
+  OrinocoDebugReportingJobC.Packet -> Radio;
   TestC.OrinocoDebugReporting   -> OrinocoDebugReportingJobC;
   #endif
+
 }
