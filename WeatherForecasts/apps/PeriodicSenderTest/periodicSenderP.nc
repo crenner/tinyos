@@ -39,7 +39,7 @@
  
 #include "Reporting.h"
 #include "Orinoco.h"
-
+#include "DdcForecastMsg.h"
 #include "OrinocoDebugReportingMsg.h"
 
 #define MSG_BURST_LEN      1    // number of packets per period (#)
@@ -54,23 +54,26 @@
 
 #define AM_PERIODIC_PACKET  33  // packet type
 
-module TestC {
+module periodicSenderP {
   uses {
     interface Boot;
     interface Timer<TMilli>;
     interface Timer<TMilli> as BootTimer;
+
     interface SplitControl as RadioControl;
-    interface StdControl as ForwardingControl;
     interface RootControl;
-    interface OrinocoConfig;
+    interface StdControl as ForwardingControl;
     interface Packet;
     interface QueueSend as Send[collection_id_t];
-    interface Leds;
-
-    interface DisseminationValue<CloudCoverMAX> as Value;
     interface Receive as RadioReceive[collection_id_t];
     interface CollectionPacket;
-    
+    //interface OrinocoRoutingClient as OrinocoRouting;
+
+    interface Leds;
+
+    interface OrinocoConfig;
+    interface DisseminationValue<DdcForecastMsg>  as ForecastValue;
+ 
     interface Random;
 
     #ifdef PRINTF_H
@@ -90,7 +93,7 @@ implementation {
   uint16_t   cnt = 0;
   bool       active = FALSE;
   uint32_t   delay = DATA_PERIOD;
-  CloudCoverMAX defPackage;
+  DdcForecastMsg defPackage;
   
   event void Boot.booted() {
     // we're no root, just make sure
@@ -111,35 +114,36 @@ implementation {
  
 
      // setze Standardwert
-    call Value.set(&defPackage);
+    call ForecastValue.set(&defPackage);
 
   }
 
 // neue daten wurden empfangen und werden über diese Methode des Anwendungsschicht zur Verfügung gestellt
 // autor anhtuan nguyen 
 // testklasse gibt empfangene Vorhersagen aus
- event void Value.changed(){
+ event void ForecastValue.changed(){
      uint32_t timestamp;
-     const CloudCoverMAX* CC =call  Value.get(); 
+     const DdcForecastMsg* CC =call  ForecastValue.get(); 
+	//TODO neuen Wert ausgeben entweder über printf oder serielle Schnittstelle
+/*
      timestamp  =  CC->header_ZMsbAM  & (HEADER_TIME_MSB);// setze modus und auflösungsbit auf 
      timestamp  =  timestamp<< HEADER_TIME_MSB_OFFSET;
      timestamp  =  timestamp| CC->header_ZLsb;
       #ifdef WISEBED
-      printf("%u,%lu: BL %u,%u,%u,%lu\n",TOS_NODE_ID,call LocalTime.get(),CC->data[2],CC->data[3],CC->header_VA,timestamp);
+      printf("%u,%lu: BL %u,%u,%u,%lu\n",TOS_NODE_ID,call LocalTime.get(),CC->data[2],CC->data[3],
+      CC- >header_VA,timestamp);
       printfflush();
       #endif
-
+	*/
 }
-
 
  event message_t *
   RadioReceive.receive[collection_id_t type](message_t * msg, void * payload, uint8_t len) {
-    uint8_t hops = ((orinoco_data_header_t *)(payload + len))->hopCnt;
     #ifdef WISEBED
-    printf("%u,%lu: data-rx %u %u %u %u\n",  TOS_NODE_ID,call LocalTime.get(), call CollectionPacket.getOrigin(msg), type, *((nx_uint16_t *)payload), hops);
+    uint8_t hops = ((orinoco_data_header_t *)(payload + len))->hopCnt;
+    printf("%u,%lu: data-rx %u %u %u %u\n",  TOS_NODE_ID,call LocalTime.get(), call CollectionPacket.getOrigin(msg), 	 type, *((nx_uint16_t *)payload), hops);
     printfflush();
     #endif
-
 
     return msg;
   }
@@ -169,6 +173,7 @@ implementation {
         printfflush();
         #endif
       }
+
     }
     
     call Timer.startOneShot(delay);
@@ -178,7 +183,7 @@ implementation {
     call Timer.startOneShot(value);
     delay = value;
   }
-
+/*
   event void OrinocoRouting.newCommandNotification(uint8_t cmd, uint16_t identifier) {
     error_t returnCode;
     
@@ -201,7 +206,7 @@ implementation {
       returnCode = SUCCESS;
       break;
     case ORINOCO_MULTICAST_COMMAND_LED1:
-      /* LED1 not available because it is used for Orinoco */
+      // LED1 not available because it is used for Orinoco 
       call Leds.led1Off(); call Leds.led2Off();
       returnCode = SUCCESS;
       break;
@@ -213,28 +218,30 @@ implementation {
       call Leds.led2On(); call Leds.led1Off();
       returnCode = SUCCESS;
       break;
-    /* NOT YET IMPLEMENTED:
-    case ORINOCO_MULTICAST_COMMAND_POLLCMD:
-      returnCode = SUCCESS;
-      break;*/
-    default: returnCode = FAIL;
-    }
+    // NOT YET IMPLEMENTED:
+    //case ORINOCO_MULTICAST_COMMAND_POLLCMD:
+    //  returnCode = SUCCESS;
+    //  break;
+
+      default: returnCode = FAIL;
+     }
 
     // call this if you want the node to acknowledge the execution of the command
     // TODO do we need output here?
     call OrinocoRouting.confirmCommandExecution(cmd, identifier, returnCode);
-  }
-
+  }*/
+/*
   event void OrinocoRouting.noMorePacketNotification() { 
-    /* This one is called when we have been removed from the multicast group */ 
-  }
-  
+    // This one is called when we have been removed from the multicast group  
+  }*/
+ 
   event void RadioControl.startDone(error_t error) { }
 
   event void RadioControl.stopDone(error_t error) { }
   
 
   /* ************************* ORINOCO STATS ************************* */
+
   event message_t * OrinocoStatsReporting.receive(message_t *msg, void *payload, uint8_t len) {
     //call Send.send[CID_ORINOCO_STATS_REPORT](msg, len);  // packet is copied or rejected
     return msg;

@@ -1,4 +1,4 @@
-COMPONENT=TestAppC
+COMPONENT=periodicSenderC
 
 CC2420POWER=31
 #CC2420POWER=15
@@ -15,9 +15,10 @@ CFLAGS += -DUSE_PRINTF
 
 CFLAGS += \
 	-I . \
-	-I ../../interfaces \
-	-I ../../lib/net/orinoco \
-	-I ../../../LocalTimeSyncedMicro/lib \
+	-I ../../../Orinoco/interfaces \
+	-I ../../../Orinoco/lib/net/orinoco \
+	-I ../../lib \
+	-I ../../../Orinoco/LocalTimeSyncedMicro/lib \
 	-I ../../../EAJobs/interfaces \
 	-I ../../../EAJobs/lib \
 	-I ../../../Tools \
@@ -27,15 +28,15 @@ CFLAGS += \
 
 ifeq ($(findstring $(PLATFORM),iris), iris)
 CFLAGS += \
-	-I ../../chips/rf230  \
-	-I ../../platforms/iris \
-	-I ../../lib/rfxlink/layers \
+	-I ../../../Orinoco/chips/rf230  \
+	-I ../../../Orinoco/platforms/iris \
+	-I ../../../Orinoco/lib/rfxlink/layers \
 	-I ../../../LocalTimeSyncedMicro/chips/atm1281 \
 	-I ../../../LocalTimeSyncedMicro/chips/atm1281/timer
 else ifeq ($(findstring $(PLATFORM),telosb), telosb)
 CFLAGS += \
-	-I ../../chips/cc2420  \
-	-I ../../platforms/telosb \
+	-I ../../../Orinoco/chips/cc2420  \
+	-I ../../../Orinoco/platforms/telosb \
 	-I ../../../LocalTimeSyncedMicro/chips/msp430 \
 	-I ../../../LocalTimeSyncedMicro/chips/msp430/timer
 else ifeq ($(PLATFORM),)

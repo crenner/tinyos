@@ -36,71 +36,62 @@
  * @author Christian Renner
  * @date December 14 2011
  */
-#include "DdcForecastMsg.h"
+
 #ifdef USE_PRINTF
   #define NEW_PRINTF_SEMANTICS
   #include "printf.h"
 #endif
+#include "DdcForecastMsg.h"
 
-configuration SinkC {
+configuration TestAppC {
 }
 implementation {
-  components SinkP;
-  
   components MainC;
-  SinkP.Boot             -> MainC;
+  components TestC;
+  components new TimerMilliC();
+  components new TimerMilliC() as BootTimer;
 
-#ifdef PRINTF_H
+  #ifdef PRINTF_H
   components PrintfC;
   components SerialStartC;
-#endif
-
-  components new TimerMilliC() as BootTimer;
-  SinkP.BootTimer -> BootTimer;
+  components LocalTimeMilliC;
+  TestC.LocalTime -> LocalTimeMilliC;
+  #endif
   
-  components new TimerMilliC() as DistTimer;
-  SinkP.DistTimer -> DistTimer;
+  TestC.Boot              -> MainC.Boot;
+  TestC.Timer             -> TimerMilliC;
+  TestC.BootTimer         -> BootTimer;
 
   components OrinocoP as Radio;
-  SinkP.RootControl      -> Radio;
-  SinkP.RoutingControl   -> Radio;
-  SinkP.RadioControl     -> Radio;
+  TestC.RootControl       -> Radio;
+  TestC.RadioControl      -> Radio;
+  TestC.ForwardingControl -> Radio;
+  TestC.Send              -> Radio.Send;
+  TestC.Packet            -> Radio;
+  TestC.RadioReceive      -> Radio.Receive;
+  TestC.CollectionPacket  -> Radio;
+  TestC.OrinocoConfig     -> Radio;
+  TestC.OrinocoRouting    -> Radio;
 
-  SinkP.OrinocoConfig    -> Radio;
-  //SinkP.OrinocoRoutingRoot -> Radio;
-
-  SinkP.RadioSend        -> Radio;
-  SinkP.RadioReceive     -> Radio.Receive;
-  SinkP.RadioPacket      -> Radio;
-  SinkP.CollectionPacket -> Radio;
-  SinkP.PacketDelayMilli -> Radio;
-
-  // dissemination
-  components OrinocoDisseminationLayerC;
-  SinkP.ForecastUpdate -> OrinocoDisseminationLayerC.Update;
-  SinkP.ForecastValue  -> OrinocoDisseminationLayerC.Value;
-
-  //Receive Packages via Serial Connection
-  components SerialActiveMessageC as AM;
-  SinkP.RadioControl -> AM;
-  SinkP.SerialReceive -> AM.Receive[AM_DDC_FORECAST_MSG];
-  SinkP.RadioPacket -> AM;
-  //Leds
-  components LedsC;
-  SinkP.Leds -> LedsC;
-
-
+  // Orinoco internal reporting
   components OrinocoStatsReportingJobC;
   OrinocoStatsReportingJobC.Packet -> Radio;
-  SinkP.OrinocoStatsReporting   -> OrinocoStatsReportingJobC;
-
+  TestC.OrinocoStatsReporting   -> OrinocoStatsReportingJobC;
+/*
+  // Data Dissemination
+  components RadioTestAppC;
+  TestC.Value-> RadioTestAppC.Value;
+*/
+  components LedsC;
+  TestC.Leds -> LedsC;
+  
+  components RandomC;
+  TestC.Random -> RandomC;
+ 
   #ifdef ORINOCO_DEBUG_STATISTICS
   components OrinocoDebugReportingJobC;
   OrinocoDebugReportingJobC.Packet -> Radio;
-  SinkP.OrinocoDebugReporting   -> OrinocoDebugReportingJobC;
+  TestC.OrinocoDebugReporting   -> OrinocoDebugReportingJobC;
   #endif
 
-  
-  components LocalTimeMilliC;
-  SinkP.LocalTime -> LocalTimeMilliC;
 }

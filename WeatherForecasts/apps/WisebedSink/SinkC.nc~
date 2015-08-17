@@ -77,8 +77,8 @@ implementation {
 
   // dissemination
   components OrinocoDisseminationLayerC;
-  SinkP.ForecastUpdate -> OrinocoDisseminationLayerC.Update;
-  SinkP.ForecastValue  -> OrinocoDisseminationLayerC.Value;
+   //SinkP.ForecastUpdate -> OrinocoDisseminationLayerC.Update;
+   //SinkP.ForecastValue  -> OrinocoDisseminationLayerC.Value;
 
   //Receive Packages via Serial Connection
   components SerialActiveMessageC as AM;

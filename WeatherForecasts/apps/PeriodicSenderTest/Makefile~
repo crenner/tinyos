@@ -1,4 +1,4 @@
-COMPONENT=SinkC
+COMPONENT=TestAppC
 
 CC2420POWER=31
 #CC2420POWER=15
@@ -7,10 +7,9 @@ CC2420POWER=31
 include $(MAKERULES)
 include ../Makefile.radioconfig
 
+CFLAGS += -DDISABLE_SYNCED_MICRO
 CFLAGS += -DORINOCO_DEBUG_STATISTICS
 #CFLAGS += -DORINOCO_DEBUG_PRINTF
-CFLAGS += -DDISABLE_SYNCED_MICRO
-CFLAGS += -DORINOCO_QUEUE_SIZE=1
 
 CFLAGS += -DUSE_PRINTF
 
@@ -18,13 +17,12 @@ CFLAGS += \
 	-I . \
 	-I ../../../Orinoco/interfaces \
 	-I ../../../Orinoco/lib/net/orinoco \
-	-I ../../../Orinoco/lib/rfxlink/layers \
+	-I ../../lib \
 	-I ../../../Orinoco/LocalTimeSyncedMicro/lib \
 	-I ../../../EAJobs/interfaces \
 	-I ../../../EAJobs/lib \
 	-I ../../../Tools \
 	-I ../../../Reporting \
-	-I ../../lib \
 	-I $(TOSDIR)/lib/net \
 	-I $(TOSDIR)/lib/printf \
 
@@ -32,6 +30,7 @@ ifeq ($(findstring $(PLATFORM),iris), iris)
 CFLAGS += \
 	-I ../../../Orinoco/chips/rf230  \
 	-I ../../../Orinoco/platforms/iris \
+	-I ../../../Orinoco/lib/rfxlink/layers \
 	-I ../../../LocalTimeSyncedMicro/chips/atm1281 \
 	-I ../../../LocalTimeSyncedMicro/chips/atm1281/timer
 else ifeq ($(findstring $(PLATFORM),telosb), telosb)

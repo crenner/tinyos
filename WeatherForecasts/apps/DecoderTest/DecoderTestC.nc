@@ -62,8 +62,7 @@ implementation {
   DecoderTestP.LocalTime -> LocalTimeMicroC;
 
 
-// NEU
-// Receive Package
+// Receive Package via Radio
 /*
   components new AMSenderC(AM_DDCFORECAST);
   components new AMReceiverC(AM_DDC_FORECAST_MSG);
@@ -73,6 +72,7 @@ implementation {
   DecoderTestP.AMSend 		-> AMSenderC;
   DecoderTestP.Packet 		-> AMSenderC;
 */
+//Receive Packages via Serial Connection
 components SerialActiveMessageC as AM;
   DecoderTestP.AMControl -> AM;
   DecoderTestP.Receive -> AM.Receive[AM_DDC_FORECAST_MSG];
