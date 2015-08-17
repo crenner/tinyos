@@ -59,13 +59,22 @@ implementation {
   }
 
 
-  void decodeNextValue(uint8_t * res, uint8_t n)
+  void decodeNextValue(uint8_t * res, uint8_t n, uint8_t defaultPredecessor)
   {
-    // the first value is always encoded as absolute one
+    uint8_t predecessor;
+    uint8_t  ones;
+    // define relative predecessor
+    if (defaultPredecessor){ // if last value was Unknown
+      predecessor = DDC_VALUE_DEFAULT;
+    } 
+    else {
+      predecessor = res[n-1];
+    }
+    // predecessor of first value is default value
     if (n == 0) {
-      res[0] = readBits(DDC_VALUE_ABS_SIZE);
-    } else {
-      uint8_t  ones;
+        predecessor = DDC_VALUE_DEFAULT;
+    } 
+
       
       // read the number of ones, but at most DDC_VALUE_REL_MAXSIZE
       for (ones = 0; ones < DDC_VALUE_REL_MAXSIZE && readBits(1); ones++) {
@@ -73,15 +82,16 @@ implementation {
       }
       
       if (ones == DDC_CODE_EQ) {
-        res[n] = res[n-1];
+        res[n] = predecessor;
       } else if (ones == DDC_CODE_INC) {
-        res[n] = res[n-1] + 1;
+        res[n] = predecessor + 1;
       } else if (ones == DDC_CODE_DEC) {
-        res[n] = res[n-1] + 1;
+        res[n] = predecessor - 1;
+
       } else /* DDC_CODE_ABS */ {
         res[n] = readBits(DDC_VALUE_ABS_SIZE);
       }
-    }
+    
   }
  
 
@@ -90,9 +100,10 @@ implementation {
   {
     uint8_t  i;
     uint8_t  sunrise, sunset;
+    uint8_t  defaultPredecessor;
     
     // get the number of values inside the forecast
-    res->numValues = (encData->header.numDays) * (24 / encData->header.resolution);
+    res->numValues = (encData->header.numDays+1) * (24 / (encData->header.resolution+1));
     
     // make sure we can handle the data
     if (res->numValues > DDC_VALUE_MAX_NUM) {
@@ -101,30 +112,35 @@ implementation {
     
     // TODO use packet delay to calculate creatio time *correctly*
     res->creationTime = call LocalTime.get();
-    
+    // BIS HIER KORRIGIERT
     // INIT: start at first byte and first bit
     dsByte_     = encData->data;
     dsLastByte_ = dsByte_ + DDC_FORECAST_MAX_DATALEN - 1;
     dsBit_      = 0;
     
     // read out sunrise and sunset offsets
-    res->sunrise = readBits(DDC_FORECAST_TIMEOFFSET_SIZE);
-    res->sunset  = readBits(DDC_FORECAST_TIMEOFFSET_SIZE);
-
+    res->sunrise = encData->header.sunrise;
+    res->sunset  = encData->header.sunset;
     // then read out the values
     sunrise = res->sunrise;
     sunset  = res->sunset;
+
+
+
     for (i = 0; i < res->numValues; i++){
       // at sunrise/sunset, move to next occurance
+      defaultPredecessor = 0; // false
       if (i == sunrise) {
         sunrise += 24;
+        defaultPredecessor = 1;
       } else if (i == sunset) {
         sunset += 24;
       }
-      
+   
       // decode during daytime, pad during nighttime
-      if (sunrise > sunset) {
-        decodeNextValue(res->values, i);
+      if (sunrise > sunset) { 
+        decodeNextValue(res->values, i,defaultPredecessor);
+
         
         // check if there was an error!
         if (dsByte_ > dsLastByte_) {

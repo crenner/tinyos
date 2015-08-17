@@ -3,13 +3,14 @@
 
 
 enum {
-  DDC_FORECAST_MAX_DATALEN     = 20,  // max length of ddc forecasts in bytes
+  DDC_FORECAST_MAX_DATALEN     = 30,  // max length of ddc forecasts in bytes
   //DDC_FORECAST_VERSION_SIZE    = 5,   // size of version number (bits)
   DDC_FORECAST_NUMDAYS_SIZE    = 3,   // size of the number of days field (bits)
   DDC_FORECAST_RESOLUTION_SIZE = 2,   // size of the resolution field (bits)
   DDC_FORECAST_TIMEOFFSET_SIZE = 5,   // size of time offsets (sunrise/sunset) (bits)
   //DDC_FORECAST_RESERVED_SIZE   = 4,   // unused bits (to next byte border)
-  AM_DDC_FORECAST_MSG          = 200
+  AM_DDC_FORECAST_MSG          = 200,
+  AM_DDCFORECASTMSG          = 200 // added this extra line so the MIG compiler can read the AM
 };
 
 

@@ -40,11 +40,15 @@
  * @author Christian Renner
  * @date December 14 2011
  */
-
+/*
 #ifdef USE_PRINTF
   #define NEW_PRINTF_SEMANTICS
   #include "printf.h"
-#endif
+#endif*/
+#include "DdcForecastMsg.h"
+#include "DdcForecast.h"
+#include "DdcTestMsg.h"
+//#include "printf.h"
 
 configuration DecoderTestC {
 }
@@ -54,17 +58,38 @@ implementation {
   components MainC;
   DecoderTestP.Boot -> MainC;
   
-//   components LocalTimeMilliC;
-//   DecoderTestP.LocalTime -> LocalTimeMilliC;
+  components LocalTimeMicroC;
+  DecoderTestP.LocalTime -> LocalTimeMicroC;
 
-  components SerialActiveMessageC as Serial;
-  DecoderTestP.UartControl -> Serial;
-  DecoderTestP.UartReceive -> Serial.Receive[AM_DDC_FORECAST_MSG];
+
+// NEU
+// Receive Package
+/*
+  components new AMSenderC(AM_DDCFORECAST);
+  components new AMReceiverC(AM_DDC_FORECAST_MSG);
+  components ActiveMessageC;
+  DecoderTestP.AMControl      -> ActiveMessageC;
+  DecoderTestP.Receive 		-> AMReceiverC;
+  DecoderTestP.AMSend 		-> AMSenderC;
+  DecoderTestP.Packet 		-> AMSenderC;
+*/
+components SerialActiveMessageC as AM;
+  DecoderTestP.AMControl -> AM;
+  DecoderTestP.Receive -> AM.Receive[AM_DDC_FORECAST_MSG];
+  DecoderTestP.AMSend -> AM.AMSend[AM_DDCTESTMSG];
+  DecoderTestP.Packet -> AM;
+// LED
+  components LedsC;
+  DecoderTestP.Leds -> LedsC;
+//-------------------------------------
+
   
   components DdcDecoderC;
   DecoderTestP.Decoder -> DdcDecoderC;
+
+  
   
   // printf
-  components PrintfC;
-  components SerialStartC;
+  //components PrintfC;
+  //components SerialStartC;
 }
