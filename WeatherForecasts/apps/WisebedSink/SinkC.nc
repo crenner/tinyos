@@ -76,15 +76,15 @@ implementation {
   SinkP.PacketDelayMilli -> Radio;
 
   // dissemination
-  components OrinocoDisseminationLayerC;
-  SinkP.ForecastUpdate -> OrinocoDisseminationLayerC.Update;
-  SinkP.ForecastValue  -> OrinocoDisseminationLayerC.Value;
+  components new OrinocoDisseminatorC(DdcForecastMsg);
+  SinkP.ForecastUpdate -> OrinocoDisseminatorC.Update;
+  SinkP.ForecastValue  -> OrinocoDisseminatorC.Value;
 
   //Receive Packages via Serial Connection
   components SerialActiveMessageC as AM;
-  SinkP.RadioControl -> AM;
+  SinkP.SerialControl -> AM;
   SinkP.SerialReceive -> AM.Receive[AM_DDC_FORECAST_MSG];
-  SinkP.RadioPacket -> AM;
+  SinkP.SerialPacket -> AM;
   //Leds
   components LedsC;
   SinkP.Leds -> LedsC;

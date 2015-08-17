@@ -52,9 +52,6 @@ configuration OrinocoDisseminationLayerC {
     
     // dissemination
     interface OrinocoDissemination;
-    interface DisseminationValue<DdcForecastMsg>  as Value;	
-    interface DisseminationUpdate<DdcForecastMsg> as Update;
-
   }
   uses {
     // beacons
@@ -95,10 +92,7 @@ implementation {
   DataSubSend          = OrinocoDisseminationLayerP.DataSubSend;
   DataSubPacket        = OrinocoDisseminationLayerP.DataSubPacket;
   AMPacket             = OrinocoDisseminationLayerP;
-//new
-  components new OrinocoDisseminatorC(DdcForecastMsg) as Disseminator;
-  Value  	       = Disseminator.Value;
-  Update               = Disseminator.Update;
+
   
 #ifdef PRINTF_H
   LocalTime            = OrinocoDisseminationLayerP;

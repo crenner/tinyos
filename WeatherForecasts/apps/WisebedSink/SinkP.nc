@@ -69,6 +69,7 @@ module SinkP @safe() {
     interface Timer<TMilli> as DistTimer;
 
     interface SplitControl as RadioControl;
+    interface SplitControl as SerialControl;
     interface StdControl as RoutingControl;
     
     interface RootControl;
@@ -82,9 +83,8 @@ module SinkP @safe() {
 
     // radio
     interface Packet as RadioPacket;
-    interface Receive as SerialReceive;
     interface CollectionPacket;
-    interface Receive as RadioReceive[collection_id_t];
+    interface Receive   as RadioReceive[collection_id_t];
     interface QueueSend as RadioSend[collection_id_t];
     interface PacketDelay<TMilli> as PacketDelayMilli;
     interface Receive as OrinocoStatsReporting;
@@ -92,7 +92,9 @@ module SinkP @safe() {
     interface LocalTime<TMilli>;  
     interface Leds;
 
-
+    // serial line
+    interface Packet  as SerialPacket;
+    interface Receive as SerialReceive;
   }
 }
 implementation
@@ -111,6 +113,7 @@ implementation
     call RootControl.setRoot();
     call RoutingControl.start();
     call RadioControl.start();
+    call SerialControl.start();
 
     call BootTimer.startOneShot(1024);
     call DistTimer.startPeriodic(FORECAST_INTVL);
@@ -177,6 +180,10 @@ implementation
   event void RadioControl.startDone(error_t error) {}
 
   event void RadioControl.stopDone(error_t error) {}
+  
+  event void SerialControl.startDone(error_t error) {}
+
+  event void SerialControl.stopDone(error_t error) {}
 
 
 
