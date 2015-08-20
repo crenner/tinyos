@@ -220,7 +220,6 @@ implementation
 				   void* payload, uint8_t len) {
 	uint8_t numValues;
 	DdcForecastMsg* cc= (DdcForecastMsg*)bufPtr->data;
-	
  	if(!temp){
 		call Leds.led2On();
 		temp = TRUE;
@@ -230,7 +229,7 @@ implementation
     	}
 	//Copy Values vom Received Package to Local Package
 	numValues=(cc->header.numDays+1) * (24 / (cc->header.resolution+1));	
-	memcpy(&fcast,cc,numValues+4); //numDays,resolution,sunset,sunrise
+	memcpy(&fcast,cc,numValues+4); //numDays,resolution,sunset,sunrise //TODO constant
 
 	//call dissemination change
 	call ForecastUpdate.change(&fcast);

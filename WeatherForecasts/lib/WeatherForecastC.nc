@@ -17,25 +17,26 @@ module WeatherForecastC {
 }
 implementation {
   bool             init_ = FALSE;
-  DdcForecastMsg   fcastMsg_;
+  const DdcForecastMsg*   fcastMsg_;
   ddc_forecast_t   fcastRes_;
   
-  
+  //TODO anpassen für mehr als 72 werte !!!
   
   /*** helpers *********************************************************/
   
   void
   printForecast() {
-#ifdef PRINT_H
+//#ifdef PRINT_H
     uint8_t  i;
+//TODO printf kann menge der Daten nicht korrekt ausgeben. Daher per serielle schnittstell als Paket ?
     
-    printf("%lu: %u fcast %u %u %u %u %u [", call LocalTime.get(), TOS_NODE_ID, fcastRes_.creationTime, fcastRes_.resolution, fcastRes_.numValues, fcastRes_.sunrise, fcastRes_.sunset);
+   /*printf("%lu: %d fcast %lu %d %d %d %d [", call LocalTime.get(), TOS_NODE_ID, fcastRes_.creationTime, fcastRes_.resolution, fcastRes_.numValues, fcastRes_.sunrise, fcastRes_.sunset);*/
     for (i = 0; i < fcastRes_.numValues; i++) {
-      printf(" %u", fcastRes_->values[i]);
+      printf("%d", fcastRes_.values[i]);
     }
     printf("]\n");
     printfflush();
-#endif
+//#endif
   }
   
   
@@ -45,11 +46,10 @@ implementation {
   task void
   decodeTask() {
     ddc_forecast_t  fcastTmp_;
-    
-    if (SUCCESS != call Decoder.decode(&fcastTmp_, &fcastMsg_)) {
+
+    if (SUCCESS == call Decoder.decode(&fcastTmp_, fcastMsg_)) {
       fcastRes_ = fcastTmp_;
-      init_ = TRUE;
-      
+      init_ = TRUE; 
       printForecast();
     }
   }
@@ -137,7 +137,7 @@ implementation {
   DissValue.changed() {
     // access packet delay directly to estimate time of forecast creation
     fcastRes_.creationTime = call LocalTime.get() - call DissDelay.delay();
-    
+    fcastMsg_              = call  DissValue.get();
     // put actual decoding into separate task
     post decodeTask();
   }

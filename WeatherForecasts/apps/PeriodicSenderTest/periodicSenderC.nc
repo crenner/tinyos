@@ -61,6 +61,9 @@ implementation {
   TestC.Boot              -> MainC.Boot;
   TestC.Timer             -> TimerMilliC;
   TestC.BootTimer         -> BootTimer;
+//TODO 
+// OrinocoDisseminator Wiren
+// WeatherForecasts C wiren 
 
   components OrinocoP as Radio;
   TestC.RootControl       -> Radio;
@@ -77,13 +80,20 @@ implementation {
   components OrinocoStatsReportingJobC;
   OrinocoStatsReportingJobC.Packet -> Radio;
   TestC.OrinocoStatsReporting   -> OrinocoStatsReportingJobC;
-/*
-  // Data Dissemination
-  components RadioTestAppC;
-  TestC.Value-> RadioTestAppC.Value;
-*/
-  components OrinocoDisseminationLayerC;
-  TestC.ForecastValue  -> OrinocoDisseminationLayerC.Value;
+
+  //Decoder  
+  components WeatherForecastC; 
+  TestC.Weather -> WeatherForecastC.WeatherForecast;
+  components new OrinocoDisseminatorC(DdcForecastMsg);
+  components DdcDecoderC;
+  components LocalTimeMilliC as WeatherTime;
+  WeatherForecastC.DissValue ->OrinocoDisseminatorC.Value;
+  WeatherForecastC.DissDelay ->OrinocoDisseminatorC.Delay;
+  WeatherForecastC.Decoder ->DdcDecoderC.Decoder;
+  WeatherForecastC.LocalTime -> WeatherTime;
+   
+
+
   components LedsC;
   TestC.Leds -> LedsC;
   

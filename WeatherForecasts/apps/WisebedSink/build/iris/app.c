@@ -256,11 +256,11 @@ typedef struct { unsigned char nxdata[2]; } __attribute__((packed)) nxle_uint16_
 typedef struct { unsigned char nxdata[4]; } __attribute__((packed)) nxle_uint32_t;typedef uint32_t __nesc_nxbase_nxle_uint32_t  ;
 typedef struct { unsigned char nxdata[8]; } __attribute__((packed)) nxle_uint64_t;typedef uint64_t __nesc_nxbase_nxle_uint64_t  ;
 # 117 "/usr/lib/gcc/avr/4.1.2/../../../../avr/include/string.h" 3
-extern void *memcpy(void *arg_0x2b129b9ad1f0, const void *arg_0x2b129b9ad4c8, size_t arg_0x2b129b9ad770);
+extern void *memcpy(void *arg_0x2b26017671f0, const void *arg_0x2b26017674c8, size_t arg_0x2b2601767770);
 
 
 
-extern void *memset(void *arg_0x2b129b9b0020, int arg_0x2b129b9b0288, size_t arg_0x2b129b9b0530);
+extern void *memset(void *arg_0x2b260176a020, int arg_0x2b260176a288, size_t arg_0x2b260176a530);
 # 71 "/usr/lib/gcc/avr/4.1.2/../../../../avr/include/stdlib.h" 3
 #line 68
 typedef struct __nesc_unnamed4242 {
@@ -279,7 +279,7 @@ typedef struct __nesc_unnamed4243 {
 } ldiv_t;
 
 
-typedef int (*__compar_fn_t)(const void *arg_0x2b129b9cf838, const void *arg_0x2b129b9cfb10);
+typedef int (*__compar_fn_t)(const void *arg_0x2b2601789838, const void *arg_0x2b2601789b10);
 # 25 "/opt/tinyos-2.1.2/tos/system/tos.h"
 typedef uint8_t bool;
 enum __nesc_unnamed4244 {
@@ -1058,8 +1058,8 @@ struct __file {
 #line 261
   int size;
   int len;
-  int (*put)(char arg_0x2b129bb5c928, struct __file *arg_0x2b129bb5cc68);
-  int (*get)(struct __file *arg_0x2b129bb5b3a0);
+  int (*put)(char arg_0x2b2601916928, struct __file *arg_0x2b2601916c68);
+  int (*get)(struct __file *arg_0x2b26019153a0);
   void *udata;
 };
 #line 405
@@ -2224,11 +2224,6 @@ typedef const orinoco_dissemination_statistics_t *OrinocoDisseminationLayerP__Di
 typedef DdcForecastMsg OrinocoDisseminationLayerP__Update__t;
 typedef TMilli OrinocoDisseminationLayerP__LocalTime__precision_tag;
 typedef DdcForecastMsg OrinocoDisseminationLayerP__Value__t;
-typedef DdcForecastMsg /*OrinocoDisseminationLayerC.Disseminator*/OrinocoDisseminatorC__0__T;
-typedef /*OrinocoDisseminationLayerC.Disseminator*/OrinocoDisseminatorC__0__T /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T;
-typedef /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__t;
-typedef TMilli /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__precision_tag;
-typedef /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Value__t;
 typedef TMilli OrinocoForwardLayerP__Timer__precision_tag;
 typedef uint16_t RandomMlcgC__SeedInit__parameter;
 typedef TMilli OrinocoPacketDelayLayerP__PacketDelayMilli__precision_tag;
@@ -2246,6 +2241,11 @@ enum /*OrinocoTrafficStatisticsC.Job*/EAJobC__0____nesc_unnamed4366 {
   EAJobC__0__JOB_ID = 0U
 };
 typedef TMilli EASchedulerP__DispatchTimer__precision_tag;
+typedef DdcForecastMsg /*SinkC.OrinocoDisseminatorC*/OrinocoDisseminatorC__0__T;
+typedef /*SinkC.OrinocoDisseminatorC*/OrinocoDisseminatorC__0__T /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T;
+typedef /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__t;
+typedef TMilli /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__precision_tag;
+typedef /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Value__t;
 enum /*OrinocoStatsReportingJobC.Job*/EAJobC__1____nesc_unnamed4367 {
   EAJobC__1__JOB_ID = 1U
 };
@@ -2257,6 +2257,10 @@ enum /*OrinocoDebugReportingJobC.Job*/EAJobC__2____nesc_unnamed4368 {
 };
 # 60 "/opt/tinyos-2.1.2/tos/interfaces/Boot.nc"
 static void SinkP__Boot__booted(void );
+# 113 "/opt/tinyos-2.1.2/tos/interfaces/SplitControl.nc"
+static void SinkP__SerialControl__startDone(error_t error);
+#line 138
+static void SinkP__SerialControl__stopDone(error_t error);
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 static 
 #line 74
@@ -2287,7 +2291,7 @@ message_t *
 
 SinkP__RadioReceive__receive(
 # 87 "SinkP.nc"
-collection_id_t arg_0x2b129bc4b480, 
+collection_id_t arg_0x2b2601a14b50, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -2414,11 +2418,11 @@ static uint16_t MeasureClockC__Atm128Calibrate__baudrateRegister(uint32_t baudra
 # 67 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static error_t SchedulerBasicP__TaskBasic__postTask(
 # 56 "/opt/tinyos-2.1.2/tos/system/SchedulerBasicP.nc"
-uint8_t arg_0x2b129bb01ab0);
+uint8_t arg_0x2b26018bbab0);
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static void SchedulerBasicP__TaskBasic__default__runTask(
 # 56 "/opt/tinyos-2.1.2/tos/system/SchedulerBasicP.nc"
-uint8_t arg_0x2b129bb01ab0);
+uint8_t arg_0x2b26018bbab0);
 # 57 "/opt/tinyos-2.1.2/tos/interfaces/Scheduler.nc"
 static void SchedulerBasicP__Scheduler__init(void );
 #line 72
@@ -2453,7 +2457,7 @@ error_t error);
 # 110 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static void /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__sendDone(
 # 48 "/opt/tinyos-2.1.2/tos/system/AMQueueImplP.nc"
-am_id_t arg_0x2b129bea3650, 
+am_id_t arg_0x2b2601c76650, 
 # 103 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -2466,7 +2470,7 @@ error_t error);
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 static error_t /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__send(
 # 46 "/opt/tinyos-2.1.2/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x2b129bea4430, 
+uint8_t arg_0x2b2601c77430, 
 # 67 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -2480,7 +2484,7 @@ uint8_t len);
 #line 100
 static void /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__default__sendDone(
 # 46 "/opt/tinyos-2.1.2/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x2b129bea4430, 
+uint8_t arg_0x2b2601c77430, 
 # 96 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -2519,7 +2523,7 @@ uint8_t len);
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static error_t /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__send(
 # 47 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2b129bef6220, 
+am_id_t arg_0x2b2601cca220, 
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 am_addr_t addr, 
 #line 71
@@ -2570,7 +2574,7 @@ message_t *
 
 /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__default__receive(
 # 48 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2b129bf11340, 
+am_id_t arg_0x2b2601cc8340, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -2639,7 +2643,7 @@ static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__receive
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 static error_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__send(
 # 51 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c041020, 
+uart_id_t arg_0x2b2601e1a020, 
 # 67 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -2653,7 +2657,7 @@ uint8_t len);
 #line 100
 static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__default__sendDone(
 # 51 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c041020, 
+uart_id_t arg_0x2b2601e1a020, 
 # 96 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -2671,7 +2675,7 @@ message_t *
 
 /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__default__receive(
 # 50 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c0423e0, 
+uart_id_t arg_0x2b2601df93e0, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -2684,17 +2688,17 @@ uint8_t len);
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__upperLength(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c040308, 
+uart_id_t arg_0x2b2601e19308, 
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 message_t *msg, uint8_t dataLinkLen);
 #line 15
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__offset(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c040308);
+uart_id_t arg_0x2b2601e19308);
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__dataLinkLength(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c040308, 
+uart_id_t arg_0x2b2601e19308, 
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 message_t *msg, uint8_t upperLen);
 # 81 "/opt/tinyos-2.1.2/tos/lib/serial/SendBytePacket.nc"
@@ -2992,23 +2996,23 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__TimerFrom__f
 #line 136
 static uint32_t /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__getNow(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2b129c4cfda0);
+uint8_t arg_0x2b260228dda0);
 # 83 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2b129c4cfda0);
+uint8_t arg_0x2b260228dda0);
 # 144 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
 static uint32_t /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__gett0(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2b129c4cfda0);
+uint8_t arg_0x2b260228dda0);
 # 92 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
 static bool /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__isRunning(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2b129c4cfda0);
+uint8_t arg_0x2b260228dda0);
 # 64 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__startPeriodic(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2b129c4cfda0, 
+uint8_t arg_0x2b260228dda0, 
 # 64 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
 uint32_t dt);
 
@@ -3021,7 +3025,7 @@ uint32_t dt);
 
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__startOneShot(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2b129c4cfda0, 
+uint8_t arg_0x2b260228dda0, 
 # 73 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
 uint32_t dt);
 
@@ -3030,7 +3034,7 @@ uint32_t dt);
 
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__stop(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2b129c4cfda0);
+uint8_t arg_0x2b260228dda0);
 # 61 "/opt/tinyos-2.1.2/tos/lib/timer/LocalTime.nc"
 static uint32_t /*HilTimerMilliC.CounterToLocalTimeC*/CounterToLocalTimeC__0__LocalTime__get(void );
 # 82 "/opt/tinyos-2.1.2/tos/lib/timer/Counter.nc"
@@ -3071,7 +3075,7 @@ static bool OrinocoQueueP__QueueStatus__acceptsRemote(void );
 # 31 "/opt/tinyos-2.1.2/tos/interfaces/Intercept.nc"
 static bool OrinocoQueueP__Intercept__default__forward(
 # 54 "../../../Orinoco/lib/net/orinoco/OrinocoQueueP.nc"
-collection_id_t arg_0x2b129c57f418, 
+collection_id_t arg_0x2b2602340418, 
 # 20 "/opt/tinyos-2.1.2/tos/interfaces/Intercept.nc"
 message_t * msg, 
 
@@ -3281,21 +3285,21 @@ static am_addr_t RF230RadioP__UniqueConfig__getSender(message_t *msg);
 # 60 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarm.nc"
 static void /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__default__fired(
 # 43 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarmP.nc"
-uint8_t arg_0x2b129c7f2908);
+uint8_t arg_0x2b26025f4768);
 # 50 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarm.nc"
 static void /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__wait(
 # 43 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarmP.nc"
-uint8_t arg_0x2b129c7f2908, 
+uint8_t arg_0x2b26025f4768, 
 # 50 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarm.nc"
 tradio_size timeout);
 #line 45
 static bool /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__isFree(
 # 43 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarmP.nc"
-uint8_t arg_0x2b129c7f2908);
+uint8_t arg_0x2b26025f4768);
 # 65 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarm.nc"
 static tradio_size /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__getNow(
 # 43 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarmP.nc"
-uint8_t arg_0x2b129c7f2908);
+uint8_t arg_0x2b26025f4768);
 # 78 "/opt/tinyos-2.1.2/tos/lib/timer/Alarm.nc"
 static void /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__Alarm__fired(void );
 # 48 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/Tasklet.nc"
@@ -3327,7 +3331,7 @@ static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessage
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/SendNotifier.nc"
 static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SendNotifier__default__aboutToSend(
 # 48 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c868630, 
+am_id_t arg_0x2b260262b020, 
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/SendNotifier.nc"
 am_addr_t dest, 
 #line 57
@@ -3367,7 +3371,7 @@ uint8_t len);
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static error_t /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__AMSend__send(
 # 45 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c86ccc8, 
+am_id_t arg_0x2b260262f778, 
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 am_addr_t addr, 
 #line 71
@@ -3384,13 +3388,13 @@ uint8_t len);
 #line 96
 static error_t /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__AMSend__cancel(
 # 45 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c86ccc8, 
+am_id_t arg_0x2b260262f778, 
 # 92 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 message_t * msg);
 #line 110
 static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__AMSend__default__sendDone(
 # 45 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c86ccc8, 
+am_id_t arg_0x2b260262f778, 
 # 103 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -3409,7 +3413,7 @@ message_t *
 
 /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Snoop__default__receive(
 # 47 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c86a9c0, 
+am_id_t arg_0x2b260262c480, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -3446,7 +3450,7 @@ message_t *
 
 /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Receive__default__receive(
 # 46 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c86bde0, 
+am_id_t arg_0x2b260262e908, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -3465,7 +3469,7 @@ message_t *
 
 /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__ReceiveDefault__default__receive(
 # 51 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c867220, 
+am_id_t arg_0x2b260262bbe0, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -3549,7 +3553,7 @@ message_t *
 
 /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SnoopDefault__default__receive(
 # 52 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c867db0, 
+am_id_t arg_0x2b260262a808, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -3602,35 +3606,35 @@ static resource_client_id_t /*RF230RadioC.SendResourceC.Queue*/FcfsResourceQueue
 # 53 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__default__requested(
 # 52 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9261a0);
+uint8_t arg_0x2b26026eb1a0);
 # 61 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__default__immediateRequested(
 # 52 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9261a0);
+uint8_t arg_0x2b26026eb1a0);
 # 65 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__default__unconfigure(
 # 56 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9256e0);
+uint8_t arg_0x2b26026ea6e0);
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__default__configure(
 # 56 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9256e0);
+uint8_t arg_0x2b26026ea6e0);
 # 120 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__release(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 97 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__immediateRequest(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 88 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__request(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__default__granted(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__grantedTask__runTask(void );
 # 54 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/BareSend.nc"
@@ -3751,7 +3755,7 @@ static error_t /*RF230RadioC.UniqueLayerC.UniqueLayerP*/UniqueLayerP__0__Init__i
 # 46 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/NeighborhoodFlag.nc"
 static bool NeighborhoodP__NeighborhoodFlag__get(
 # 43 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/NeighborhoodP.nc"
-uint8_t arg_0x2b129ca87970, 
+uint8_t arg_0x2b260284c970, 
 # 46 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/NeighborhoodFlag.nc"
 uint8_t idx);
 
@@ -3760,7 +3764,7 @@ uint8_t idx);
 
 static void NeighborhoodP__NeighborhoodFlag__set(
 # 43 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/NeighborhoodP.nc"
-uint8_t arg_0x2b129ca87970, 
+uint8_t arg_0x2b260284c970, 
 # 51 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/NeighborhoodFlag.nc"
 uint8_t idx);
 # 71 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/Neighborhood.nc"
@@ -3853,13 +3857,13 @@ static uint8_t /*RF230RadioC.MetadataFlagsLayerC*/MetadataFlagsLayerC__0__RadioP
 # 55 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/PacketFlag.nc"
 static void /*RF230RadioC.MetadataFlagsLayerC*/MetadataFlagsLayerC__0__PacketFlag__clear(
 # 42 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/MetadataFlagsLayerC.nc"
-uint8_t arg_0x2b129cc0a260, 
+uint8_t arg_0x2b2602981260, 
 # 55 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/PacketFlag.nc"
 message_t *msg);
 #line 40
 static bool /*RF230RadioC.MetadataFlagsLayerC*/MetadataFlagsLayerC__0__PacketFlag__get(
 # 42 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/MetadataFlagsLayerC.nc"
-uint8_t arg_0x2b129cc0a260, 
+uint8_t arg_0x2b2602981260, 
 # 40 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/PacketFlag.nc"
 message_t *msg);
 
@@ -3873,7 +3877,7 @@ message_t *msg);
 
 static void /*RF230RadioC.MetadataFlagsLayerC*/MetadataFlagsLayerC__0__PacketFlag__set(
 # 42 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/MetadataFlagsLayerC.nc"
-uint8_t arg_0x2b129cc0a260, 
+uint8_t arg_0x2b2602981260, 
 # 50 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/PacketFlag.nc"
 message_t *msg);
 # 52 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioCCA.nc"
@@ -3928,27 +3932,12 @@ static bool RF230DriverLayerP__PacketTimeSyncOffset__isSet(message_t *msg);
 static error_t RF230DriverLayerP__PlatformInit__init(void );
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static void RF230DriverLayerP__SpiResource__granted(void );
-# 46 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/PacketField.nc"
-static RF230DriverLayerP__PacketLinkQuality__value_type RF230DriverLayerP__PacketLinkQuality__get(message_t *msg);
-
-
-
-
-
-
-
-
-
-
+# 57 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/PacketField.nc"
 static void RF230DriverLayerP__PacketLinkQuality__set(message_t *msg, RF230DriverLayerP__PacketLinkQuality__value_type value);
 # 48 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioSend.nc"
 static error_t RF230DriverLayerP__RadioSend__send(message_t *msg);
 # 61 "/opt/tinyos-2.1.2/tos/interfaces/GpioCapture.nc"
 static void RF230DriverLayerP__IRQ__captured(uint16_t time);
-# 47 "/opt/tinyos-2.1.2/tos/interfaces/LinkPacketMetadata.nc"
-static bool RF230DriverLayerP__LinkPacketMetadata__highChannelQuality(
-#line 44
-message_t * msg);
 # 48 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/Tasklet.nc"
 static void RF230DriverLayerP__Tasklet__run(void );
 # 60 "/opt/tinyos-2.1.2/tos/chips/atm128/timer/HplAtm128Capture.nc"
@@ -3976,7 +3965,7 @@ error_t error);
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static void Atm128SpiP__ResourceArbiter__granted(
 # 99 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd6c060);
+uint8_t arg_0x2b2602b33060);
 # 45 "/opt/tinyos-2.1.2/tos/interfaces/SpiByte.nc"
 static uint8_t Atm128SpiP__SpiByte__write(uint8_t tx);
 # 109 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128Spi.nc"
@@ -3992,23 +3981,23 @@ static uint8_t Atm128SpiP__FastSpiByte__write(uint8_t data);
 # 120 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t Atm128SpiP__Resource__release(
 # 95 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd34ae0);
+uint8_t arg_0x2b2602afbae0);
 # 97 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t Atm128SpiP__Resource__immediateRequest(
 # 95 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd34ae0);
+uint8_t arg_0x2b2602afbae0);
 # 88 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t Atm128SpiP__Resource__request(
 # 95 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd34ae0);
+uint8_t arg_0x2b2602afbae0);
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static void Atm128SpiP__Resource__default__granted(
 # 95 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd34ae0);
+uint8_t arg_0x2b2602afbae0);
 # 128 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static bool Atm128SpiP__Resource__isOwner(
 # 95 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd34ae0);
+uint8_t arg_0x2b2602afbae0);
 # 89 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128Spi.nc"
 static void HplAtm128SpiP__SPI__sleep(void );
 #line 83
@@ -4062,35 +4051,35 @@ static resource_client_id_t /*Atm128SpiC.Arbiter.Queue*/FcfsResourceQueueC__1__F
 # 53 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__default__requested(
 # 52 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9261a0);
+uint8_t arg_0x2b26026eb1a0);
 # 61 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__default__immediateRequested(
 # 52 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9261a0);
+uint8_t arg_0x2b26026eb1a0);
 # 65 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__default__unconfigure(
 # 56 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9256e0);
+uint8_t arg_0x2b26026ea6e0);
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__default__configure(
 # 56 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9256e0);
+uint8_t arg_0x2b26026ea6e0);
 # 120 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__release(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 97 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__immediateRequest(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 88 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__request(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 128 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static bool /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__isOwner(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 90 "/opt/tinyos-2.1.2/tos/interfaces/ArbiterInfo.nc"
 static bool /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ArbiterInfo__inUse(void );
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
@@ -4351,16 +4340,6 @@ void * payload,
 
 
 uint8_t len);
-# 60 "/opt/tinyos-2.1.2/tos/lib/net/DisseminationUpdate.nc"
-static void /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__change(/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__t * newVal);
-# 19 "../../../Orinoco/interfaces/OrinocoDissemination.nc"
-static const uint8_t */*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__data(uint8_t *size);
-#line 13
-static uint8_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__version(void );
-#line 25
-static void /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__update(uint8_t rversion, const uint8_t *rdata, uint8_t size);
-# 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
-static void /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__runTask(void );
 # 110 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static void OrinocoForwardLayerP__SubAMSend__sendDone(
 #line 103
@@ -4576,21 +4555,31 @@ static void EASchedulerP__dispatch__runTask(void );
 # 43 "../../../EAJobs/interfaces/EAJob.nc"
 static void EASchedulerP__EAJob__default__run(
 # 47 "../../../EAJobs/lib/EASchedulerP.nc"
-uint8_t arg_0x2b129d1f8020);
+uint8_t arg_0x2b2602f96020);
 # 47 "../../../EAJobs/interfaces/EAJob.nc"
 static void EASchedulerP__EAJob__done(
 # 47 "../../../EAJobs/lib/EASchedulerP.nc"
-uint8_t arg_0x2b129d1f8020);
+uint8_t arg_0x2b2602f96020);
 # 60 "/opt/tinyos-2.1.2/tos/interfaces/Boot.nc"
 static void EAEnergyManagerP__Boot__booted(void );
 # 43 "../../../EAJobs/interfaces/EAJobConfig.nc"
 static ea_generic_jobconfig_t *EAEnergyManagerP__EAJobConfig__default__getConfig(
 # 45 "../../../EAJobs/lib/EAEnergyManagerP.nc"
-uint8_t arg_0x2b129d22e140);
+uint8_t arg_0x2b2602fcb140);
 # 44 "../../../EAJobs/interfaces/EAScheduler.nc"
 static void EAEnergyManagerP__EAScheduler__jobStarted(jobid_t jobId);
 # 43 "../../../EAJobs/interfaces/EAJobConfig.nc"
 static ea_generic_jobconfig_t */*OrinocoTrafficStatisticsC.EAPeriodicJobConfigC*/EAPeriodicJobConfigC__0__JobConfig__getConfig(void );
+# 60 "/opt/tinyos-2.1.2/tos/lib/net/DisseminationUpdate.nc"
+static void /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__change(/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__t * newVal);
+# 19 "../../../Orinoco/interfaces/OrinocoDissemination.nc"
+static const uint8_t */*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__data(uint8_t *size);
+#line 13
+static uint8_t /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__version(void );
+#line 25
+static void /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__update(uint8_t rversion, const uint8_t *rdata, uint8_t size);
+# 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
+static void /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__runTask(void );
 # 43 "../../../EAJobs/interfaces/EAJob.nc"
 static void OrinocoStatsReportingJobP__EAJob__run(void );
 # 43 "../../../EAJobs/interfaces/EAJobConfig.nc"
@@ -4607,6 +4596,8 @@ static uint32_t OrinocoDebugReportingJobConfigC__JobConfig__getPeriod(void );
 static error_t SinkP__RootControl__setRoot(void );
 # 44 "../../../Orinoco/interfaces/OrinocoConfig.nc"
 static void SinkP__OrinocoConfig__setWakeUpInterval(uint16_t Ts);
+# 104 "/opt/tinyos-2.1.2/tos/interfaces/SplitControl.nc"
+static error_t SinkP__SerialControl__start(void );
 # 61 "/opt/tinyos-2.1.2/tos/lib/timer/LocalTime.nc"
 static uint32_t SinkP__LocalTime__get(void );
 # 104 "/opt/tinyos-2.1.2/tos/interfaces/SplitControl.nc"
@@ -4623,13 +4614,13 @@ static void SinkP__BootTimer__startOneShot(uint32_t dt);
 static void SinkP__ForecastUpdate__change(SinkP__ForecastUpdate__t * newVal);
 # 64 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
 static void SinkP__DistTimer__startPeriodic(uint32_t dt);
-# 101 "SinkP.nc"
+# 103 "SinkP.nc"
 bool SinkP__temp = FALSE;
 DdcForecastMsg SinkP__fcast;
 
 
 static inline void SinkP__Boot__booted(void );
-#line 119
+#line 122
 static inline void SinkP__BootTimer__fired(void );
 
 
@@ -4638,26 +4629,30 @@ static inline void SinkP__BootTimer__fired(void );
 
 
 static inline void SinkP__DistTimer__fired(void );
-#line 144
+#line 147
 static inline message_t *SinkP__OrinocoStatsReporting__receive(message_t *msg, void *payload, uint8_t len);
 
 
 
 
 static inline message_t *SinkP__OrinocoDebugReporting__receive(message_t *msg, void *payload, uint8_t len);
-#line 177
+#line 180
 static inline void SinkP__RadioControl__startDone(error_t error);
 
 static inline void SinkP__RadioControl__stopDone(error_t error);
+
+static inline void SinkP__SerialControl__startDone(error_t error);
+
+static inline void SinkP__SerialControl__stopDone(error_t error);
 
 
 
 static inline message_t *
 SinkP__RadioReceive__receive(collection_id_t type, message_t *msg, void *payload, uint8_t len);
-#line 212
+#line 219
 static inline message_t *SinkP__SerialReceive__receive(message_t *bufPtr, 
 void *payload, uint8_t len);
-#line 233
+#line 239
 static inline void SinkP__ForecastValue__changed(void );
 # 62 "/opt/tinyos-2.1.2/tos/interfaces/Init.nc"
 static error_t PlatformP__MoteInit__init(void );
@@ -4771,7 +4766,7 @@ int main(void )   ;
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static void SchedulerBasicP__TaskBasic__runTask(
 # 56 "/opt/tinyos-2.1.2/tos/system/SchedulerBasicP.nc"
-uint8_t arg_0x2b129bb01ab0);
+uint8_t arg_0x2b26018bbab0);
 # 76 "/opt/tinyos-2.1.2/tos/interfaces/McuSleep.nc"
 static void SchedulerBasicP__McuSleep__sleep(void );
 # 61 "/opt/tinyos-2.1.2/tos/system/SchedulerBasicP.nc"
@@ -4893,7 +4888,7 @@ static inline void /*PrintfC.SerialAMSenderC.AMQueueEntryP*/AMQueueEntryP__0__Se
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static error_t /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__send(
 # 48 "/opt/tinyos-2.1.2/tos/system/AMQueueImplP.nc"
-am_id_t arg_0x2b129bea3650, 
+am_id_t arg_0x2b2601c76650, 
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 am_addr_t addr, 
 #line 71
@@ -4910,7 +4905,7 @@ uint8_t len);
 # 100 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 static void /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__sendDone(
 # 46 "/opt/tinyos-2.1.2/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x2b129bea4430, 
+uint8_t arg_0x2b2601c77430, 
 # 96 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -5003,7 +4998,7 @@ uint8_t len);
 # 110 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__sendDone(
 # 47 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2b129bef6220, 
+am_id_t arg_0x2b2601cca220, 
 # 103 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -5022,7 +5017,7 @@ message_t *
 
 /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__receive(
 # 48 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2b129bf11340, 
+am_id_t arg_0x2b2601cc8340, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -5507,7 +5502,7 @@ static error_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__rece
 # 100 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__sendDone(
 # 51 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c041020, 
+uart_id_t arg_0x2b2601e1a020, 
 # 96 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -5525,7 +5520,7 @@ message_t *
 
 /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__receive(
 # 50 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c0423e0, 
+uart_id_t arg_0x2b2601df93e0, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -5538,17 +5533,17 @@ uint8_t len);
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__upperLength(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c040308, 
+uart_id_t arg_0x2b2601e19308, 
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 message_t *msg, uint8_t dataLinkLen);
 #line 15
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__offset(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c040308);
+uart_id_t arg_0x2b2601e19308);
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__dataLinkLength(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2b129c040308, 
+uart_id_t arg_0x2b2601e19308, 
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 message_t *msg, uint8_t upperLen);
 # 71 "/opt/tinyos-2.1.2/tos/lib/serial/SendBytePacket.nc"
@@ -6414,7 +6409,7 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__TimerFrom__s
 
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2b129c4cfda0);
+uint8_t arg_0x2b260228dda0);
 #line 71
 enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0____nesc_unnamed4397 {
 #line 71
@@ -6531,7 +6526,7 @@ static void OrinocoQueueP__QueueStatus__dropped(void );
 # 31 "/opt/tinyos-2.1.2/tos/interfaces/Intercept.nc"
 static bool OrinocoQueueP__Intercept__forward(
 # 54 "../../../Orinoco/lib/net/orinoco/OrinocoQueueP.nc"
-collection_id_t arg_0x2b129c57f418, 
+collection_id_t arg_0x2b2602340418, 
 # 20 "/opt/tinyos-2.1.2/tos/interfaces/Intercept.nc"
 message_t * msg, 
 
@@ -6610,7 +6605,7 @@ message_t *
 
 OrinocoQueueP__Receive__receive(
 # 52 "../../../Orinoco/lib/net/orinoco/OrinocoQueueP.nc"
-collection_id_t arg_0x2b129c54cca8, 
+collection_id_t arg_0x2b260230cca8, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -7131,7 +7126,7 @@ static inline void RF230RadioP__RadioAlarm__fired(void );
 # 60 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarm.nc"
 static void /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__fired(
 # 43 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarmP.nc"
-uint8_t arg_0x2b129c7f2908);
+uint8_t arg_0x2b26025f4768);
 # 109 "/opt/tinyos-2.1.2/tos/lib/timer/Alarm.nc"
 static /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__Alarm__size_type /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__Alarm__getNow(void );
 #line 66
@@ -7206,7 +7201,7 @@ static error_t /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMess
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/SendNotifier.nc"
 static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SendNotifier__aboutToSend(
 # 48 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c868630, 
+am_id_t arg_0x2b260262b020, 
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/SendNotifier.nc"
 am_addr_t dest, 
 #line 57
@@ -7214,7 +7209,7 @@ message_t * msg);
 # 110 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__AMSend__sendDone(
 # 45 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c86ccc8, 
+am_id_t arg_0x2b260262f778, 
 # 103 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -7233,7 +7228,7 @@ message_t *
 
 /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Snoop__receive(
 # 47 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c86a9c0, 
+am_id_t arg_0x2b260262c480, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -7296,7 +7291,7 @@ message_t *
 
 /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Receive__receive(
 # 46 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c86bde0, 
+am_id_t arg_0x2b260262e908, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -7315,7 +7310,7 @@ message_t *
 
 /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__ReceiveDefault__receive(
 # 51 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c867220, 
+am_id_t arg_0x2b260262bbe0, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -7334,7 +7329,7 @@ message_t *
 
 /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SnoopDefault__receive(
 # 52 "/opt/tinyos-2.1.2/tos/lib/rfxlink/layers/ActiveMessageLayerP.nc"
-am_id_t arg_0x2b129c867db0, 
+am_id_t arg_0x2b260262a808, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -7594,19 +7589,19 @@ static inline error_t /*RF230RadioC.SendResourceC.Queue*/FcfsResourceQueueC__0__
 # 53 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__requested(
 # 52 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9261a0);
+uint8_t arg_0x2b26026eb1a0);
 # 61 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__immediateRequested(
 # 52 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9261a0);
+uint8_t arg_0x2b26026eb1a0);
 # 65 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__unconfigure(
 # 56 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9256e0);
+uint8_t arg_0x2b26026ea6e0);
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__configure(
 # 56 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9256e0);
+uint8_t arg_0x2b26026ea6e0);
 # 79 "/opt/tinyos-2.1.2/tos/interfaces/ResourceQueue.nc"
 static error_t /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Queue__enqueue(resource_client_id_t id);
 #line 53
@@ -7616,7 +7611,7 @@ static resource_client_id_t /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP_
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__granted(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 67 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static error_t /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__grantedTask__postTask(void );
 # 69 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
@@ -8607,24 +8602,8 @@ static inline bool RF230DriverLayerP__PacketTimeSyncOffset__isSet(message_t *msg
 
 
 static inline uint8_t RF230DriverLayerP__PacketTimeSyncOffset__get(message_t *msg);
-#line 999
-static inline uint8_t RF230DriverLayerP__PacketLinkQuality__get(message_t *msg);
-
-
-
-
-
-
-
-
+#line 1008
 static inline void RF230DriverLayerP__PacketLinkQuality__set(message_t *msg, uint8_t value);
-
-
-
-
-
-
-static inline bool RF230DriverLayerP__LinkPacketMetadata__highChannelQuality(message_t *msg);
 # 44 "/opt/tinyos-2.1.2/tos/interfaces/GeneralIO.nc"
 static void HplRF230P__PortCLKM__makeInput(void );
 #line 41
@@ -8687,19 +8666,19 @@ error_t error);
 # 120 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t Atm128SpiP__ResourceArbiter__release(
 # 99 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd6c060);
+uint8_t arg_0x2b2602b33060);
 # 97 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t Atm128SpiP__ResourceArbiter__immediateRequest(
 # 99 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd6c060);
+uint8_t arg_0x2b2602b33060);
 # 88 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static error_t Atm128SpiP__ResourceArbiter__request(
 # 99 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd6c060);
+uint8_t arg_0x2b2602b33060);
 # 128 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static bool Atm128SpiP__ResourceArbiter__isOwner(
 # 99 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd6c060);
+uint8_t arg_0x2b2602b33060);
 # 89 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128Spi.nc"
 static void Atm128SpiP__Spi__sleep(void );
 #line 83
@@ -8728,7 +8707,7 @@ static void Atm128SpiP__Spi__setClockPhase(bool sampleOnTrailing);
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static void Atm128SpiP__Resource__granted(
 # 95 "/opt/tinyos-2.1.2/tos/chips/atm128/spi/Atm128SpiP.nc"
-uint8_t arg_0x2b129cd34ae0);
+uint8_t arg_0x2b2602afbae0);
 # 90 "/opt/tinyos-2.1.2/tos/interfaces/ArbiterInfo.nc"
 static bool Atm128SpiP__ArbiterInfo__inUse(void );
 # 52 "/opt/tinyos-2.1.2/tos/interfaces/McuPowerState.nc"
@@ -8907,19 +8886,19 @@ static inline error_t /*Atm128SpiC.Arbiter.Queue*/FcfsResourceQueueC__1__FcfsQue
 # 53 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__requested(
 # 52 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9261a0);
+uint8_t arg_0x2b26026eb1a0);
 # 61 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__immediateRequested(
 # 52 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9261a0);
+uint8_t arg_0x2b26026eb1a0);
 # 65 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__unconfigure(
 # 56 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9256e0);
+uint8_t arg_0x2b26026ea6e0);
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__configure(
 # 56 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c9256e0);
+uint8_t arg_0x2b26026ea6e0);
 # 79 "/opt/tinyos-2.1.2/tos/interfaces/ResourceQueue.nc"
 static error_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Queue__enqueue(resource_client_id_t id);
 #line 53
@@ -8929,7 +8908,7 @@ static resource_client_id_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Que
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
 static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__granted(
 # 51 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
-uint8_t arg_0x2b129c928020);
+uint8_t arg_0x2b26026ed020);
 # 67 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static error_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__grantedTask__postTask(void );
 # 69 "/opt/tinyos-2.1.2/tos/system/SimpleArbiterP.nc"
@@ -9493,70 +9472,6 @@ OrinocoDisseminationLayerP__DataSubSend__sendDone(message_t *msg, error_t error)
 
 static inline message_t *
 OrinocoDisseminationLayerP__DataSubReceive__receive(message_t *msg, void *payload, uint8_t len);
-# 61 "/opt/tinyos-2.1.2/tos/lib/timer/LocalTime.nc"
-static uint32_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get(void );
-# 69 "/opt/tinyos-2.1.2/tos/lib/net/DisseminationValue.nc"
-static void /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Value__changed(void );
-# 67 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
-static error_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__postTask(void );
-# 25 "../../../Orinoco/lib/net/orinoco/OrinocoDisseminatorP.nc"
-enum /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0____nesc_unnamed4430 {
-#line 25
-  OrinocoDisseminatorP__0__valueChangedTask = 22U
-};
-#line 25
-typedef int /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0____nesc_sillytask_valueChangedTask[/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask];
-#line 13
-uint8_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__version_ = 0;
-uint32_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__creationTime_;
-
-
-
-#line 15
-typedef struct /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggy_data_s {
-  uint16_t age;
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T data;
-} /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggy_data_t;
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggy_data_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_;
-
-
-
-
-
-static inline void /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__runTask(void );
-
-
-
-
-
-
-static inline 
-#line 31
-void 
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__change(/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T * newVal);
-#line 69
-static inline 
-#line 68
-uint8_t 
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__version(void );
-
-
-
-static inline const uint8_t *
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__data(uint8_t *size);
-
-
-
-
-
-
-
-
-
-static inline 
-#line 83
-void 
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__update(uint8_t rversion, const uint8_t *rdata, uint8_t size);
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static error_t OrinocoForwardLayerP__SubAMSend__send(am_addr_t addr, 
 #line 71
@@ -9599,14 +9514,14 @@ static void OrinocoForwardLayerP__Timer__startOneShot(uint32_t dt);
 
 static void OrinocoForwardLayerP__Timer__stop(void );
 # 70 "../../../Orinoco/lib/net/orinoco/OrinocoForwardLayerP.nc"
-enum OrinocoForwardLayerP____nesc_unnamed4431 {
+enum OrinocoForwardLayerP____nesc_unnamed4430 {
 #line 70
-  OrinocoForwardLayerP__doneTask = 23U
+  OrinocoForwardLayerP__doneTask = 22U
 };
 #line 70
 typedef int OrinocoForwardLayerP____nesc_sillytask_doneTask[OrinocoForwardLayerP__doneTask];
 #line 52
-enum OrinocoForwardLayerP____nesc_unnamed4432 {
+enum OrinocoForwardLayerP____nesc_unnamed4431 {
   OrinocoForwardLayerP__STATE_READY, 
   OrinocoForwardLayerP__STATE_BACKOFF, 
   OrinocoForwardLayerP__STATE_SEND
@@ -9816,10 +9731,6 @@ static inline uint8_t OrinocoConfigP__OrinocoConfig__getMinQueueSize(void );
 static inline uint8_t OrinocoConfigP__OrinocoConfig__getQueueLocalReserve(void );
 # 43 "/opt/tinyos-2.1.2/tos/lib/net/RootControl.nc"
 static bool OrinocoPathCostHopCountP__RootControl__isRoot(void );
-# 47 "/opt/tinyos-2.1.2/tos/interfaces/LinkPacketMetadata.nc"
-static bool OrinocoPathCostHopCountP__LinkPacketMetadata__highChannelQuality(
-#line 44
-message_t * msg);
 # 51 "../../../Orinoco/lib/net/orinoco/OrinocoPathCostHopCountP.nc"
 orinoco_pathcost_t OrinocoPathCostHopCountP__curCost_ = ORINOCO_PATHCOST_INF;
 
@@ -9905,7 +9816,7 @@ static void OrinocoTrafficStatisticsP__PktRateJob__done(void );
 orinoco_traffic_statistics_t OrinocoTrafficStatisticsP__ts_ = { 0, 0, ORINOCO_DFLT_WAKEUP_INTERVAL / 2, 256, 256 };
 #line 71
 #line 65
-struct OrinocoTrafficStatisticsP____nesc_unnamed4433 {
+struct OrinocoTrafficStatisticsP____nesc_unnamed4432 {
   uint16_t numPktCreated;
   uint16_t numPktReceived;
   uint32_t curForwardTime;
@@ -9913,7 +9824,7 @@ struct OrinocoTrafficStatisticsP____nesc_unnamed4433 {
   uint8_t curRxBurstLen;
 } OrinocoTrafficStatisticsP__tv_ = { 0 };
 
-enum OrinocoTrafficStatisticsP____nesc_unnamed4434 {
+enum OrinocoTrafficStatisticsP____nesc_unnamed4433 {
   OrinocoTrafficStatisticsP__EWMA_FILTER = 243
 };
 
@@ -9986,16 +9897,16 @@ static error_t EASchedulerP__dispatch__postTask(void );
 # 43 "../../../EAJobs/interfaces/EAJob.nc"
 static void EASchedulerP__EAJob__run(
 # 47 "../../../EAJobs/lib/EASchedulerP.nc"
-uint8_t arg_0x2b129d1f8020);
+uint8_t arg_0x2b2602f96020);
 #line 104
-enum EASchedulerP____nesc_unnamed4435 {
+enum EASchedulerP____nesc_unnamed4434 {
 #line 104
-  EASchedulerP__dispatch = 24U
+  EASchedulerP__dispatch = 23U
 };
 #line 104
 typedef int EASchedulerP____nesc_sillytask_dispatch[EASchedulerP__dispatch];
 #line 67
-enum EASchedulerP____nesc_unnamed4436 {
+enum EASchedulerP____nesc_unnamed4435 {
   EASchedulerP__NUM_JOBS = 3U
 };
 
@@ -10046,11 +9957,11 @@ static inline void EASchedulerP__EAJob__default__run(uint8_t jobId);
 # 43 "../../../EAJobs/interfaces/EAJobConfig.nc"
 static ea_generic_jobconfig_t *EAEnergyManagerP__EAJobConfig__getConfig(
 # 45 "../../../EAJobs/lib/EAEnergyManagerP.nc"
-uint8_t arg_0x2b129d22e140);
+uint8_t arg_0x2b2602fcb140);
 # 43 "../../../EAJobs/interfaces/EAScheduler.nc"
 static void EAEnergyManagerP__EAScheduler__scheduleJob(jobid_t jobId, uint32_t dt);
 # 50 "../../../EAJobs/lib/EAEnergyManagerP.nc"
-enum EAEnergyManagerP____nesc_unnamed4437 {
+enum EAEnergyManagerP____nesc_unnamed4436 {
   EAEnergyManagerP__NUM_JOBS = 3U
 };
 
@@ -10068,6 +9979,70 @@ static uint32_t /*OrinocoTrafficStatisticsC.EAPeriodicJobConfigC*/EAPeriodicJobC
 ea_periodic_jobconfig_t /*OrinocoTrafficStatisticsC.EAPeriodicJobConfigC*/EAPeriodicJobConfigC__0__conf_;
 
 static ea_generic_jobconfig_t */*OrinocoTrafficStatisticsC.EAPeriodicJobConfigC*/EAPeriodicJobConfigC__0__JobConfig__getConfig(void );
+# 61 "/opt/tinyos-2.1.2/tos/lib/timer/LocalTime.nc"
+static uint32_t /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get(void );
+# 69 "/opt/tinyos-2.1.2/tos/lib/net/DisseminationValue.nc"
+static void /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Value__changed(void );
+# 67 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
+static error_t /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__postTask(void );
+# 25 "../../../Orinoco/lib/net/orinoco/OrinocoDisseminatorP.nc"
+enum /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0____nesc_unnamed4437 {
+#line 25
+  OrinocoDisseminatorP__0__valueChangedTask = 24U
+};
+#line 25
+typedef int /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0____nesc_sillytask_valueChangedTask[/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask];
+#line 13
+uint8_t /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__version_ = 0;
+uint32_t /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__creationTime_;
+
+
+
+#line 15
+typedef struct /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggy_data_s {
+  uint16_t age;
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T data;
+} /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggy_data_t;
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggy_data_t /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_;
+
+
+
+
+
+static inline void /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__runTask(void );
+
+
+
+
+
+
+static inline 
+#line 31
+void 
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__change(/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T * newVal);
+#line 69
+static inline 
+#line 68
+uint8_t 
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__version(void );
+
+
+
+static inline const uint8_t *
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__data(uint8_t *size);
+
+
+
+
+
+
+
+
+
+static inline 
+#line 83
+void 
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__update(uint8_t rversion, const uint8_t *rdata, uint8_t size);
 # 65 "/opt/tinyos-2.1.2/tos/interfaces/Packet.nc"
 static void OrinocoStatsReportingJobP__Packet__clear(
 #line 62
@@ -10902,6 +10877,26 @@ inline static bool RealMainP__Scheduler__runNextTask(void ){
 #line 65
 }
 #line 65
+# 239 "SinkP.nc"
+static inline void SinkP__ForecastValue__changed(void )
+#line 239
+{
+}
+
+# 69 "/opt/tinyos-2.1.2/tos/lib/net/DisseminationValue.nc"
+inline static void /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Value__changed(void ){
+#line 69
+  SinkP__ForecastValue__changed();
+#line 69
+}
+#line 69
+# 25 "../../../Orinoco/lib/net/orinoco/OrinocoDisseminatorP.nc"
+static inline void /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__runTask(void )
+#line 25
+{
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Value__changed();
+}
+
 # 187 "../../../EAJobs/lib/EASchedulerP.nc"
 static inline void EASchedulerP__EAJob__done(uint8_t jobId)
 #line 187
@@ -10976,9 +10971,9 @@ inline static void OrinocoStatsReportingJobP__EAJob__done(void ){
 #line 47
 }
 #line 47
-# 144 "SinkP.nc"
+# 147 "SinkP.nc"
 static inline message_t *SinkP__OrinocoStatsReporting__receive(message_t *msg, void *payload, uint8_t len)
-#line 144
+#line 147
 {
 
   return msg;
@@ -11412,16 +11407,16 @@ inline static uint32_t SinkP__LocalTime__get(void ){
 #line 61
 }
 #line 61
-# 149 "SinkP.nc"
+# 152 "SinkP.nc"
 static inline message_t *SinkP__OrinocoDebugReporting__receive(message_t *msg, void *payload, uint8_t len)
-#line 149
+#line 152
 {
 
 
 
   OrinocoDebugReportingMsg *m = (OrinocoDebugReportingMsg *)payload;
 
-#line 154
+#line 157
   printf("%lu: %u dbg %u %u %u %lu %lu %u %lu %lu %lu %u %lu %u %u\n", 
   SinkP__LocalTime__get(), 
   TOS_NODE_ID, __nesc_ntoh_uint16(
@@ -11686,9 +11681,9 @@ static inline void EASchedulerP__EAJob__default__run(uint8_t jobId)
 }
 
 # 43 "../../../EAJobs/interfaces/EAJob.nc"
-inline static void EASchedulerP__EAJob__run(uint8_t arg_0x2b129d1f8020){
+inline static void EASchedulerP__EAJob__run(uint8_t arg_0x2b2602f96020){
 #line 43
-  switch (arg_0x2b129d1f8020) {
+  switch (arg_0x2b2602f96020) {
 #line 43
     case /*OrinocoTrafficStatisticsC.Job*/EAJobC__0__JOB_ID:
 #line 43
@@ -11710,7 +11705,7 @@ inline static void EASchedulerP__EAJob__run(uint8_t arg_0x2b129d1f8020){
 #line 43
     default:
 #line 43
-      EASchedulerP__EAJob__default__run(arg_0x2b129d1f8020);
+      EASchedulerP__EAJob__default__run(arg_0x2b2602f96020);
 #line 43
       break;
 #line 43
@@ -11733,13 +11728,13 @@ static inline ea_generic_jobconfig_t *EAEnergyManagerP__EAJobConfig__default__ge
 }
 
 # 43 "../../../EAJobs/interfaces/EAJobConfig.nc"
-inline static ea_generic_jobconfig_t *EAEnergyManagerP__EAJobConfig__getConfig(uint8_t arg_0x2b129d22e140){
+inline static ea_generic_jobconfig_t *EAEnergyManagerP__EAJobConfig__getConfig(uint8_t arg_0x2b2602fcb140){
 #line 43
   struct ea_generic_jobconfig_t *__nesc_result;
 #line 43
 
 #line 43
-  switch (arg_0x2b129d22e140) {
+  switch (arg_0x2b2602fcb140) {
 #line 43
     case /*OrinocoTrafficStatisticsC.Job*/EAJobC__0__JOB_ID:
 #line 43
@@ -11761,7 +11756,7 @@ inline static ea_generic_jobconfig_t *EAEnergyManagerP__EAJobConfig__getConfig(u
 #line 43
     default:
 #line 43
-      __nesc_result = EAEnergyManagerP__EAJobConfig__default__getConfig(arg_0x2b129d22e140);
+      __nesc_result = EAEnergyManagerP__EAJobConfig__default__getConfig(arg_0x2b2602fcb140);
 #line 43
       break;
 #line 43
@@ -12386,13 +12381,13 @@ inline static void /*PrintfC.SerialAMSenderC.AMQueueEntryP*/AMQueueEntryP__0__AM
 }
 #line 162
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
-inline static error_t /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__send(am_id_t arg_0x2b129bea3650, am_addr_t addr, message_t * msg, uint8_t len){
+inline static error_t /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__send(am_id_t arg_0x2b2601c76650, am_addr_t addr, message_t * msg, uint8_t len){
 #line 80
   unsigned char __nesc_result;
 #line 80
 
 #line 80
-  __nesc_result = /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__send(arg_0x2b129bea3650, addr, msg, len);
+  __nesc_result = /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__send(arg_0x2b2601c76650, addr, msg, len);
 #line 80
 
 #line 80
@@ -12574,13 +12569,13 @@ uint8_t upperLen)
 }
 
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
-inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__dataLinkLength(uart_id_t arg_0x2b129c040308, message_t *msg, uint8_t upperLen){
+inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__dataLinkLength(uart_id_t arg_0x2b2601e19308, message_t *msg, uint8_t upperLen){
 #line 23
   unsigned char __nesc_result;
 #line 23
 
 #line 23
-  switch (arg_0x2b129c040308) {
+  switch (arg_0x2b2601e19308) {
 #line 23
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 23
@@ -12590,7 +12585,7 @@ inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__
 #line 23
     default:
 #line 23
-      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__dataLinkLength(arg_0x2b129c040308, msg, upperLen);
+      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__dataLinkLength(arg_0x2b2601e19308, msg, upperLen);
 #line 23
       break;
 #line 23
@@ -12617,13 +12612,13 @@ static inline uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__
 }
 
 # 15 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
-inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__offset(uart_id_t arg_0x2b129c040308){
+inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__offset(uart_id_t arg_0x2b2601e19308){
 #line 15
   unsigned char __nesc_result;
 #line 15
 
 #line 15
-  switch (arg_0x2b129c040308) {
+  switch (arg_0x2b2601e19308) {
 #line 15
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 15
@@ -12633,7 +12628,7 @@ inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__
 #line 15
     default:
 #line 15
-      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__offset(arg_0x2b129c040308);
+      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__offset(arg_0x2b2601e19308);
 #line 15
       break;
 #line 15
@@ -12773,26 +12768,6 @@ inline static bool OrinocoRadioP__Timer__isRunning(void ){
 #line 92
 }
 #line 92
-# 233 "SinkP.nc"
-static inline void SinkP__ForecastValue__changed(void )
-#line 233
-{
-}
-
-# 69 "/opt/tinyos-2.1.2/tos/lib/net/DisseminationValue.nc"
-inline static void /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Value__changed(void ){
-#line 69
-  SinkP__ForecastValue__changed();
-#line 69
-}
-#line 69
-# 25 "../../../Orinoco/lib/net/orinoco/OrinocoDisseminatorP.nc"
-static inline void /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__runTask(void )
-#line 25
-{
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Value__changed();
-}
-
 # 61 "../../../Orinoco/lib/net/orinoco/OrinocoDisseminationLayerP.nc"
 static inline void OrinocoDisseminationLayerP__decodingTask__runTask(void )
 #line 61
@@ -13081,9 +13056,9 @@ static inline void Atm128SpiP__Resource__default__granted(uint8_t id)
 }
 
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
-inline static void Atm128SpiP__Resource__granted(uint8_t arg_0x2b129cd34ae0){
+inline static void Atm128SpiP__Resource__granted(uint8_t arg_0x2b2602afbae0){
 #line 102
-  switch (arg_0x2b129cd34ae0) {
+  switch (arg_0x2b2602afbae0) {
 #line 102
     case 0U:
 #line 102
@@ -13093,7 +13068,7 @@ inline static void Atm128SpiP__Resource__granted(uint8_t arg_0x2b129cd34ae0){
 #line 102
     default:
 #line 102
-      Atm128SpiP__Resource__default__granted(arg_0x2b129cd34ae0);
+      Atm128SpiP__Resource__default__granted(arg_0x2b2602afbae0);
 #line 102
       break;
 #line 102
@@ -13109,9 +13084,9 @@ static inline void Atm128SpiP__ResourceArbiter__granted(uint8_t id)
 }
 
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
-inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__granted(uint8_t arg_0x2b129c928020){
+inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__granted(uint8_t arg_0x2b26026ed020){
 #line 102
-  Atm128SpiP__ResourceArbiter__granted(arg_0x2b129c928020);
+  Atm128SpiP__ResourceArbiter__granted(arg_0x2b26026ed020);
 #line 102
 }
 #line 102
@@ -13122,9 +13097,9 @@ static inline void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConf
 }
 
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
-inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__configure(uint8_t arg_0x2b129c9256e0){
+inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__configure(uint8_t arg_0x2b26026ea6e0){
 #line 59
-    /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__default__configure(arg_0x2b129c9256e0);
+    /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__default__configure(arg_0x2b26026ea6e0);
 #line 59
 }
 #line 59
@@ -13159,9 +13134,9 @@ static inline void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConf
 }
 
 # 65 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
-inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__unconfigure(uint8_t arg_0x2b129c9256e0){
+inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__unconfigure(uint8_t arg_0x2b26026ea6e0){
 #line 65
-    /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__default__unconfigure(arg_0x2b129c9256e0);
+    /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceConfigure__default__unconfigure(arg_0x2b26026ea6e0);
 #line 65
 }
 #line 65
@@ -13298,13 +13273,13 @@ static inline error_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource_
 }
 
 # 120 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
-inline static error_t Atm128SpiP__ResourceArbiter__release(uint8_t arg_0x2b129cd6c060){
+inline static error_t Atm128SpiP__ResourceArbiter__release(uint8_t arg_0x2b2602b33060){
 #line 120
   unsigned char __nesc_result;
 #line 120
 
 #line 120
-  __nesc_result = /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__release(arg_0x2b129cd6c060);
+  __nesc_result = /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__release(arg_0x2b2602b33060);
 #line 120
 
 #line 120
@@ -13447,9 +13422,9 @@ static inline void /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioA
 }
 
 # 60 "/opt/tinyos-2.1.2/tos/lib/rfxlink/util/RadioAlarm.nc"
-inline static void /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__fired(uint8_t arg_0x2b129c7f2908){
+inline static void /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__fired(uint8_t arg_0x2b26025f4768){
 #line 60
-  switch (arg_0x2b129c7f2908) {
+  switch (arg_0x2b26025f4768) {
 #line 60
     case 0U:
 #line 60
@@ -13465,7 +13440,7 @@ inline static void /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioA
 #line 60
     default:
 #line 60
-      /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__default__fired(arg_0x2b129c7f2908);
+      /*RF230RadioC.RadioAlarmC.RadioAlarmP*/RadioAlarmP__0__RadioAlarm__default__fired(arg_0x2b26025f4768);
 #line 60
       break;
 #line 60
@@ -14860,13 +14835,13 @@ static inline bool /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__is
 }
 
 # 128 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
-inline static bool Atm128SpiP__ResourceArbiter__isOwner(uint8_t arg_0x2b129cd6c060){
+inline static bool Atm128SpiP__ResourceArbiter__isOwner(uint8_t arg_0x2b2602b33060){
 #line 128
   unsigned char __nesc_result;
 #line 128
 
 #line 128
-  __nesc_result = /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__isOwner(arg_0x2b129cd6c060);
+  __nesc_result = /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__isOwner(arg_0x2b2602b33060);
 #line 128
 
 #line 128
@@ -14903,9 +14878,9 @@ static inline void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequ
 }
 
 # 61 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
-inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__immediateRequested(uint8_t arg_0x2b129c9261a0){
+inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__immediateRequested(uint8_t arg_0x2b26026eb1a0){
 #line 61
-    /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__default__immediateRequested(arg_0x2b129c9261a0);
+    /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__default__immediateRequested(arg_0x2b26026eb1a0);
 #line 61
 }
 #line 61
@@ -14953,13 +14928,13 @@ static inline error_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource_
 }
 
 # 97 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
-inline static error_t Atm128SpiP__ResourceArbiter__immediateRequest(uint8_t arg_0x2b129cd6c060){
+inline static error_t Atm128SpiP__ResourceArbiter__immediateRequest(uint8_t arg_0x2b2602b33060){
 #line 97
   unsigned char __nesc_result;
 #line 97
 
 #line 97
-  __nesc_result = /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__immediateRequest(arg_0x2b129cd6c060);
+  __nesc_result = /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__immediateRequest(arg_0x2b2602b33060);
 #line 97
 
 #line 97
@@ -15225,9 +15200,9 @@ static inline void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequ
 }
 
 # 53 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
-inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__requested(uint8_t arg_0x2b129c9261a0){
+inline static void /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__requested(uint8_t arg_0x2b26026eb1a0){
 #line 53
-    /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__default__requested(arg_0x2b129c9261a0);
+    /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__ResourceRequested__default__requested(arg_0x2b26026eb1a0);
 #line 53
 }
 #line 53
@@ -15275,13 +15250,13 @@ static inline error_t /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource_
 }
 
 # 88 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
-inline static error_t Atm128SpiP__ResourceArbiter__request(uint8_t arg_0x2b129cd6c060){
+inline static error_t Atm128SpiP__ResourceArbiter__request(uint8_t arg_0x2b2602b33060){
 #line 88
   unsigned char __nesc_result;
 #line 88
 
 #line 88
-  __nesc_result = /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__request(arg_0x2b129cd6c060);
+  __nesc_result = /*Atm128SpiC.Arbiter.Arbiter*/SimpleArbiterP__1__Resource__request(arg_0x2b2602b33060);
 #line 88
 
 #line 88
@@ -15794,9 +15769,9 @@ static inline void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/Active
 }
 
 # 110 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
-inline static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__AMSend__sendDone(am_id_t arg_0x2b129c86ccc8, message_t * msg, error_t error){
+inline static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__AMSend__sendDone(am_id_t arg_0x2b260262f778, message_t * msg, error_t error){
 #line 110
-  switch (arg_0x2b129c86ccc8) {
+  switch (arg_0x2b260262f778) {
 #line 110
     case ORINOCO_AM_BEACON:
 #line 110
@@ -15812,7 +15787,7 @@ inline static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/Active
 #line 110
     default:
 #line 110
-      /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__AMSend__default__sendDone(arg_0x2b129c86ccc8, msg, error);
+      /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__AMSend__default__sendDone(arg_0x2b260262f778, msg, error);
 #line 110
       break;
 #line 110
@@ -16316,9 +16291,9 @@ static inline void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resou
 }
 
 # 65 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
-inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__unconfigure(uint8_t arg_0x2b129c9256e0){
+inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__unconfigure(uint8_t arg_0x2b26026ea6e0){
 #line 65
-    /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__default__unconfigure(arg_0x2b129c9256e0);
+    /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__default__unconfigure(arg_0x2b26026ea6e0);
 #line 65
 }
 #line 65
@@ -16727,13 +16702,13 @@ static inline message_t */*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SnoopDefault__receive(am_id_t arg_0x2b129c867db0, message_t * msg, void * payload, uint8_t len){
+inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SnoopDefault__receive(am_id_t arg_0x2b260262a808, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-    __nesc_result = /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SnoopDefault__default__receive(arg_0x2b129c867db0, msg, payload, len);
+    __nesc_result = /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SnoopDefault__default__receive(arg_0x2b260262a808, msg, payload, len);
 #line 78
 
 #line 78
@@ -16815,13 +16790,13 @@ static inline message_t */*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Snoop__receive(am_id_t arg_0x2b129c86a9c0, message_t * msg, void * payload, uint8_t len){
+inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Snoop__receive(am_id_t arg_0x2b260262c480, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-  switch (arg_0x2b129c86a9c0) {
+  switch (arg_0x2b260262c480) {
 #line 78
     case ORINOCO_AM_BEACON:
 #line 78
@@ -16837,7 +16812,7 @@ inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*
 #line 78
     default:
 #line 78
-      __nesc_result = /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Snoop__default__receive(arg_0x2b129c86a9c0, msg, payload, len);
+      __nesc_result = /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Snoop__default__receive(arg_0x2b260262c480, msg, payload, len);
 #line 78
       break;
 #line 78
@@ -16856,13 +16831,13 @@ static inline message_t */*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__ReceiveDefault__receive(am_id_t arg_0x2b129c867220, message_t * msg, void * payload, uint8_t len){
+inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__ReceiveDefault__receive(am_id_t arg_0x2b260262bbe0, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-    __nesc_result = /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__ReceiveDefault__default__receive(arg_0x2b129c867220, msg, payload, len);
+    __nesc_result = /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__ReceiveDefault__default__receive(arg_0x2b260262bbe0, msg, payload, len);
 #line 78
 
 #line 78
@@ -17076,13 +17051,13 @@ static inline bool OrinocoQueueP__Intercept__default__forward(collection_id_t co
 }
 
 # 31 "/opt/tinyos-2.1.2/tos/interfaces/Intercept.nc"
-inline static bool OrinocoQueueP__Intercept__forward(collection_id_t arg_0x2b129c57f418, message_t * msg, void * payload, uint8_t len){
+inline static bool OrinocoQueueP__Intercept__forward(collection_id_t arg_0x2b2602340418, message_t * msg, void * payload, uint8_t len){
 #line 31
   unsigned char __nesc_result;
 #line 31
 
 #line 31
-    __nesc_result = OrinocoQueueP__Intercept__default__forward(arg_0x2b129c57f418, msg, payload, len);
+    __nesc_result = OrinocoQueueP__Intercept__default__forward(arg_0x2b2602340418, msg, payload, len);
 #line 31
 
 #line 31
@@ -17090,23 +17065,23 @@ inline static bool OrinocoQueueP__Intercept__forward(collection_id_t arg_0x2b129
 #line 31
 }
 #line 31
-# 183 "SinkP.nc"
+# 190 "SinkP.nc"
 static inline message_t *
 SinkP__RadioReceive__receive(collection_id_t type, message_t *msg, void *payload, uint8_t len)
-#line 184
+#line 191
 {
-#line 209
+#line 216
   return msg;
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * OrinocoQueueP__Receive__receive(collection_id_t arg_0x2b129c54cca8, message_t * msg, void * payload, uint8_t len){
+inline static message_t * OrinocoQueueP__Receive__receive(collection_id_t arg_0x2b260230cca8, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-  __nesc_result = SinkP__RadioReceive__receive(arg_0x2b129c54cca8, msg, payload, len);
+  __nesc_result = SinkP__RadioReceive__receive(arg_0x2b260230cca8, msg, payload, len);
 #line 78
 
 #line 78
@@ -17506,10 +17481,10 @@ static inline bool OrinocoDisseminationLayerP__isNewer(uint8_t v1, uint8_t v2)
 static inline 
 #line 68
 uint8_t 
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__version(void )
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__version(void )
 #line 69
 {
-  return /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__version_;
+  return /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__version_;
 }
 
 # 13 "../../../Orinoco/interfaces/OrinocoDissemination.nc"
@@ -17519,7 +17494,7 @@ inline static uint8_t OrinocoDisseminationLayerP__Dissemination__version(void ){
 #line 13
 
 #line 13
-  __nesc_result = /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__version();
+  __nesc_result = /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__version();
 #line 13
 
 #line 13
@@ -17585,13 +17560,13 @@ static inline message_t */*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Receive__receive(am_id_t arg_0x2b129c86bde0, message_t * msg, void * payload, uint8_t len){
+inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Receive__receive(am_id_t arg_0x2b260262e908, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-  switch (arg_0x2b129c86bde0) {
+  switch (arg_0x2b260262e908) {
 #line 78
     case ORINOCO_AM_BEACON:
 #line 78
@@ -17607,7 +17582,7 @@ inline static message_t * /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*
 #line 78
     default:
 #line 78
-      __nesc_result = /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Receive__default__receive(arg_0x2b129c86bde0, msg, payload, len);
+      __nesc_result = /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__Receive__default__receive(arg_0x2b260262e908, msg, payload, len);
 #line 78
       break;
 #line 78
@@ -17783,13 +17758,13 @@ static inline void /*RF230RadioC.MessageBufferLayerC.MessageBufferLayerP*/Messag
 }
 
 # 67 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
-inline static error_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__postTask(void ){
+inline static error_t /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__postTask(void ){
 #line 67
   unsigned char __nesc_result;
 #line 67
 
 #line 67
-  __nesc_result = SchedulerBasicP__TaskBasic__postTask(/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask);
+  __nesc_result = SchedulerBasicP__TaskBasic__postTask(/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask);
 #line 67
 
 #line 67
@@ -17798,7 +17773,7 @@ inline static error_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDissemina
 }
 #line 67
 # 61 "/opt/tinyos-2.1.2/tos/lib/timer/LocalTime.nc"
-inline static uint32_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get(void ){
+inline static uint32_t /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get(void ){
 #line 61
   unsigned long __nesc_result;
 #line 61
@@ -17816,20 +17791,20 @@ inline static uint32_t /*OrinocoDisseminationLayerC.Disseminator.OrinocoDissemin
 static inline 
 #line 83
 void 
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__update(uint8_t rversion, const uint8_t *rdata, uint8_t size)
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__update(uint8_t rversion, const uint8_t *rdata, uint8_t size)
 #line 84
 {
 
-  memcpy(&/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_, rdata, size);
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__version_ = rversion;
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__creationTime_ = /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get() - /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_.age * 1024;
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__postTask();
+  memcpy(&/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_, rdata, size);
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__version_ = rversion;
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__creationTime_ = /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get() - /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_.age * 1024;
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__postTask();
 }
 
 # 25 "../../../Orinoco/interfaces/OrinocoDissemination.nc"
 inline static void OrinocoDisseminationLayerP__Dissemination__update(uint8_t rversion, const uint8_t *rdata, uint8_t size){
 #line 25
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__update(rversion, rdata, size);
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__update(rversion, rdata, size);
 #line 25
 }
 #line 25
@@ -18356,33 +18331,6 @@ inline static uint32_t OrinocoTrafficStatisticsP__LocalTime__get(void ){
 #line 61
 }
 #line 61
-# 999 "/opt/tinyos-2.1.2/tos/chips/rf230/RF230DriverLayerP.nc"
-static inline uint8_t RF230DriverLayerP__PacketLinkQuality__get(message_t *msg)
-{
-  return RF230DriverLayerP__getMeta(msg)->lqi;
-}
-
-#line 1015
-static inline bool RF230DriverLayerP__LinkPacketMetadata__highChannelQuality(message_t *msg)
-{
-  return RF230DriverLayerP__PacketLinkQuality__get(msg) > 200;
-}
-
-# 47 "/opt/tinyos-2.1.2/tos/interfaces/LinkPacketMetadata.nc"
-inline static bool OrinocoPathCostHopCountP__LinkPacketMetadata__highChannelQuality(message_t * msg){
-#line 47
-  unsigned char __nesc_result;
-#line 47
-
-#line 47
-  __nesc_result = RF230DriverLayerP__LinkPacketMetadata__highChannelQuality(msg);
-#line 47
-
-#line 47
-  return __nesc_result;
-#line 47
-}
-#line 47
 # 43 "/opt/tinyos-2.1.2/tos/lib/net/RootControl.nc"
 inline static bool OrinocoPathCostHopCountP__RootControl__isRoot(void ){
 #line 43
@@ -18431,7 +18379,7 @@ static inline bool OrinocoPathCostHopCountP__OrinocoPathCost__inspectBeacon(mess
 
 
 
-  if (update && (OrinocoPathCostHopCountP__LinkPacketMetadata__highChannelQuality(msg) || OrinocoPathCostHopCountP__curCost_ == ORINOCO_PATHCOST_INF)) {
+  if (update && (TRUE || OrinocoPathCostHopCountP__curCost_ == ORINOCO_PATHCOST_INF)) {
       OrinocoPathCostHopCountP__curCost_ = cost;
     }
 
@@ -18678,9 +18626,9 @@ static inline void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resou
 }
 
 # 102 "/opt/tinyos-2.1.2/tos/interfaces/Resource.nc"
-inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__granted(uint8_t arg_0x2b129c928020){
+inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__granted(uint8_t arg_0x2b26026ed020){
 #line 102
-  switch (arg_0x2b129c928020) {
+  switch (arg_0x2b26026ed020) {
 #line 102
     case 0U:
 #line 102
@@ -18690,7 +18638,7 @@ inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resou
 #line 102
     default:
 #line 102
-      /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__default__granted(arg_0x2b129c928020);
+      /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resource__default__granted(arg_0x2b26026ed020);
 #line 102
       break;
 #line 102
@@ -18705,9 +18653,9 @@ static inline void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resou
 }
 
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/ResourceConfigure.nc"
-inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__configure(uint8_t arg_0x2b129c9256e0){
+inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__configure(uint8_t arg_0x2b26026ea6e0){
 #line 59
-    /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__default__configure(arg_0x2b129c9256e0);
+    /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceConfigure__default__configure(arg_0x2b26026ea6e0);
 #line 59
 }
 #line 59
@@ -18845,15 +18793,15 @@ inline static uint8_t OrinocoDisseminationLayerP__BeaconSubPacket__maxPayloadLen
 #line 106
 # 73 "../../../Orinoco/lib/net/orinoco/OrinocoDisseminatorP.nc"
 static inline const uint8_t *
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__data(uint8_t *size)
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__data(uint8_t *size)
 #line 74
 {
 
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_.age = (/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get() - /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__creationTime_ + 512) / 1024;
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_.age = (/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get() - /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__creationTime_ + 512) / 1024;
 
 
-  *size = sizeof /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_;
-  return (uint8_t *)&/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_;
+  *size = sizeof /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_;
+  return (uint8_t *)&/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_;
 }
 
 # 19 "../../../Orinoco/interfaces/OrinocoDissemination.nc"
@@ -18863,7 +18811,7 @@ inline static const uint8_t *OrinocoDisseminationLayerP__Dissemination__data(uin
 #line 19
 
 #line 19
-  __nesc_result = /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__data(size);
+  __nesc_result = /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Dissemination__data(size);
 #line 19
 
 #line 19
@@ -19337,9 +19285,9 @@ static __inline uint16_t OrinocoRadioP__getRandomSleepTime(void )
   return OrinocoRadioP__Config__getWakeUpInterval() + OrinocoRadioP__Config__getAbsWakeUpDeviation() - rdev;
 }
 
-# 179 "SinkP.nc"
+# 182 "SinkP.nc"
 static inline void SinkP__RadioControl__stopDone(error_t error)
-#line 179
+#line 182
 {
 }
 
@@ -19350,9 +19298,9 @@ inline static void OrinocoRadioP__SplitControl__stopDone(error_t error){
 #line 138
 }
 #line 138
-# 177 "SinkP.nc"
+# 180 "SinkP.nc"
 static inline void SinkP__RadioControl__startDone(error_t error)
-#line 177
+#line 180
 {
 }
 
@@ -19941,9 +19889,9 @@ static inline void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/Active
 }
 
 # 59 "/opt/tinyos-2.1.2/tos/interfaces/SendNotifier.nc"
-inline static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SendNotifier__aboutToSend(am_id_t arg_0x2b129c868630, am_addr_t dest, message_t * msg){
+inline static void /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SendNotifier__aboutToSend(am_id_t arg_0x2b260262b020, am_addr_t dest, message_t * msg){
 #line 59
-    /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SendNotifier__default__aboutToSend(arg_0x2b129c868630, dest, msg);
+    /*RF230RadioC.ActiveMessageLayerC.ActiveMessageLayerP*/ActiveMessageLayerP__0__SendNotifier__default__aboutToSend(arg_0x2b260262b020, dest, msg);
 #line 59
 }
 #line 59
@@ -20038,9 +19986,9 @@ static inline void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resou
 }
 
 # 53 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
-inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__requested(uint8_t arg_0x2b129c9261a0){
+inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__requested(uint8_t arg_0x2b26026eb1a0){
 #line 53
-    /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__default__requested(arg_0x2b129c9261a0);
+    /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__default__requested(arg_0x2b26026eb1a0);
 #line 53
 }
 #line 53
@@ -20109,9 +20057,9 @@ static inline void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__Resou
 }
 
 # 61 "/opt/tinyos-2.1.2/tos/interfaces/ResourceRequested.nc"
-inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__immediateRequested(uint8_t arg_0x2b129c9261a0){
+inline static void /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__immediateRequested(uint8_t arg_0x2b26026eb1a0){
 #line 61
-    /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__default__immediateRequested(arg_0x2b129c9261a0);
+    /*RF230RadioC.SendResourceC.Arbiter*/SimpleArbiterP__0__ResourceRequested__default__immediateRequested(arg_0x2b26026eb1a0);
 #line 61
 }
 #line 61
@@ -20369,9 +20317,9 @@ static inline void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__updat
     }
 }
 
-# 119 "SinkP.nc"
+# 122 "SinkP.nc"
 static inline void SinkP__BootTimer__fired(void )
-#line 119
+#line 122
 {
 
   printf("%lu: %u reset\n", SinkP__LocalTime__get(), TOS_NODE_ID);
@@ -20380,7 +20328,7 @@ static inline void SinkP__BootTimer__fired(void )
 
 
 static inline void SinkP__DistTimer__fired(void )
-#line 126
+#line 129
 {
 }
 
@@ -20642,9 +20590,9 @@ static inline void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer
 }
 
 # 83 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
-inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(uint8_t arg_0x2b129c4cfda0){
+inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(uint8_t arg_0x2b260228dda0){
 #line 83
-  switch (arg_0x2b129c4cfda0) {
+  switch (arg_0x2b260228dda0) {
 #line 83
     case 0U:
 #line 83
@@ -20678,7 +20626,7 @@ inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer
 #line 83
     default:
 #line 83
-      /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(arg_0x2b129c4cfda0);
+      /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(arg_0x2b260228dda0);
 #line 83
       break;
 #line 83
@@ -20918,9 +20866,9 @@ static inline void /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__default
 }
 
 # 100 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
-inline static void /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__sendDone(uint8_t arg_0x2b129bea4430, message_t * msg, error_t error){
+inline static void /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__sendDone(uint8_t arg_0x2b2601c77430, message_t * msg, error_t error){
 #line 100
-  switch (arg_0x2b129bea4430) {
+  switch (arg_0x2b2601c77430) {
 #line 100
     case 0U:
 #line 100
@@ -20930,7 +20878,7 @@ inline static void /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__sendDon
 #line 100
     default:
 #line 100
-      /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__default__sendDone(arg_0x2b129bea4430, msg, error);
+      /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__default__sendDone(arg_0x2b2601c77430, msg, error);
 #line 100
       break;
 #line 100
@@ -20968,9 +20916,9 @@ static inline void /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__sendD
 }
 
 # 110 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
-inline static void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__sendDone(am_id_t arg_0x2b129bef6220, message_t * msg, error_t error){
+inline static void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__sendDone(am_id_t arg_0x2b2601cca220, message_t * msg, error_t error){
 #line 110
-  /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__sendDone(arg_0x2b129bef6220, msg, error);
+  /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__sendDone(arg_0x2b2601cca220, msg, error);
 #line 110
 }
 #line 110
@@ -20989,9 +20937,9 @@ static inline void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__
 }
 
 # 100 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
-inline static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__sendDone(uart_id_t arg_0x2b129c041020, message_t * msg, error_t error){
+inline static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__sendDone(uart_id_t arg_0x2b2601e1a020, message_t * msg, error_t error){
 #line 100
-  switch (arg_0x2b129c041020) {
+  switch (arg_0x2b2601e1a020) {
 #line 100
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 100
@@ -21001,7 +20949,7 @@ inline static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__
 #line 100
     default:
 #line 100
-      /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__default__sendDone(arg_0x2b129c041020, msg, error);
+      /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__default__sendDone(arg_0x2b2601e1a020, msg, error);
 #line 100
       break;
 #line 100
@@ -21159,20 +21107,20 @@ static __inline  uint8_t __nesc_ntohbf_uint8(const void *source, unsigned offset
 static inline 
 #line 31
 void 
-/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__change(/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T * newVal)
+/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__change(/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T * newVal)
 #line 32
 {
 
-  memcpy(& /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_.data, newVal, sizeof(/*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T ));
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_.age = 0;
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__version_++;
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__creationTime_ = /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get();
+  memcpy(& /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_.data, newVal, sizeof(/*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__T ));
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__piggyData_.age = 0;
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__version_++;
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__creationTime_ = /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__LocalTimeMilli__get();
 }
 
 # 60 "/opt/tinyos-2.1.2/tos/lib/net/DisseminationUpdate.nc"
 inline static void SinkP__ForecastUpdate__change(SinkP__ForecastUpdate__t * newVal){
 #line 60
-  /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__change(newVal);
+  /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__Update__change(newVal);
 #line 60
 }
 #line 60
@@ -21225,20 +21173,21 @@ inline static void SinkP__Leds__led2On(void ){
 #line 89
 }
 #line 89
-# 212 "SinkP.nc"
+# 219 "SinkP.nc"
 static inline message_t *SinkP__SerialReceive__receive(message_t *bufPtr, 
 void *payload, uint8_t len)
-#line 213
+#line 220
 {
   uint8_t numValues;
   DdcForecastMsg *cc = (DdcForecastMsg *)bufPtr->data;
 
+#line 223
   if (!SinkP__temp) {
       SinkP__Leds__led2On();
       SinkP__temp = TRUE;
     }
   else 
-#line 220
+#line 226
     {
       SinkP__Leds__led2Off();
       SinkP__temp = FALSE;
@@ -21260,13 +21209,13 @@ static inline message_t */*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Rec
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__receive(am_id_t arg_0x2b129bf11340, message_t * msg, void * payload, uint8_t len){
+inline static message_t * /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__receive(am_id_t arg_0x2b2601cc8340, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-  switch (arg_0x2b129bf11340) {
+  switch (arg_0x2b2601cc8340) {
 #line 78
     case AM_DDC_FORECAST_MSG:
 #line 78
@@ -21276,7 +21225,7 @@ inline static message_t * /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Re
 #line 78
     default:
 #line 78
-      __nesc_result = /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__default__receive(arg_0x2b129bf11340, msg, payload, len);
+      __nesc_result = /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__default__receive(arg_0x2b2601cc8340, msg, payload, len);
 #line 78
       break;
 #line 78
@@ -21305,13 +21254,13 @@ uint8_t len)
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__receive(uart_id_t arg_0x2b129c0423e0, message_t * msg, void * payload, uint8_t len){
+inline static message_t * /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__receive(uart_id_t arg_0x2b2601df93e0, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-  switch (arg_0x2b129c0423e0) {
+  switch (arg_0x2b2601df93e0) {
 #line 78
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 78
@@ -21321,7 +21270,7 @@ inline static message_t * /*SerialDispatcherC.SerialDispatcherP*/SerialDispatche
 #line 78
     default:
 #line 78
-      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__default__receive(arg_0x2b129c0423e0, msg, payload, len);
+      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__default__receive(arg_0x2b2601df93e0, msg, payload, len);
 #line 78
       break;
 #line 78
@@ -21349,13 +21298,13 @@ uint8_t dataLinkLen)
 }
 
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
-inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__upperLength(uart_id_t arg_0x2b129c040308, message_t *msg, uint8_t dataLinkLen){
+inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__upperLength(uart_id_t arg_0x2b2601e19308, message_t *msg, uint8_t dataLinkLen){
 #line 31
   unsigned char __nesc_result;
 #line 31
 
 #line 31
-  switch (arg_0x2b129c040308) {
+  switch (arg_0x2b2601e19308) {
 #line 31
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 31
@@ -21365,7 +21314,7 @@ inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__
 #line 31
     default:
 #line 31
-      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__upperLength(arg_0x2b129c040308, msg, dataLinkLen);
+      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__upperLength(arg_0x2b2601e19308, msg, dataLinkLen);
 #line 31
       break;
 #line 31
@@ -21411,6 +21360,12 @@ static inline void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__
     __nesc_atomic_end(__nesc_atomic); }
 }
 
+# 186 "SinkP.nc"
+static inline void SinkP__SerialControl__stopDone(error_t error)
+#line 186
+{
+}
+
 # 49 "/opt/tinyos-2.1.2/tos/lib/printf/SerialStartP.nc"
 static inline void SerialStartP__SerialControl__stopDone(error_t error)
 #line 49
@@ -21422,7 +21377,7 @@ inline static void SerialP__SplitControl__stopDone(error_t error){
 #line 138
   SerialStartP__SerialControl__stopDone(error);
 #line 138
-  SinkP__RadioControl__stopDone(error);
+  SinkP__SerialControl__stopDone(error);
 #line 138
 }
 #line 138
@@ -21555,6 +21510,12 @@ static inline void SerialP__stopDoneTask__runTask(void )
   SerialP__SerialFlush__flush();
 }
 
+# 184 "SinkP.nc"
+static inline void SinkP__SerialControl__startDone(error_t error)
+#line 184
+{
+}
+
 # 48 "/opt/tinyos-2.1.2/tos/lib/printf/SerialStartP.nc"
 static inline void SerialStartP__SerialControl__startDone(error_t error)
 #line 48
@@ -21566,7 +21527,7 @@ inline static void SerialP__SplitControl__startDone(error_t error){
 #line 113
   SerialStartP__SerialControl__startDone(error);
 #line 113
-  SinkP__RadioControl__startDone(error);
+  SinkP__SerialControl__startDone(error);
 #line 113
 }
 #line 113
@@ -22538,6 +22499,21 @@ inline static void SinkP__BootTimer__startOneShot(uint32_t dt){
 #line 73
 }
 #line 73
+# 104 "/opt/tinyos-2.1.2/tos/interfaces/SplitControl.nc"
+inline static error_t SinkP__SerialControl__start(void ){
+#line 104
+  unsigned char __nesc_result;
+#line 104
+
+#line 104
+  __nesc_result = SerialP__SplitControl__start();
+#line 104
+
+#line 104
+  return __nesc_result;
+#line 104
+}
+#line 104
 # 368 "../../../Orinoco/lib/net/orinoco/OrinocoRadioP.nc"
 static inline error_t OrinocoRadioP__SplitControl__start(void )
 #line 368
@@ -22570,8 +22546,6 @@ inline static error_t SinkP__RadioControl__start(void ){
 
 #line 104
   __nesc_result = OrinocoRadioP__SplitControl__start();
-#line 104
-  __nesc_result = ecombine(__nesc_result, SerialP__SplitControl__start());
 #line 104
 
 #line 104
@@ -22641,9 +22615,9 @@ inline static void SinkP__OrinocoConfig__setWakeUpInterval(uint16_t Ts){
 #line 44
 }
 #line 44
-# 105 "SinkP.nc"
+# 107 "SinkP.nc"
 static inline void SinkP__Boot__booted(void )
-#line 105
+#line 107
 {
 
 
@@ -22653,6 +22627,7 @@ static inline void SinkP__Boot__booted(void )
   SinkP__RootControl__setRoot();
   SinkP__RoutingControl__start();
   SinkP__RadioControl__start();
+  SinkP__SerialControl__start();
 
   SinkP__BootTimer__startOneShot(1024);
   SinkP__DistTimer__startPeriodic(307200);
@@ -24333,9 +24308,9 @@ static void SchedulerBasicP__TaskBasic__default__runTask(uint8_t id)
 }
 
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
-static void SchedulerBasicP__TaskBasic__runTask(uint8_t arg_0x2b129bb01ab0){
+static void SchedulerBasicP__TaskBasic__runTask(uint8_t arg_0x2b26018bbab0){
 #line 75
-  switch (arg_0x2b129bb01ab0) {
+  switch (arg_0x2b26018bbab0) {
 #line 75
     case /*SerialAMQueueP.AMQueueImplP*/AMQueueImplP__0__CancelTask:
 #line 75
@@ -24469,12 +24444,6 @@ static void SchedulerBasicP__TaskBasic__runTask(uint8_t arg_0x2b129bb01ab0){
 #line 75
       break;
 #line 75
-    case /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask:
-#line 75
-      /*OrinocoDisseminationLayerC.Disseminator.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__runTask();
-#line 75
-      break;
-#line 75
     case OrinocoForwardLayerP__doneTask:
 #line 75
       OrinocoForwardLayerP__doneTask__runTask();
@@ -24487,9 +24456,15 @@ static void SchedulerBasicP__TaskBasic__runTask(uint8_t arg_0x2b129bb01ab0){
 #line 75
       break;
 #line 75
+    case /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask:
+#line 75
+      /*SinkC.OrinocoDisseminatorC.OrinocoDisseminatorP*/OrinocoDisseminatorP__0__valueChangedTask__runTask();
+#line 75
+      break;
+#line 75
     default:
 #line 75
-      SchedulerBasicP__TaskBasic__default__runTask(arg_0x2b129bb01ab0);
+      SchedulerBasicP__TaskBasic__default__runTask(arg_0x2b26018bbab0);
 #line 75
       break;
 #line 75

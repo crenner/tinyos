@@ -22,21 +22,9 @@ include ../Makefile.radioconfig
 ##PACKETLENGTH=80
 
 
-<<<<<<< HEAD
-########## Maximum data length (for buffer allocation)
-PACKETLENGTH=80
-
-########## Maximum printf length (for buffer allocation)
-PRINTF_MSG_LENGTH=80
-PRINTF_BUFFER_SIZE=400
-
-# enable printf
-CFLAGS += -DUSE_PRINTF -I $(TOSDIR)/lib/printf
-=======
 ########## Maximum printf length (for buffer allocation)
 ##PRINTF_MSG_LENGTH=80
 ##PRINTF_BUFFER_SIZE=400
->>>>>>> 231a6d65ab2788e7643eeffc10f31de565a93c42
 
 ##CFLAGS += -DUSE_PRINTF -I $(TOSDIR)/lib/printf
 CFLAGS += -I$(TOSDIR)/lib/T2Hack

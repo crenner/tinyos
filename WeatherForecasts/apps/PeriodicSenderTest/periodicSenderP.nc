@@ -45,8 +45,8 @@
 #define MSG_BURST_LEN      1    // number of packets per period (#)
 //#define DATA_PERIOD    122880UL  // data creation period (ms)
 //  #define DATA_PERIOD    307200UL  // data creation period (ms)
- //#define DATA_PERIOD      10240UL  // data creation period (ms)
-  #define DATA_PERIOD    61440UL  // data creation period (ms)
+ #define DATA_PERIOD      10240UL  // data creation period (ms)
+  //#define DATA_PERIOD    61440UL  // data creation period (ms)
 //#define DATA_PERIOD    491520UL  // data creation period (ms)
 //#define DATA_PERIOD    5120UL  // data creation period (ms)
 #define QUEUE_LIMIT        1    // aggregation degree (#)
@@ -72,7 +72,7 @@ module periodicSenderP {
     interface Leds;
 
     interface OrinocoConfig;
-    interface DisseminationValue<DdcForecastMsg>  as ForecastValue;
+    interface WeatherForecast<uint8_t> as Weather;
  
     interface Random;
 
@@ -111,30 +111,6 @@ implementation {
 
     // start our packet timer
     call Timer.startOneShot(1 + (call Random.rand32() % delay));
- 
-
-     // setze Standardwert
-    call ForecastValue.set(&defPackage);
-
-  }
-
-// neue daten wurden empfangen und werden über diese Methode des Anwendungsschicht zur Verfügung gestellt
-// autor anhtuan nguyen 
-// testklasse gibt empfangene Vorhersagen aus
- event void ForecastValue.changed(){
-     uint32_t timestamp;
-     const DdcForecastMsg* CC =call  ForecastValue.get(); 
-	//TODO neuen Wert ausgeben entweder über printf oder serielle Schnittstelle
-/*
-     timestamp  =  CC->header_ZMsbAM  & (HEADER_TIME_MSB);// setze modus und auflösungsbit auf 
-     timestamp  =  timestamp<< HEADER_TIME_MSB_OFFSET;
-     timestamp  =  timestamp| CC->header_ZLsb;
-      #ifdef WISEBED
-      printf("%u,%lu: BL %u,%u,%u,%lu\n",TOS_NODE_ID,call LocalTime.get(),CC->data[2],CC->data[3],
-      CC- >header_VA,timestamp);
-      printfflush();
-      #endif
-	*/
 }
 
  event message_t *
