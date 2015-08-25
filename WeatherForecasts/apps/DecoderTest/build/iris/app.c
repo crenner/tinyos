@@ -217,7 +217,7 @@ typedef struct { unsigned char nxdata[2]; } __attribute__((packed)) nxle_uint16_
 typedef struct { unsigned char nxdata[4]; } __attribute__((packed)) nxle_uint32_t;typedef uint32_t __nesc_nxbase_nxle_uint32_t  ;
 typedef struct { unsigned char nxdata[8]; } __attribute__((packed)) nxle_uint64_t;typedef uint64_t __nesc_nxbase_nxle_uint64_t  ;
 # 121 "/usr/lib/gcc/avr/4.1.2/../../../../avr/include/string.h" 3
-extern void *memset(void *arg_0x2ac38b564020, int arg_0x2ac38b564288, size_t arg_0x2ac38b564530);
+extern void *memset(void *arg_0x2ae5b5043020, int arg_0x2ae5b5043288, size_t arg_0x2ae5b5043530);
 # 71 "/usr/lib/gcc/avr/4.1.2/../../../../avr/include/stdlib.h" 3
 #line 68
 typedef struct __nesc_unnamed4242 {
@@ -236,7 +236,7 @@ typedef struct __nesc_unnamed4243 {
 } ldiv_t;
 
 
-typedef int (*__compar_fn_t)(const void *arg_0x2ac38b583838, const void *arg_0x2ac38b583b10);
+typedef int (*__compar_fn_t)(const void *arg_0x2ae5b5062838, const void *arg_0x2ae5b5062b10);
 # 25 "/opt/tinyos-2.1.2/tos/system/tos.h"
 typedef uint8_t bool;
 enum __nesc_unnamed4244 {
@@ -1843,11 +1843,11 @@ static uint16_t MeasureClockC__Atm128Calibrate__baudrateRegister(uint32_t baudra
 # 67 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static error_t SchedulerBasicP__TaskBasic__postTask(
 # 56 "/opt/tinyos-2.1.2/tos/system/SchedulerBasicP.nc"
-uint8_t arg_0x2ac38b6b5ab0);
+uint8_t arg_0x2ae5b5194ab0);
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static void SchedulerBasicP__TaskBasic__default__runTask(
 # 56 "/opt/tinyos-2.1.2/tos/system/SchedulerBasicP.nc"
-uint8_t arg_0x2ac38b6b5ab0);
+uint8_t arg_0x2ae5b5194ab0);
 # 57 "/opt/tinyos-2.1.2/tos/interfaces/Scheduler.nc"
 static void SchedulerBasicP__Scheduler__init(void );
 #line 72
@@ -1944,7 +1944,7 @@ uint8_t len);
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static error_t /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__send(
 # 47 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2ac38baba020, 
+am_id_t arg_0x2ae5b5599020, 
 # 80 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 am_addr_t addr, 
 #line 71
@@ -1961,7 +1961,7 @@ uint8_t len);
 #line 110
 static void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__default__sendDone(
 # 47 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2ac38baba020, 
+am_id_t arg_0x2ae5b5599020, 
 # 103 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -1996,7 +1996,7 @@ message_t *
 
 /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__default__receive(
 # 48 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2ac38bad7158, 
+am_id_t arg_0x2ae5b55b6158, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -2045,7 +2045,7 @@ static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__receive
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 static error_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__send(
 # 51 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc27748, 
+uart_id_t arg_0x2ae5b5706748, 
 # 67 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -2059,7 +2059,7 @@ uint8_t len);
 #line 100
 static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__default__sendDone(
 # 51 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc27748, 
+uart_id_t arg_0x2ae5b5706748, 
 # 96 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -2077,7 +2077,7 @@ message_t *
 
 /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__default__receive(
 # 50 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc08c38, 
+uart_id_t arg_0x2ae5b56e7c38, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -2090,17 +2090,17 @@ uint8_t len);
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__upperLength(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc25aa8, 
+uart_id_t arg_0x2ae5b5704aa8, 
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 message_t *msg, uint8_t dataLinkLen);
 #line 15
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__offset(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc25aa8);
+uart_id_t arg_0x2ae5b5704aa8);
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__dataLinkLength(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc25aa8, 
+uart_id_t arg_0x2ae5b5704aa8, 
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 message_t *msg, uint8_t upperLen);
 # 81 "/opt/tinyos-2.1.2/tos/lib/serial/SendBytePacket.nc"
@@ -2372,7 +2372,7 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__TimerFrom__f
 #line 83
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2ac38bff3da0);
+uint8_t arg_0x2ae5b5ad2da0);
 # 61 "/opt/tinyos-2.1.2/tos/lib/timer/LocalTime.nc"
 static uint32_t /*HilTimerMilliC.CounterToLocalTimeC*/CounterToLocalTimeC__1__LocalTime__get(void );
 # 82 "/opt/tinyos-2.1.2/tos/lib/timer/Counter.nc"
@@ -2566,7 +2566,7 @@ int main(void )   ;
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
 static void SchedulerBasicP__TaskBasic__runTask(
 # 56 "/opt/tinyos-2.1.2/tos/system/SchedulerBasicP.nc"
-uint8_t arg_0x2ac38b6b5ab0);
+uint8_t arg_0x2ae5b5194ab0);
 # 76 "/opt/tinyos-2.1.2/tos/interfaces/McuSleep.nc"
 static void SchedulerBasicP__McuSleep__sleep(void );
 # 61 "/opt/tinyos-2.1.2/tos/system/SchedulerBasicP.nc"
@@ -2810,7 +2810,7 @@ uint8_t len);
 # 110 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 static void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__sendDone(
 # 47 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2ac38baba020, 
+am_id_t arg_0x2ae5b5599020, 
 # 103 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -2829,7 +2829,7 @@ message_t *
 
 /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__receive(
 # 48 "/opt/tinyos-2.1.2/tos/lib/serial/SerialActiveMessageP.nc"
-am_id_t arg_0x2ac38bad7158, 
+am_id_t arg_0x2ae5b55b6158, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -3281,7 +3281,7 @@ static error_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__rece
 # 100 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__sendDone(
 # 51 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc27748, 
+uart_id_t arg_0x2ae5b5706748, 
 # 96 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -3299,7 +3299,7 @@ message_t *
 
 /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__receive(
 # 50 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc08c38, 
+uart_id_t arg_0x2ae5b56e7c38, 
 # 71 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -3312,17 +3312,17 @@ uint8_t len);
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__upperLength(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc25aa8, 
+uart_id_t arg_0x2ae5b5704aa8, 
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 message_t *msg, uint8_t dataLinkLen);
 #line 15
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__offset(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc25aa8);
+uart_id_t arg_0x2ae5b5704aa8);
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__dataLinkLength(
 # 54 "/opt/tinyos-2.1.2/tos/lib/serial/SerialDispatcherP.nc"
-uart_id_t arg_0x2ac38bc25aa8, 
+uart_id_t arg_0x2ae5b5704aa8, 
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
 message_t *msg, uint8_t upperLen);
 # 71 "/opt/tinyos-2.1.2/tos/lib/serial/SendBytePacket.nc"
@@ -4087,7 +4087,7 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__TimerFrom__s
 
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(
 # 48 "/opt/tinyos-2.1.2/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x2ac38bff3da0);
+uint8_t arg_0x2ae5b5ad2da0);
 #line 71
 enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0____nesc_unnamed4363 {
 #line 71
@@ -4826,9 +4826,9 @@ static inline void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer
 }
 
 # 83 "/opt/tinyos-2.1.2/tos/lib/timer/Timer.nc"
-inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(uint8_t arg_0x2ac38bff3da0){
+inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(uint8_t arg_0x2ae5b5ad2da0){
 #line 83
-    /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(arg_0x2ac38bff3da0);
+    /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(arg_0x2ae5b5ad2da0);
 #line 83
 }
 #line 83
@@ -5090,9 +5090,9 @@ static inline void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__d
 }
 
 # 110 "/opt/tinyos-2.1.2/tos/interfaces/AMSend.nc"
-inline static void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__sendDone(am_id_t arg_0x2ac38baba020, message_t * msg, error_t error){
+inline static void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__sendDone(am_id_t arg_0x2ae5b5599020, message_t * msg, error_t error){
 #line 110
-  switch (arg_0x2ac38baba020) {
+  switch (arg_0x2ae5b5599020) {
 #line 110
     case AM_DDCTESTMSG:
 #line 110
@@ -5102,7 +5102,7 @@ inline static void /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__s
 #line 110
     default:
 #line 110
-      /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__default__sendDone(arg_0x2ac38baba020, msg, error);
+      /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__AMSend__default__sendDone(arg_0x2ae5b5599020, msg, error);
 #line 110
       break;
 #line 110
@@ -5125,9 +5125,9 @@ static inline void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__
 }
 
 # 100 "/opt/tinyos-2.1.2/tos/interfaces/Send.nc"
-inline static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__sendDone(uart_id_t arg_0x2ac38bc27748, message_t * msg, error_t error){
+inline static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__sendDone(uart_id_t arg_0x2ae5b5706748, message_t * msg, error_t error){
 #line 100
-  switch (arg_0x2ac38bc27748) {
+  switch (arg_0x2ae5b5706748) {
 #line 100
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 100
@@ -5137,7 +5137,7 @@ inline static void /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__
 #line 100
     default:
 #line 100
-      /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__default__sendDone(arg_0x2ac38bc27748, msg, error);
+      /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Send__default__sendDone(arg_0x2ae5b5706748, msg, error);
 #line 100
       break;
 #line 100
@@ -5278,13 +5278,13 @@ static inline message_t */*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Rec
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__receive(am_id_t arg_0x2ac38bad7158, message_t * msg, void * payload, uint8_t len){
+inline static message_t * /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__receive(am_id_t arg_0x2ae5b55b6158, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-  switch (arg_0x2ac38bad7158) {
+  switch (arg_0x2ae5b55b6158) {
 #line 78
     case AM_DDC_FORECAST_MSG:
 #line 78
@@ -5294,7 +5294,7 @@ inline static message_t * /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Re
 #line 78
     default:
 #line 78
-      __nesc_result = /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__default__receive(arg_0x2ac38bad7158, msg, payload, len);
+      __nesc_result = /*SerialActiveMessageC.AM*/SerialActiveMessageP__0__Receive__default__receive(arg_0x2ae5b55b6158, msg, payload, len);
 #line 78
       break;
 #line 78
@@ -5323,13 +5323,13 @@ uint8_t len)
 }
 
 # 78 "/opt/tinyos-2.1.2/tos/interfaces/Receive.nc"
-inline static message_t * /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__receive(uart_id_t arg_0x2ac38bc08c38, message_t * msg, void * payload, uint8_t len){
+inline static message_t * /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__receive(uart_id_t arg_0x2ae5b56e7c38, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-  switch (arg_0x2ac38bc08c38) {
+  switch (arg_0x2ae5b56e7c38) {
 #line 78
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 78
@@ -5339,7 +5339,7 @@ inline static message_t * /*SerialDispatcherC.SerialDispatcherP*/SerialDispatche
 #line 78
     default:
 #line 78
-      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__default__receive(arg_0x2ac38bc08c38, msg, payload, len);
+      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__Receive__default__receive(arg_0x2ae5b56e7c38, msg, payload, len);
 #line 78
       break;
 #line 78
@@ -5367,13 +5367,13 @@ uint8_t dataLinkLen)
 }
 
 # 31 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
-inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__upperLength(uart_id_t arg_0x2ac38bc25aa8, message_t *msg, uint8_t dataLinkLen){
+inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__upperLength(uart_id_t arg_0x2ae5b5704aa8, message_t *msg, uint8_t dataLinkLen){
 #line 31
   unsigned char __nesc_result;
 #line 31
 
 #line 31
-  switch (arg_0x2ac38bc25aa8) {
+  switch (arg_0x2ae5b5704aa8) {
 #line 31
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 31
@@ -5383,7 +5383,7 @@ inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__
 #line 31
     default:
 #line 31
-      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__upperLength(arg_0x2ac38bc25aa8, msg, dataLinkLen);
+      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__upperLength(arg_0x2ae5b5704aa8, msg, dataLinkLen);
 #line 31
       break;
 #line 31
@@ -5410,13 +5410,13 @@ static inline uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__
 }
 
 # 15 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
-inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__offset(uart_id_t arg_0x2ac38bc25aa8){
+inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__offset(uart_id_t arg_0x2ae5b5704aa8){
 #line 15
   unsigned char __nesc_result;
 #line 15
 
 #line 15
-  switch (arg_0x2ac38bc25aa8) {
+  switch (arg_0x2ae5b5704aa8) {
 #line 15
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 15
@@ -5426,7 +5426,7 @@ inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__
 #line 15
     default:
 #line 15
-      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__offset(arg_0x2ac38bc25aa8);
+      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__offset(arg_0x2ae5b5704aa8);
 #line 15
       break;
 #line 15
@@ -6322,13 +6322,13 @@ uint8_t upperLen)
 }
 
 # 23 "/opt/tinyos-2.1.2/tos/lib/serial/SerialPacketInfo.nc"
-inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__dataLinkLength(uart_id_t arg_0x2ac38bc25aa8, message_t *msg, uint8_t upperLen){
+inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__dataLinkLength(uart_id_t arg_0x2ae5b5704aa8, message_t *msg, uint8_t upperLen){
 #line 23
   unsigned char __nesc_result;
 #line 23
 
 #line 23
-  switch (arg_0x2ac38bc25aa8) {
+  switch (arg_0x2ae5b5704aa8) {
 #line 23
     case TOS_SERIAL_ACTIVE_MESSAGE_ID:
 #line 23
@@ -6338,7 +6338,7 @@ inline static uint8_t /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__
 #line 23
     default:
 #line 23
-      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__dataLinkLength(arg_0x2ac38bc25aa8, msg, upperLen);
+      __nesc_result = /*SerialDispatcherC.SerialDispatcherP*/SerialDispatcherP__0__PacketInfo__default__dataLinkLength(arg_0x2ae5b5704aa8, msg, upperLen);
 #line 23
       break;
 #line 23
@@ -8441,9 +8441,9 @@ static void SchedulerBasicP__TaskBasic__default__runTask(uint8_t id)
 }
 
 # 75 "/opt/tinyos-2.1.2/tos/interfaces/TaskBasic.nc"
-static void SchedulerBasicP__TaskBasic__runTask(uint8_t arg_0x2ac38b6b5ab0){
+static void SchedulerBasicP__TaskBasic__runTask(uint8_t arg_0x2ae5b5194ab0){
 #line 75
-  switch (arg_0x2ac38b6b5ab0) {
+  switch (arg_0x2ae5b5194ab0) {
 #line 75
     case DecoderTestP__decoderTask:
 #line 75
@@ -8501,7 +8501,7 @@ static void SchedulerBasicP__TaskBasic__runTask(uint8_t arg_0x2ac38b6b5ab0){
 #line 75
     default:
 #line 75
-      SchedulerBasicP__TaskBasic__default__runTask(arg_0x2ac38b6b5ab0);
+      SchedulerBasicP__TaskBasic__default__runTask(arg_0x2ae5b5194ab0);
 #line 75
       break;
 #line 75

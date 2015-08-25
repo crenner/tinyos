@@ -67,6 +67,7 @@ module periodicSenderP {
     interface QueueSend as Send[collection_id_t];
     interface Receive as RadioReceive[collection_id_t];
     interface CollectionPacket;
+
     //interface OrinocoRoutingClient as OrinocoRouting;
 
     interface Leds;
@@ -93,6 +94,7 @@ implementation {
   uint16_t   cnt = 0;
   bool       active = FALSE;
   uint32_t   delay = DATA_PERIOD;
+  bool locked = FALSE;
   DdcForecastMsg defPackage;
   
   event void Boot.booted() {
@@ -214,6 +216,8 @@ implementation {
   event void RadioControl.startDone(error_t error) { }
 
   event void RadioControl.stopDone(error_t error) { }
+
+  
   
 
   /* ************************* ORINOCO STATS ************************* */

@@ -42,6 +42,7 @@
   #include "printf.h"
 #endif
 #include "DdcForecastMsg.h"
+#include "DdcTestMsg.h"
 
 configuration periodicSenderC {
 }
@@ -76,6 +77,9 @@ implementation {
   TestC.OrinocoConfig     -> Radio;
   //TestC.OrinocoRouting    -> Radio;
 
+//Receive Packages via Serial Connection
+
+
   // Orinoco internal reporting
   components OrinocoStatsReportingJobC;
   OrinocoStatsReportingJobC.Packet -> Radio;
@@ -91,6 +95,13 @@ implementation {
   WeatherForecastC.DissDelay ->OrinocoDisseminatorC.Delay;
   WeatherForecastC.Decoder ->DdcDecoderC.Decoder;
   WeatherForecastC.LocalTime -> WeatherTime;
+
+components SerialActiveMessageC as AM;
+  WeatherForecastC.AMControl 	  -> AM;
+  WeatherForecastC.AMSend 	  -> AM.AMSend[AM_DDCTESTMSG];
+  WeatherForecastC.AMPacket 	  -> AM;
+components LedsC as LED;
+  WeatherForecastC.Leds -> LED;
    
 
 

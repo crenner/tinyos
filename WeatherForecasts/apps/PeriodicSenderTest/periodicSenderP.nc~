@@ -67,12 +67,15 @@ module periodicSenderP {
     interface QueueSend as Send[collection_id_t];
     interface Receive as RadioReceive[collection_id_t];
     interface CollectionPacket;
+
+    interface SplitControl as AMControl;
+    interface AMSend;
+    interface Packet as AMPacket;
     //interface OrinocoRoutingClient as OrinocoRouting;
 
     interface Leds;
 
     interface OrinocoConfig;
-    //interface DisseminationValue<DdcForecastMsg>  as ForecastValue;
     interface WeatherForecast<uint8_t> as Weather;
  
     interface Random;
@@ -94,6 +97,7 @@ implementation {
   uint16_t   cnt = 0;
   bool       active = FALSE;
   uint32_t   delay = DATA_PERIOD;
+  bool locked = FALSE;
   DdcForecastMsg defPackage;
   
   event void Boot.booted() {
@@ -215,6 +219,22 @@ implementation {
   event void RadioControl.startDone(error_t error) { }
 
   event void RadioControl.stopDone(error_t error) { }
+
+  
+  event void AMControl.startDone(error_t error) { }
+  
+  
+  event void
+  AMControl.stopDone(error_t error) {
+    call AMControl.start();  // restart
+  }
+
+  event void AMSend.sendDone(message_t* bufPtr, error_t error) {
+    /*if (&packet == bufPtr) {
+      locked = FALSE;
+    }*/
+  }
+  
   
 
   /* ************************* ORINOCO STATS ************************* */
