@@ -18,7 +18,8 @@ implementation {
   EAPeriodicJobConfigC.SubJobConfig -> SolarSamplingJobConfigC;
 
   // job's internal wirings
-  components LedsC as LedsC;
+  components NoLedsC as LedsC;
+  //components LedsC as LedsC;
   SolarSamplingJobP.Leds -> LedsC;
 
   components SolarCurrentC;
