@@ -12,12 +12,14 @@ CFLAGS += -DORINOCO_DEBUG_STATISTICS
 #CFLAGS += -DORINOCO_DEBUG_PRINTF
 
 CFLAGS += -DUSE_PRINTF
+CFLAGS += -DWISEBED
 
 CFLAGS += \
 	-I . \
 	-I ../../../Orinoco/interfaces \
 	-I ../../../Orinoco/lib/net/orinoco \
 	-I ../../lib \
+	-I ../../interfaces \
 	-I ../../../Orinoco/LocalTimeSyncedMicro/lib \
 	-I ../../../EAJobs/interfaces \
 	-I ../../../EAJobs/lib \

@@ -104,7 +104,6 @@ implementation {
     
     // get the number of values inside the forecast
     res->numValues = (encData->header.numDays+1) * (24 / (encData->header.resolution+1));
-    
     // make sure we can handle the data
     if (res->numValues > DDC_VALUE_MAX_NUM) {
       res->numValues = DDC_VALUE_MAX_NUM;
@@ -117,6 +116,7 @@ implementation {
     dsByte_     = encData->data;
     dsLastByte_ = dsByte_ + DDC_FORECAST_MAX_DATALEN - 1;
     dsBit_      = 0;
+
     
     // read out sunrise and sunset offsets
     res->sunrise = encData->header.sunrise;
@@ -125,32 +125,29 @@ implementation {
     sunrise = res->sunrise;
     sunset  = res->sunset;
 
-
-
     for (i = 0; i < res->numValues; i++){
       // at sunrise/sunset, move to next occurance
-      defaultPredecessor = 0; // false
-      if (i == sunrise) {
-        sunrise += 24;
-        defaultPredecessor = 1;
-      } else if (i == sunset) {
-        sunset += 24;
-      }
+      	defaultPredecessor = 0; // false
+      	if (i == sunrise) {
+        	sunrise += 24;
+        	defaultPredecessor = 1;
+      	} else if (i == sunset) {
+        	sunset += 24;
+      	}
    
       // decode during daytime, pad during nighttime
-      if (sunrise > sunset) { 
-        decodeNextValue(res->values, i,defaultPredecessor);
+      	if (sunrise > sunset) { 
+        	decodeNextValue(res->values, i,defaultPredecessor);
 
-        
         // check if there was an error!
-        if (dsByte_ > dsLastByte_) {
-          return FAIL;
-        }
-      } else {
-        res->values[i] = DDC_VALUE_UNKNOWN;
-      }
+        	if (dsByte_ > dsLastByte_) {
+          	return FAIL;
+        	}
+
+      	} else {
+        	res->values[i] = DDC_VALUE_UNKNOWN;
+      	}
     }
-    
     return SUCCESS;
   }
 
