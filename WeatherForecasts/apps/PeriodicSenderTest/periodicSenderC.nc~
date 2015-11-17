@@ -100,9 +100,8 @@ components SerialActiveMessageC as AM;
   WeatherForecastC.AMControl 	  -> AM;
   WeatherForecastC.AMSend 	  -> AM.AMSend[AM_DDCTESTMSG];
   WeatherForecastC.AMPacket 	  -> AM;
-components LedsC;
-  WeatherForecastC.Leds -> LedsC;
-   
+components LedsC as LED;
+  WeatherForecastC.Leds -> LED;
 
 
   components LedsC;

@@ -189,17 +189,20 @@ implementation
 
   event message_t *
   RadioReceive.receive[collection_id_t type](message_t * msg, void * payload, uint8_t len) {
-/*
+
     #ifdef PRINTF_H
     uint8_t hops = ((orinoco_data_header_t *)(payload + len))->hopCnt;
+   /*
     if (type == ORINOCO_AM_CMDCFRM) { // TODO what is CMDCFRM?
       OrinocoCommandAckMsg * p = (OrinocoCommandAckMsg *)payload;
       printf("%lu: %u bf-rx-conf %u %u %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, call CollectionPacket.getOrigin(msg), type, hops, p->version, len);
       printfflush();
-    } else {
-      printf("%lu: %u data-rx %u %u %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, call CollectionPacket.getOrigin(msg), type, *((nx_uint16_t *)payload), hops, call RadioPacket.payloadLength(msg));
+    } else {*/
+ //     printf("%lu: %u data-rx %u %u %u %u %u\n", call LocalTime.get(), TOS_NODE_ID, call CollectionPacket.getOrigin(msg), type, *((nx_uint16_t *)payload), hops, call //RadioPacket.payloadLength(msg));
+
+      printf("data-rx %u %u %uX\n", call CollectionPacket.getOrigin(msg), type, hops);
       printfflush();
-    
+    /*
       if (type != 33) {  // DEBUGGING HACK TO FIND packet corruption bug
         uint8_t * ps = call RadioPacket.getPayload(msg, 0);
         uint8_t * pe = (uint8_t *)payload + len + sizeof(orinoco_data_header_t) + sizeof(orinoco_delay_footer_t);
@@ -210,8 +213,8 @@ implementation
         printf("\n");
         printfflush();
       }
-    }
-    #endif*/
+    }*/
+    #endif
     
     return msg;
   }

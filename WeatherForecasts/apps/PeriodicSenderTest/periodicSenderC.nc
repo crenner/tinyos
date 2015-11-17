@@ -62,9 +62,6 @@ implementation {
   TestC.Boot              -> MainC.Boot;
   TestC.Timer             -> TimerMilliC;
   TestC.BootTimer         -> BootTimer;
-//TODO 
-// OrinocoDisseminator Wiren
-// WeatherForecasts C wiren 
 
   components OrinocoP as Radio;
   TestC.RootControl       -> Radio;
@@ -102,7 +99,6 @@ components SerialActiveMessageC as AM;
   WeatherForecastC.AMPacket 	  -> AM;
 components LedsC as LED;
   WeatherForecastC.Leds -> LED;
-   
 
 
   components LedsC;

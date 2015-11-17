@@ -42,11 +42,16 @@
 #include "DdcForecastMsg.h"
 #include "OrinocoDebugReportingMsg.h"
 
+#ifdef WISEBED
+#include "printf.h"
+#endif
+
+
 #define MSG_BURST_LEN      1    // number of packets per period (#)
 //#define DATA_PERIOD    122880UL  // data creation period (ms)
 //  #define DATA_PERIOD    307200UL  // data creation period (ms)
- #define DATA_PERIOD      10240UL  // data creation period (ms)
-  //#define DATA_PERIOD    61440UL  // data creation period (ms)
+// #define DATA_PERIOD      10240UL  // data creation period (ms)
+  #define DATA_PERIOD    61440UL  // data creation period (ms)
 //#define DATA_PERIOD    491520UL  // data creation period (ms)
 //#define DATA_PERIOD    5120UL  // data creation period (ms)
 #define QUEUE_LIMIT        1    // aggregation degree (#)

@@ -42,6 +42,11 @@
 #include "DdcForecastMsg.h"
 #include "OrinocoDebugReportingMsg.h"
 
+#ifdef WISEBED
+#include "printf.h"
+#endif
+
+
 #define MSG_BURST_LEN      1    // number of packets per period (#)
 //#define DATA_PERIOD    122880UL  // data creation period (ms)
 //  #define DATA_PERIOD    307200UL  // data creation period (ms)
@@ -68,9 +73,6 @@ module periodicSenderP {
     interface Receive as RadioReceive[collection_id_t];
     interface CollectionPacket;
 
-    interface SplitControl as AMControl;
-    interface AMSend;
-    interface Packet as AMPacket;
     //interface OrinocoRoutingClient as OrinocoRouting;
 
     interface Leds;
@@ -220,20 +222,6 @@ implementation {
 
   event void RadioControl.stopDone(error_t error) { }
 
-  
-  event void AMControl.startDone(error_t error) { }
-  
-  
-  event void
-  AMControl.stopDone(error_t error) {
-    call AMControl.start();  // restart
-  }
-
-  event void AMSend.sendDone(message_t* bufPtr, error_t error) {
-    /*if (&packet == bufPtr) {
-      locked = FALSE;
-    }*/
-  }
   
   
 

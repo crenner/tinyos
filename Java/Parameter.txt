@@ -1,0 +1,6 @@
+Frequency = 120000
+Number of values = 144
+Resolution = 0
+Night start = 2
+Night end = 8
+
