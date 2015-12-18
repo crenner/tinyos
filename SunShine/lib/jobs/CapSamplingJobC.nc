@@ -18,8 +18,8 @@ implementation {
   EAPeriodicJobConfigC.SubJobConfig -> CapSamplingJobConfigC;
 
   // job's internal wirings
+  components NoLedsC as LedsC;
   //components LedsC as LedsC;
-  components LedsC as LedsC;
   CapSamplingJobP.Leds -> LedsC;
 
   components CapVoltageC;
