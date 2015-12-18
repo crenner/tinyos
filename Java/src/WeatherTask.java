@@ -1,17 +1,83 @@
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import net.tinyos.message.Message;
+import net.tinyos.message.MessageListener;
+import net.tinyos.message.MoteIF;
+import net.tinyos.util.PrintStreamMessenger;
+
 
 /**
  * task for parsing data, encoding and sending
  * @author anh tuan nguyen
- *
  */
 
-public class WeatherTask extends TimerTask {
-	public int connection_Tries = 3; 
+
+
+public class WeatherTask extends TimerTask implements MessageListener{
+    private MoteIF mote;
+	private int connection_Tries; 
+	private byte lastSeqNr;
+	private String fileName;
+	private int delayTime;
+	
+	boolean resend = false;
+	
+    ScheduledExecutorService scheduledThreadPool;
+    ScheduledFuture<?> timer;
+	
+	
+	public WeatherTask(int connectionTries, String fileName){
+		mote = new MoteIF(PrintStreamMessenger.err);
+	    mote.registerListener(new SinkAck(), this);
+	    this.connection_Tries 	= connectionTries;
+	    this.lastSeqNr 			= -1;
+	    this.fileName  			= fileName;
+	    this.delayTime 			= 1024; //minimum waiting time between each package sent
+	    
+		// initialize Threadpool
+		scheduledThreadPool = Executors.newScheduledThreadPool(1);
+	}
 
 	@Override
-	public void run() {
+	public synchronized void run() {
+		sendPackage();
+		// start timer after package is sent
+	    // if no package arrives after 5 seconds, it its probably lost and will be resent by this thread
+		timer =scheduledThreadPool.schedule(new Thread (){
+			   public void run(){
+				   synchronized(this){
+					   System.out.println("Package Lost!, Resend Package");
+					   //TODO handling, when second package is not acknowledged as well
+					   sendPackage();
+				   	   }
+			   		}
+		   		}, 5, TimeUnit.SECONDS);  // wait 5 seconds
+		if(!resend){
+			try { 
+				wait(); // block until package received 
+				// if no package is received after 5 seconds the application will be terminated
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		resend = false;
+		System.out.println("Package sent");
+		
+
+	}
+	
+	
+	private void sendPackage(){
 		Communication comm = new Communication();
 		CloudCoverData CCD = new CloudCoverData();
 		Encode encoder = new Encode();
@@ -100,12 +166,68 @@ public class WeatherTask extends TimerTask {
 		comm.init();
 		comm.sendPackage(data, encoder.get_HeaderSunset(), encoder.get_HeaderSunrise(),
 				encoder.get_HeaderResolution(), encoder.get_HeaderNumDays());
-		
-	
-		
-				
+	}
 
+	@Override
+	public void messageReceived(int arg0, Message arg1) {
+
+		//Check Message type
+		if(arg1.amType() == SinkAck.AM_TYPE){
+			SinkAck ack = (SinkAck)arg1;
+			System.out.println(ack.get_seqNr());
+			//check only if seqNr are inequal
+			if(this.lastSeqNr != ack.get_seqNr()){
+				//System.out.println(lastSeqNr +"  A"+ ack.get_seqNr());
+				lastSeqNr = (byte) ack.get_seqNr();
+				timer.cancel(true); // if correct package is received, stop timer 
+				setReady(); // important for syncing
+			}
+
+		} else {
+			//TODO remove duplicates
+			Date now = Calendar.getInstance().getTime();
+			//Log Package 
+			writeDatatoFile(now.toString()+ " : ", this.fileName, true);
+			writeDatatoFile(arg1.toString(), this.fileName, true);
+		}
 
 	}
+	
+	
+	public void setReady(){
+		synchronized (this) {
+		
+			try {
+				Thread.sleep(delayTime);				//wait
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			notify();			//deblock 
+		}
+	}
+	
+	
+	private void writeDatatoFile(String text, String fileName, boolean append){
+		Writer fw = null;
+		// Write data into file 	
+		try {
+			fw = new FileWriter(fileName,append);
+
+			fw.write(text);
+			fw.append(System.getProperty("line.separator")); // new line
+
+		} catch (IOException e) {
+			System.out.println("error writing");
+		} finally {
+			if (fw != null)
+				try {
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+		}
+	}
+	
 
 }

@@ -37,13 +37,6 @@
  * @date December 14 2011
  */
 
-/*
-TODO 
-1 Dissemination Interface einbauen
-2. Serielle Schnittstellen einbauen
-3. zusammenfügen
-
-*/
 #include "AM.h"
 #include "Serial.h"
 #include "Reporting.h"
@@ -95,13 +88,19 @@ module SinkP @safe() {
     // serial line
     interface Packet  as SerialPacket;
     interface Receive as SerialReceive;
+    interface AMSend;
   }
 }
 implementation
 {
   uint16_t  version = 0;
+  uint8_t seq_Nr= 0;
   bool temp = FALSE;
+  bool temp2 = FALSE;
+  bool locked = FALSE;
   DdcForecastMsg  fcast;
+  message_t packet;
+
 
 
   event void Boot.booted() {
@@ -117,12 +116,15 @@ implementation
 
     call BootTimer.startOneShot(1024);
     call DistTimer.startPeriodic(FORECAST_INTVL);
+    seq_Nr=0;
   }
 
   event void BootTimer.fired() {
     // we need to delay this because printf is only set up at Boot.booted() and we cannot influence the order of event signalling
+#ifdef PRINTF_H
     printf("%lu: %u reset\n", call LocalTime.get(), TOS_NODE_ID);
     printfflush();
+#endif
   }
   
   am_addr_t addr = 0;
@@ -181,9 +183,22 @@ implementation
 
   event void RadioControl.stopDone(error_t error) {}
   
-  event void SerialControl.startDone(error_t error) {}
+  event void SerialControl.startDone(error_t error) {
+}
 
-  event void SerialControl.stopDone(error_t error) {}
+  event void SerialControl.stopDone(error_t error) {
+    	call SerialControl.start();  // restart
+}
+
+  event void AMSend.sendDone(message_t* bufPtr, error_t error) {
+	//increase seqNr
+    	if (&packet == bufPtr) {
+     		 locked = FALSE;
+		 seq_Nr= (seq_Nr+1)% 256;
+    	}
+
+
+  }
 
 
 
@@ -219,6 +234,28 @@ implementation
     return msg;
   }
 
+  task void ackTask() {
+	//send Package of Type ACK
+    	if (!locked) {
+    		SinkAck* ack;
+      		ack = (SinkAck*)call RadioPacket.getPayload(&packet, sizeof(SinkAck));
+     		if (ack != NULL) {
+      			ack->seqNr = seq_Nr;
+      			ack->nodeId = TOS_NODE_ID;
+      			if (call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(SinkAck)) == SUCCESS) {
+				locked = TRUE;
+ 				if(!temp2){
+					call Leds.led1On();
+					temp2 = TRUE;
+    				}else {
+     					call Leds.led1Off();
+					temp2 = FALSE;
+    				}
+      			}
+		}
+    	}
+   }
+
    event message_t* SerialReceive.receive(message_t* bufPtr, 
 				   void* payload, uint8_t len) {
 	uint8_t numValues;
@@ -236,6 +273,9 @@ implementation
 
 	//call dissemination change
 	call ForecastUpdate.change(&fcast);
+	post ackTask();
+
+
     	return bufPtr;
    }
 

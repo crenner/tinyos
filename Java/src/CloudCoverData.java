@@ -148,7 +148,7 @@ public class CloudCoverData {
 	/**
 	 * Parse sunset and sunrise from given link
 	 * 
-	 * @return String mit dem Bew�lkungsgrad (ungeparst)
+	 * @return String containing cloud cover value(ungeparst)
 	 */
 	public void  parseSunData() {
 		// suche Tabelle mit sonnendaten

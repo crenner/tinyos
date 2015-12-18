@@ -3,12 +3,20 @@ import java.io.FileReader;
 import java.io.IOException;
 //import java.util.Timer;
 
+
+
+import net.tinyos.message.Message;
+import net.tinyos.message.MessageListener;
+import net.tinyos.message.MoteIF;
+import net.tinyos.util.PrintStreamMessenger;
+
 /**
  * Main class with different execution modes 
  * see documentation
  * @author phu anh tuan nguyen
  *
  */
+
 
 
 
@@ -94,16 +102,15 @@ public class Main {
 	    	}
 	    	
 	    	// start task
-	    	WeatherTask x = new WeatherTask();
+	    	WeatherTask x = new WeatherTask(3,"package.txt");
 	    	x.run();
 	    	// After each task execution, wait <frequency> time until the task is started again
 	    	try{
-	    	Thread.sleep(frequency);
+	    	Thread.sleep(/*frequency*/10000);
 	    	} catch (Exception e){
 	    		
 	    	}
-	    	// neuen task starten
-	    	System.out.println("beendet");
+	    	// start new task
 	    }
 	}
 	
@@ -145,6 +152,7 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
+
 
 
 }

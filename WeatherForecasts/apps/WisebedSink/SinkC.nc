@@ -37,6 +37,7 @@
  * @date December 14 2011
  */
 #include "DdcForecastMsg.h"
+#include "SinkAck.h"
 #ifdef USE_PRINTF
   #define NEW_PRINTF_SEMANTICS
   #include "printf.h"
@@ -84,7 +85,8 @@ implementation {
   components SerialActiveMessageC as AM;
   SinkP.SerialControl -> AM;
   SinkP.SerialReceive -> AM.Receive[AM_DDC_FORECAST_MSG];
-  SinkP.SerialPacket -> AM;
+  SinkP.AMSend 	      -> AM.AMSend[AM_SINKACK];
+  SinkP.SerialPacket  -> AM;
   //Leds
   components LedsC;
   SinkP.Leds -> LedsC;

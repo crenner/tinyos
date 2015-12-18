@@ -4,6 +4,16 @@ CC2420POWER=31
 #CC2420POWER=15
 #CC2420POWER=7
 
+BUILD_EXTRA_DEPS = SinkAck.class
+CLEAN_EXTRA = SinkAck.class SinkAck.java
+
+SinkAck.class: SinkAck.java
+	javac SinkAck.java
+
+SinkAck.java: SinkAck.h
+	mig java -target=$(PLATFORM) $(CFLAGS) -java-classname=SinkAck SinkAck.h SinkAck -o $@
+
+
 include $(MAKERULES)
 include ../Makefile.radioconfig
 
@@ -12,8 +22,8 @@ CFLAGS += -DORINOCO_DEBUG_STATISTICS
 CFLAGS += -DDISABLE_SYNCED_MICRO
 CFLAGS += -DORINOCO_QUEUE_SIZE=1
 
-CFLAGS += -DUSE_PRINTF
-CFLAGS += -DWISEBED
+#CFLAGS += -DUSE_PRINTF
+#CFLAGS += -DWISEBED
 
 CFLAGS += \
 	-I . \
